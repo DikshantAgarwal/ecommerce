@@ -1,0 +1,18 @@
+                          List of tables
+ Schema |              Name              | Type  |     Owner      
+--------+--------------------------------+-------+----------------
+ public | accounts_user                  | table | ecommerce_user
+ public | accounts_user_groups           | table | ecommerce_user
+ public | accounts_user_user_permissions | table | ecommerce_user
+ public | auth_group                     | table | ecommerce_user
+ public | auth_group_permissions         | table | ecommerce_user
+ public | auth_permission                | table | ecommerce_user
+ public | django_admin_log               | table | ecommerce_user
+ public | django_content_type            | table | ecommerce_user
+ public | django_migrations              | table | ecommerce_user
+ public | django_session                 | table | ecommerce_user
+ public | products_category              | table | ecommerce_user
+ public | products_product               | table | ecommerce_user
+ public | test                           | table | postgres
+(13 rows)
+
