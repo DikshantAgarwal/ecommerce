@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404 
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -11,6 +11,9 @@ from apps.products.serializers import CategorySerializer, ProductSerializer
 class ProductListAPIView(APIView):
     def get(self, request):
         products = Product.objects.select_related('category').all()
+        category_slug = request.query_params.get('category')
+        if category_slug:
+            products = products.filter(category__slug=category_slug)
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
