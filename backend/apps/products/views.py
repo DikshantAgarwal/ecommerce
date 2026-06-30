@@ -14,6 +14,11 @@ class ProductListAPIView(APIView):
         category_slug = request.query_params.get('category')
         if category_slug:
             products = products.filter(category__slug=category_slug)
+
+        search_query = request.query_params.get('search')
+        if search_query:
+            products = products.filter(name__icontains=search_query)
+
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
