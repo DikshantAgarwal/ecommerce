@@ -8,6 +8,9 @@ from apps.products.models import Category, Product
 from apps.products.serializers import CategorySerializer, ProductSerializer
 
 
+ALLOWED_ORDERING_FIELDS = {'price', '-price', 'created_at', '-created_at'}
+
+
 class ProductListAPIView(APIView):
     def get(self, request):
         products = Product.objects.select_related('category').all()
@@ -18,6 +21,10 @@ class ProductListAPIView(APIView):
         search_query = request.query_params.get('search')
         if search_query:
             products = products.filter(name__icontains=search_query)
+
+        ordering = request.query_params.get('ordering')
+        if ordering in ALLOWED_ORDERING_FIELDS:
+            products = products.order_by(ordering)
 
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
