@@ -41,8 +41,8 @@ class ProductListAPIView(GenericAPIView):
 
 
 class ProductDetailAPIView(APIView):
-    def get(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
+    def get(self, request, slug):
+        product = get_object_or_404(Product, slug=slug)
         serializer = ProductSerializer(product)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

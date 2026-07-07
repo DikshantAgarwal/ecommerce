@@ -4,6 +4,16 @@
 
 ---
 
+## Version History
+
+| Version | Date | Summary |
+|---|---|---|
+| [v1.1.0](#110---2026-07-07) | 2026-07-07 | Product detail page, reusable components, slug routing, Bruno testing |
+| [v1.0.0](#100---2026-07-05) | 2026-07-05 | Initial documentation, ADRs, UI bible, deployment guide |
+
+---
+
+<a name="100---2026-07-05"></a>
 ## [1.0.0] — 2026-07-05
 
 ### Added
@@ -85,16 +95,80 @@
 
 ---
 
+<a name="110---2026-07-07"></a>
+## [1.1.0] — 2026-07-07
+
+### Added
+
+- **Frontend — Product Detail Feature**
+  - `ProductDetailPage` at `/products/:id` with four states: invalid id, loading (skeleton), error, not found, and full detail view.
+  - `useProduct(id)` React Query hook with scoped cache key (`['product', id]`).
+  - `getProduct(id)` API service calling `GET /products/{id}/`.
+  - Click-through navigation from `ProductCard` to product detail via React Router `Link`.
+
+- **Frontend — Reusable Component Architecture**
+  - `ProductCard` component: placeholder image (4:5), product name, formatted price.
+  - `ProductGrid` component: responsive CSS grid (2→3→4 columns), empty state.
+  - Barrel exports via `components/index.ts`.
+  - Clean separation: pages own data fetching, components own rendering.
+
+### Changed
+
+- **Backend — Products**
+  - Product Detail API migrated from integer PK to slug-based routing.
+  - Product filtering (category, price range), search (name/description), ordering (price, date, name), and pagination completed and tested via Bruno.
+
+- **Frontend — Home Page**
+  - Refactored from monolithic list to fetch-and-delegate pattern: `Home` passes `data.results` to `ProductGrid`.
+
+- **Frontend — Architecture**
+  - React Router integrated into feature flow (`/products/:id` route added).
+  - API services and React Query hooks separated into distinct layers.
+  - `ProductCard` wrapped in `<Link>` enabling keyboard-accessible navigation.
+
+### Project Status at v1.1.0
+
+| Area | Status |
+|---|---|
+| Project Configuration | ✅ Complete |
+| Architecture Documentation | ✅ Complete |
+| UI Design Bible | ✅ Complete |
+| Deployment Guide | ✅ Complete |
+| Accounts Backend | ⏳ 30% Complete |
+| Products Backend | ✅ ~90% Complete |
+| Cart Backend | ❌ Not Started |
+| Orders Backend | ❌ Not Started |
+| Payments Backend | ❌ Not Started |
+| Reviews Backend | ❌ Not Started |
+| Coupons Backend | ❌ Not Started |
+| Frontend Pages | ⏳ ~30% Complete |
+| Component Architecture | ✅ Established |
+| Tests | ❌ Not Started |
+| CI/CD | ❌ Not Started |
+| Docker | ❌ Not Started |
+
+---
+
 ## [Unreleased]
 
-### Planned for Sprint 1 (6 Jul — 12 Jul)
+### Sprint 1 (6 Jul — 12 Jul) — In Progress
 
+#### Completed
+- [x] Product detail page (Frontend)
+- [x] Product detail routing (`/products/:id`)
+- [x] Product navigation from ProductCard to Product Detail
+- [x] `useProduct()` hook and `getProduct()` service
+- [x] Home page refactored into reusable component architecture
+- [x] ProductGrid and ProductCard components created
+- [x] Backend: Product Detail API migrated to slug-based routing
+- [x] Backend: Product filtering, searching, ordering, pagination completed and tested
+- [x] ADRs 021-022: Social-only login decision documented
+
+#### Remaining
 - [ ] Google OAuth integration: `django-allauth` + Google provider
 - [ ] Accounts API: Google token exchange → JWT, Profile endpoints
 - [ ] Frontend: Google Sign-In button, post-login redirect
-- [ ] Product detail page (Frontend)
 - [ ] Add remaining product endpoints (CRUD for staff)
-- [ ] ADRs 021-022: Social-only login decision documented
 
 ### Planned for Sprint 2 (13 Jul — 19 Jul)
 

@@ -38,3 +38,4 @@ node_modules/
 frontend/build/
 frontend/.env.local
 TUTORIAL.md
+docs/prompts.md
