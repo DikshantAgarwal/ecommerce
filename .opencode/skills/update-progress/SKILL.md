@@ -1,3 +1,8 @@
+---
+name: update-progress
+description: Updates DAILY_PROGRESS.md (daily) and CHANGELOG.md (per completed feature) for the KuHu Apparels project. Follows strict rules: CHANGELOG only updates when a feature's full Definition of Done is met.
+---
+
 # Skill: Update Daily Progress & Changelog
 
 Updates `DAILY_PROGRESS.md` (daily) and `CHANGELOG.md` (per completed feature) for the KuHu Apparels project.
