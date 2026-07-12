@@ -1,20 +1,29 @@
 import { useState } from 'react';
 import { useProducts } from '../hooks/useProducts';
 import { useCategories } from '../hooks/useCategories';
-import { ProductGrid, CategoryFilter } from '../components';
+import { useDebounce } from '../hooks/useDebounce';
+import { ProductGrid, CategoryFilter, SearchBar } from '../components';
+
+const DEBOUNCE_DELAY = 400;
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebounce(searchInput, DEBOUNCE_DELAY);
   const {
     data: categories,
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useCategories();
-  const { data, isLoading, error } = useProducts(selectedCategory);
+  const { data, isLoading, error } = useProducts(selectedCategory, debouncedSearch);
 
   return (
     <section className="px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="mb-6 text-2xl font-bold text-neutral-900">Products</h1>
+
+      <div className="mb-4">
+        <SearchBar value={searchInput} onChange={setSearchInput} />
+      </div>
 
       <div className="mb-6">
         <CategoryFilter
