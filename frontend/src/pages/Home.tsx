@@ -2,7 +2,12 @@ import { useState } from 'react';
 import { useProducts } from '../hooks/useProducts';
 import { useCategories } from '../hooks/useCategories';
 import { useDebounce } from '../hooks/useDebounce';
-import { ProductGrid, CategoryFilter, SearchBar } from '../components';
+import {
+  ProductGrid,
+  CategoryFilter,
+  SearchBar,
+  LoadMoreButton,
+} from '../components';
 
 const DEBOUNCE_DELAY = 400;
 
@@ -15,7 +20,16 @@ export default function Home() {
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useCategories();
-  const { data, isLoading, error } = useProducts(selectedCategory, debouncedSearch);
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    error,
+  } = useProducts(selectedCategory, debouncedSearch);
+
+  const products = data?.pages.flatMap((page) => page.results) ?? [];
 
   return (
     <section className="px-4 py-8 sm:px-6 lg:px-8">
@@ -44,7 +58,15 @@ export default function Home() {
           Failed to load products. Please try again later.
         </div>
       ) : (
-        <ProductGrid products={data?.results ?? []} />
+        <>
+          <ProductGrid products={products} />
+          {hasNextPage && (
+            <LoadMoreButton
+              onClick={() => fetchNextPage()}
+              isLoading={isFetchingNextPage}
+            />
+          )}
+        </>
       )}
     </section>
   );

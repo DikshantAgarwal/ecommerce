@@ -1,10 +1,15 @@
 import apiClient from '../api/client';
 import type { Product, ProductsResponse } from '../types';
 
-export async function getProducts(categorySlug?: string | null, searchQuery?: string): Promise<ProductsResponse> {
+export async function getProducts(
+  categorySlug?: string | null,
+  searchQuery?: string,
+  page?: number,
+): Promise<ProductsResponse> {
   const params: Record<string, string> = {};
   if (categorySlug) params.category = categorySlug;
   if (searchQuery) params.search = searchQuery;
+  if (page) params.page = String(page);
   const { data } = await apiClient.get<ProductsResponse>('/products/', { params });
   return data;
 }
