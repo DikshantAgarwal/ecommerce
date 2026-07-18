@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router';
 import { useProduct } from '../hooks/useProduct';
+import { AddToCartButton } from '../components';
 
 function formatPrice(price: string): string {
   return `$${parseFloat(price).toFixed(2)}`;
@@ -122,6 +123,8 @@ export default function ProductDetail() {
           <p className="leading-relaxed text-neutral-600">
             {product.description}
           </p>
+
+          <AddToCartButton productId={product.id} className="w-full sm:w-auto" />
         </div>
       </div>
     </div>

@@ -5,3 +5,5 @@ export { default as SearchBar } from './SearchBar';
 export { default as LoadMoreButton } from './LoadMoreButton';
 export { default as GoogleSignInButton } from './GoogleSignInButton';
 export { default as ProtectedRoute } from './ProtectedRoute';
+export { default as CartIcon } from './CartIcon';
+export { default as AddToCartButton } from './AddToCartButton';

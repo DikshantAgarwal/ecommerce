@@ -1,5 +1,6 @@
 import { Link, Outlet } from 'react-router';
 import { useAuthStore } from '../store/auth.store';
+import { CartIcon } from '../components';
 
 export default function RootLayout() {
   const user = useAuthStore((s) => s.user);
@@ -14,6 +15,7 @@ export default function RootLayout() {
             E-Commerce
           </Link>
           <nav className="flex items-center gap-4">
+            <CartIcon />
             {isAuthenticated && user ? (
               <>
                 <Link to="/" className="flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900">
