@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.conf import settings
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from rest_framework import status
@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
-from .serializers import GoogleSocialLoginSerializer, UserSerializer
+from .serializers import GoogleSocialLoginSerializer, UserSerializer, UserUpdateSerializer
 
 
 class GoogleLoginAPIView(APIView):
@@ -24,7 +24,7 @@ class GoogleLoginAPIView(APIView):
             info = id_token.verify_oauth2_token(
                 token,
                 google_requests.Request(),
-                audience=None,
+                audience=settings.GOOGLE_CLIENT_ID or None,
             )
         except ValueError:
             return Response(
@@ -91,3 +91,27 @@ class UserProfileAPIView(APIView):
             'avatar': user.avatar,
         })
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        user = request.user
+        serializer = UserUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data
+        changed = False
+        if 'full_name' in data and data['full_name'] != user.full_name:
+            user.full_name = data['full_name']
+            changed = True
+        if 'avatar' in data and data['avatar'] != user.avatar:
+            user.avatar = data['avatar']
+            changed = True
+        if changed:
+            user.save()
+
+        response_serializer = UserSerializer({
+            'id': user.id,
+            'email': user.email,
+            'full_name': user.full_name,
+            'avatar': user.avatar,
+        })
+        return Response(response_serializer.data, status=status.HTTP_200_OK)

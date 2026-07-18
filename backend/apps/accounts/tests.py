@@ -165,3 +165,33 @@ class UserProfileAPIViewTests(TestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer invalid_token')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_patch_profile_full_name(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(self.url, {'full_name': 'Updated Name'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['full_name'], 'Updated Name')
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.full_name, 'Updated Name')
+
+    def test_patch_profile_avatar(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(self.url, {'avatar': 'https://example.com/new.jpg'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['avatar'], 'https://example.com/new.jpg')
+
+    def test_patch_profile_unauthenticated(self):
+        response = self.client.patch(self.url, {'full_name': 'New'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_patch_profile_empty_body(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(self.url, {}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['full_name'], 'Profile User')
+
+    def test_patch_profile_invalid_field(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(self.url, {'email': 'new@example.com'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['email'], 'profile@example.com')

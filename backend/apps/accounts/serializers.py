@@ -17,9 +17,14 @@ class TokenResponseSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.Serializer):
-    id = serializers.UUIDField()
-    email = serializers.EmailField()
+    id = serializers.UUIDField(read_only=True)
+    email = serializers.EmailField(read_only=True)
     full_name = serializers.CharField()
+    avatar = serializers.URLField(required=False, allow_blank=True)
+
+
+class UserUpdateSerializer(serializers.Serializer):
+    full_name = serializers.CharField(required=False, max_length=255)
     avatar = serializers.URLField(required=False, allow_blank=True)
 
 
