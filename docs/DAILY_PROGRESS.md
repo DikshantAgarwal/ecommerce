@@ -2,10 +2,19 @@
 
 | Field | Value |
 |---|---|
-| **Date** | 2026-07-07 |
+| **Date** | 2026-07-14 |
 | **Current Sprint** | Sprint 1 (Foundation & Auth: 6 Jul — 12 Jul) |
 | **MVP Deadline** | 10 August 2026 |
-| **Status** | ⚠ Slightly Behind |
+| **Status** | 🟡 On Track |
+
+---
+
+## Daily Report Index
+
+| Date | Summary |
+|---|---|
+| [2026-07-07](#2026-07-07) | Product detail page, reusable components, slug routing |
+| [2026-07-14](#2026-07-14) | Category filter, search, infinite scrolling |
 
 ---
 
@@ -19,7 +28,10 @@ Products backend ~90% complete. Frontend component architecture established. Goo
 
 ---
 
-## ✅ Completed Today
+<a name="2026-07-07"></a>
+## 2026-07-07
+
+### ✅ Completed Today
 
 **Backend**
 - Product Detail API migrated from integer PK to slug-based routing (`products/<str:slug>/`)
@@ -54,7 +66,7 @@ Products backend ~90% complete. Frontend component architecture established. Goo
 | Backend — Cart | ❌ Not Started | 0% |
 | Backend — Orders | ❌ Not Started | 0% |
 | Backend — Payments | ❌ Not Started | 0% |
-| Frontend — Pages | 🟡 In Progress | ~30% |
+| Frontend — Pages | 🟡 In Progress | ~40% |
 | Frontend — Components | ✅ Complete | 100% |
 | Authentication (Google OAuth) | ❌ Not Started | 0% |
 | Documentation | ✅ Complete | 100% |
@@ -65,7 +77,7 @@ Products backend ~90% complete. Frontend component architecture established. Goo
 
 ## 🚧 Current Sprint
 
-### Completed (10/14)
+### Completed (13/14)
 
 - [x] Product detail page (Frontend)
 - [x] Product detail routing (`/products/:id`)
@@ -76,13 +88,13 @@ Products backend ~90% complete. Frontend component architecture established. Goo
 - [x] Backend: Product Detail API migrated to slug-based routing
 - [x] Backend: Product filtering, searching, ordering, pagination completed and tested
 - [x] ADRs 021-022: Social-only login decision documented
+- [x] Category Filter UI (horizontal pill buttons with loading/error states)
+- [x] Search UI with 400ms debounce
+- [x] Infinite scrolling with `useInfiniteQuery` + Load More button
 
-### Remaining (4)
+### Remaining (1)
 
 - [ ] Google OAuth integration: `django-allauth` + Google provider
-- [ ] Accounts API: Google token exchange → JWT, Profile endpoints
-- [ ] Frontend: Google Sign-In button, post-login redirect
-- [ ] Staff product CRUD endpoints (backend)
 
 ### Blocked
 
@@ -128,3 +140,45 @@ Nothing currently blocked.
 - **Sprint completion:** 10/14 tasks (71%), 5 days remaining in Sprint 1
 - **Current feature:** Google OAuth Backend
 - **Tomorrow's objective:** Begin Google OAuth backend integration (django-allauth + token exchange endpoint)
+
+---
+
+<a name="2026-07-14"></a>
+## 2026-07-14
+
+### ✅ Completed Today
+
+**Frontend**
+- Category Filter UI: horizontal pill buttons with "All Categories" default, loading skeletons, and error state
+- Search Bar: text input with clear button, 400ms debounce before API call
+- Infinite Scrolling: replaced `useQuery` with `useInfiniteQuery`, products append on "Load More", button hides when no more pages
+- Preserved category + search filter combination — both params sent simultaneously to backend
+- Query key composition updated to `['products', categorySlug, searchQuery]` — filters reset to page 1 on change automatically
+- `useDebounce` hook extracted as reusable utility
+
+**Architecture / Learning**
+- `useInfiniteQuery` with `getNextPageParam` parsing DRF's `next` URL for page number extraction
+- Clean separation: `LoadMoreButton` is a standalone component — swapping to Intersection Observer later requires changing only `Home.tsx` rendering
+
+### 🎯 Current Focus
+
+**Current Feature:** Product Listing Enhancements (Category Filter, Search, Infinite Scroll)
+
+**Definition of Done progress:**
+- [x] Fetch categories from backend with loading/error states
+- [x] Display category pills with "All Categories" option
+- [x] Category selection updates product list via `?category=` param
+- [x] Search input with debounce prevents excessive API calls
+- [x] Category and search filters compose correctly (both params sent)
+- [x] `useQuery` replaced with `useInfiniteQuery`
+- [x] Products from all pages render as a single continuous grid
+- [x] "Load More" button appears only when another page exists
+- [x] Filter changes reset to page 1 automatically
+
+### 📌 End of Day
+
+- **Biggest achievement:** Product listing page now has category filtering, debounced search, and endless scrolling — a complete browsing experience
+- **Overall project completion:** ~22% toward MVP
+- **Sprint completion:** 13/14 tasks (93%)
+- **Current feature:** Google OAuth Backend
+- **Tomorrow:** Begin Google OAuth backend integration (django-allauth + token exchange endpoint)

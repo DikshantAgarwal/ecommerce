@@ -151,7 +151,7 @@
 
 ## [Unreleased]
 
-### Sprint 1 (6 Jul — 12 Jul) — In Progress
+### Sprint 1 (6 Jul — 12 Jul)
 
 #### Completed
 - [x] Product detail page (Frontend)
@@ -163,12 +163,12 @@
 - [x] Backend: Product Detail API migrated to slug-based routing
 - [x] Backend: Product filtering, searching, ordering, pagination completed and tested
 - [x] ADRs 021-022: Social-only login decision documented
+- [x] Category Filter UI with horizontal pill buttons
+- [x] Search UI with 400ms debounce
+- [x] Infinite scrolling via `useInfiniteQuery` + Load More button
 
 #### Remaining
 - [ ] Google OAuth integration: `django-allauth` + Google provider
-- [ ] Accounts API: Google token exchange → JWT, Profile endpoints
-- [ ] Frontend: Google Sign-In button, post-login redirect
-- [ ] Add remaining product endpoints (CRUD for staff)
 
 ### Planned for Sprint 2 (13 Jul — 19 Jul)
 
