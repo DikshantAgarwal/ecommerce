@@ -8,6 +8,8 @@
 
 | Version | Date | Summary |
 |---|---|---|
+| [v1.3.0](#130---2026-07-18) | 2026-07-18 | Cart backend + frontend, guest support, merge, Add to Cart buttons |
+| [v1.2.0](#120---2026-07-18) | 2026-07-18 | Google OAuth full auth flow, JWT, frontend integration |
 | [v1.1.0](#110---2026-07-07) | 2026-07-07 | Product detail page, reusable components, slug routing, Bruno testing |
 | [v1.0.0](#100---2026-07-05) | 2026-07-05 | Initial documentation, ADRs, UI bible, deployment guide |
 
@@ -95,6 +97,112 @@
 
 ---
 
+<a name="130---2026-07-18"></a>
+## [1.3.0] — 2026-07-18
+
+### Added
+
+- **Cart Backend**
+  - `Cart` model (UUID PK, OneToOne to User, session_id for guests) and `CartItem` model (FK to Cart, FK to Product, quantity, unique_together).
+  - `GET /api/cart/` — view current cart (creates one if not exists). Works for authenticated users and guest users with `X-Session-Id`.
+  - `POST /api/cart/items/` — add item with stock validation; increments quantity if item already in cart.
+  - `PATCH /api/cart/items/{id}/` — update item quantity with stock check.
+  - `DELETE /api/cart/items/{id}/` — remove item from cart.
+  - `POST /api/cart/merge/` — merge guest cart into user cart on login (combines quantities for duplicate products, deletes guest cart).
+  - Admin registration for both models.
+  - 27 backend tests covering CRUD, guest support, stock validation, merge, cross-cart isolation, and error cases.
+
+- **Cart Frontend**
+  - `CartIcon` component — header cart icon with item count badge (shows "99+" for >99 items, hidden when empty).
+  - `AddToCartButton` component — React Query mutation, "Adding..." pending state.
+  - `Cart` page — loading skeletons, error state, empty state with shopping CTA, item rows with +/- quantity controls, remove button, line-item subtotal, cart total, disabled checkout button with "coming soon" label.
+  - `ProductCard` — updated with Add to Cart button on every listing card (stops link navigation).
+  - `ProductDetail` — Add to Cart button below product description.
+  - React Query hooks: `useCart()`, `useAddToCart()`, `useUpdateCartItem()`, `useRemoveCartItem()` — all invalidate `['cart']` on success.
+  - 16 frontend tests covering service, CartIcon badge, AddToCartButton click, and Cart page states.
+
+### Changed
+
+- **Frontend — API Client**
+  - Auto-generates a UUID guest session ID on first load, persisted in localStorage.
+  - Attaches `X-Session-Id` header to all requests for guest cart support.
+  - Session ID is cleared on logout so a fresh one is created.
+
+- **Backend — CORS**
+  - `X-Session-Id` added to `CORS_ALLOW_HEADERS` in local settings.
+
+- **Frontend — Tailwind Theme**
+  - Added `@theme` block with `primary` color palette (`#1B4332`–`#D8F3DC`), `accent` colors, and `font-heading` font family. Fixes all invisible `bg-primary-*` / `text-primary-*` classes.
+
+- **Frontend — Auth Store**
+  - Logout now also clears the guest session ID from localStorage.
+
+### Project Status at v1.3.0
+
+| Area | Status |
+|---|---|
+| Project Configuration | ✅ Complete |
+| Architecture Documentation | ✅ Complete |
+| UI Design Bible | ✅ Complete |
+| Deployment Guide | ✅ Complete |
+| Accounts Backend | ✅ Complete |
+| Products Backend | ✅ ~90% Complete |
+| Cart Backend | ✅ Complete |
+| Cart Frontend | ✅ Complete |
+| Orders Backend | ❌ Not Started |
+| Payments Backend | ❌ Not Started |
+| Reviews Backend | ❌ Not Started |
+| Coupons Backend | ❌ Not Started |
+| Frontend Pages | ⏳ ~55% Complete |
+| Component Architecture | ✅ Established |
+| Authentication (Google OAuth) | ✅ Complete |
+| Tests | ✅ Backend + Frontend auth + cart tests |
+| CI/CD | ❌ Not Started |
+| Docker | ❌ Not Started |
+
+---
+
+<a name="120---2026-07-18"></a>
+## [1.2.0] — 2026-07-18
+
+### Added
+
+- **Authentication — Google OAuth Backend**
+  - `django-allauth` installed and configured with Google provider (SCOPE, PKCE, site ID).
+  - `POST /api/auth/google/` — accepts Google ID token, verifies signature via `google-auth` library, creates or logs in user.
+  - JWT access token (15 min lifetime) and refresh token (7 day lifetime) returned on successful authentication.
+  - `POST /api/auth/token/refresh/` — SimpleJWT token refresh endpoint.
+  - `GET /api/auth/me/` — protected profile endpoint returning user email, full_name, avatar.
+  - `PATCH /api/auth/me/` — update full_name and avatar fields.
+  - `User.avatar` field added to model for Google profile picture.
+
+- **Authentication — Frontend Integration**
+  - `GoogleSignInButton` component — loads Google Identity Services (GIS) library dynamically, renders Sign In With Google button, handles credential response with loading/error states.
+  - `auth.service.ts` — `googleLogin()`, `refreshToken()`, `getProfile()`, `updateProfile()` API functions.
+  - `auth.store.ts` — Zustand store with localStorage persistence for tokens and user data.
+  - `ProtectedRoute` component — redirects unauthenticated users to `/login`.
+  - `Login` page — presents Google Sign-In button to unauthenticated users.
+  - `api/client.ts` — Axios interceptor attaches Bearer token; handles 401 with automatic token refresh and request queue to prevent race conditions.
+  - `RootLayout` — updated with Google Sign-In integration and design-bible-aligned colors.
+  - Barrel exports for all new components via `components/index.ts`.
+
+### Changed
+
+- **Backend — Accounts**
+  - Google OAuth configuration added to settings (allauth providers, SimpleJWT, DRF auth classes).
+  - User model migration: `avatar` URL field added.
+  - URL routing: `/api/auth/google/`, `/api/auth/token/refresh/`, `/api/auth/me/` endpoints registered.
+
+- **Frontend — Architecture**
+  - Circular dependency broken: Axios interceptor inlines the refresh call instead of importing auth service.
+  - Token refresh race condition handled: concurrent 401s queue a single refresh via a promise reference.
+  - Application now has client-side auth guard — unauthenticated users cannot access protected routes.
+
+### Tests
+
+- **Backend (197 lines):** Google login (new user, existing user, name/avatar update, missing token, empty token, invalid token, wrong issuer, no email), token refresh (success, invalid, missing), profile (authenticated, unauthenticated, JWT auth, expired JWT, patch name, patch avatar, empty body, invalid field).
+- **Frontend:** `GoogleSignInButton` render/credential/error tests, `ProtectedRoute` auth/unauth redirect tests, `Login` page render tests, `auth.service` API call tests, `auth.store` persistence/setAuth/logout tests.
+
 <a name="110---2026-07-07"></a>
 ## [1.1.0] — 2026-07-07
 
@@ -126,7 +234,7 @@
   - API services and React Query hooks separated into distinct layers.
   - `ProductCard` wrapped in `<Link>` enabling keyboard-accessible navigation.
 
-### Project Status at v1.1.0
+### Project Status at v1.2.0
 
 | Area | Status |
 |---|---|
@@ -134,16 +242,17 @@
 | Architecture Documentation | ✅ Complete |
 | UI Design Bible | ✅ Complete |
 | Deployment Guide | ✅ Complete |
-| Accounts Backend | ⏳ 30% Complete |
+| Accounts Backend | ✅ Complete |
 | Products Backend | ✅ ~90% Complete |
 | Cart Backend | ❌ Not Started |
 | Orders Backend | ❌ Not Started |
 | Payments Backend | ❌ Not Started |
 | Reviews Backend | ❌ Not Started |
 | Coupons Backend | ❌ Not Started |
-| Frontend Pages | ⏳ ~30% Complete |
+| Frontend Pages | ⏳ ~45% Complete |
 | Component Architecture | ✅ Established |
-| Tests | ❌ Not Started |
+| Authentication (Google OAuth) | ✅ Complete |
+| Tests | ✅ Backend + Frontend auth tests |
 | CI/CD | ❌ Not Started |
 | Docker | ❌ Not Started |
 
@@ -151,29 +260,16 @@
 
 ## [Unreleased]
 
-### Sprint 1 (6 Jul — 12 Jul)
+### Sprint 1 — Completed (All 14 tasks)
 
-#### Completed
-- [x] Product detail page (Frontend)
-- [x] Product detail routing (`/products/:id`)
-- [x] Product navigation from ProductCard to Product Detail
-- [x] `useProduct()` hook and `getProduct()` service
-- [x] Home page refactored into reusable component architecture
-- [x] ProductGrid and ProductCard components created
-- [x] Backend: Product Detail API migrated to slug-based routing
-- [x] Backend: Product filtering, searching, ordering, pagination completed and tested
-- [x] ADRs 021-022: Social-only login decision documented
-- [x] Category Filter UI with horizontal pill buttons
-- [x] Search UI with 400ms debounce
-- [x] Infinite scrolling via `useInfiniteQuery` + Load More button
+Sprint 1 (6 Jul — 18 Jul) delivered: product listing with filtering/search/infinite scroll, product detail with slug routing, Google OAuth full auth flow (backend + frontend), reusable component architecture.
 
-#### Remaining
-- [ ] Google OAuth integration: `django-allauth` + Google provider
+### Sprint 2 (13 Jul — 19 Jul)
 
-### Planned for Sprint 2 (13 Jul — 19 Jul)
+Sprint 2 is the current sprint.
 
-- [ ] Cart backend: Cart & CartItem models, add/view/update/remove endpoints
-- [ ] Frontend: Cart page, add-to-cart flow
+- [x] Cart backend: Cart & CartItem models, add/view/update/remove endpoints
+- [x] Frontend: Cart page, add-to-cart flow
 - [ ] Orders backend: Order model, create order from cart
 
 ### Planned for Sprint 3 (20 Jul — 26 Jul)
