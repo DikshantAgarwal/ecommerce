@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary-900: #1B4332;
+  --color-primary-700: #2D6A4F;
+  --color-primary-500: #40916C;
+  --color-primary-300: #95D5B2;
+  --color-primary-100: #D8F3DC;
+
+  --color-accent-700: #C4964A;
+  --color-accent-500: #E6C87A;
+
+  --font-heading: "Playfair Display", serif;
+}

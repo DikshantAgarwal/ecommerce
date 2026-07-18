@@ -16,6 +16,13 @@ DATABASES = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'authorization',
+    'content-type',
+    'x-session-id',
+    'x-requested-with',
+]
 
 try:
     import django_extensions

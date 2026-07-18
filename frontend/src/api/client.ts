@@ -2,6 +2,23 @@ import axios from 'axios';
 import { getStoredRefreshToken, STORAGE_KEY_ACCESS, useAuthStore } from '../store/auth.store';
 import type { TokenRefreshResponse } from '../types/auth';
 
+export const STORAGE_KEY_SESSION = 'guest_session_id';
+
+function getOrCreateSessionId(): string | null {
+  const existing = localStorage.getItem(STORAGE_KEY_SESSION);
+  if (existing) return existing;
+
+  if (useAuthStore.getState().user) return null;
+
+  const sessionId = crypto.randomUUID();
+  localStorage.setItem(STORAGE_KEY_SESSION, sessionId);
+  return sessionId;
+}
+
+export function clearSessionId(): void {
+  localStorage.removeItem(STORAGE_KEY_SESSION);
+}
+
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api',
   headers: {
@@ -30,6 +47,10 @@ apiClient.interceptors.request.use((config) => {
   const accessToken = localStorage.getItem(STORAGE_KEY_ACCESS);
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  const sessionId = getOrCreateSessionId();
+  if (sessionId) {
+    config.headers['X-Session-Id'] = sessionId;
   }
   return config;
 });

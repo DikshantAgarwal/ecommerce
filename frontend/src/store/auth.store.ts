@@ -4,6 +4,7 @@ import type { User } from '../types/auth';
 export const STORAGE_KEY_REFRESH = 'auth_refresh_token';
 export const STORAGE_KEY_ACCESS = 'auth_access_token';
 const STORAGE_KEY_USER = 'auth_user';
+const STORAGE_KEY_SESSION = 'guest_session_id';
 
 interface AuthState {
   user: User | null;
@@ -46,6 +47,7 @@ export const useAuthStore = create<AuthState>((set) => {
       localStorage.removeItem(STORAGE_KEY_REFRESH);
       localStorage.removeItem(STORAGE_KEY_ACCESS);
       localStorage.removeItem(STORAGE_KEY_USER);
+      localStorage.removeItem(STORAGE_KEY_SESSION);
       set({ user: null, isAuthenticated: false });
     },
   };
