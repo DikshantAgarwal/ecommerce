@@ -23,7 +23,7 @@ export default function Login() {
   return (
     <section className="flex min-h-[60vh] items-center justify-center px-4">
       <div className="w-full max-w-sm rounded-md border border-neutral-200 p-8 text-center shadow-sm">
-        <h1 className="mb-2 text-2xl font-bold font-heading text-neutral-900">Sign In</h1>
+        <h1 className="mb-2 text-2xl font-bold text-neutral-900">Sign In</h1>
         <p className="mb-8 text-sm text-neutral-500">
           Sign in to access your cart, orders, and more.
         </p>

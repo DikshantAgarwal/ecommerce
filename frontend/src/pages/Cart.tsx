@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { ShoppingCart } from 'lucide-react';
 import { useCart, useUpdateCartItem, useRemoveCartItem } from '../hooks/useCart';
 
 function formatPrice(price: string): string {
@@ -33,7 +34,7 @@ export default function Cart() {
       <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6 lg:px-8" role="alert">
         <h1 className="text-2xl font-bold text-neutral-900">Could not load cart</h1>
         <p className="mt-2 text-neutral-600">Please try again later.</p>
-        <Link to="/" className="mt-6 inline-block text-sm font-semibold text-primary-700 hover:text-primary-900">
+        <Link to="/" className="mt-6 inline-block text-sm font-semibold text-neutral-600 hover:text-primary-900">
           &larr; Continue shopping
         </Link>
       </div>
@@ -43,12 +44,10 @@ export default function Cart() {
   if (!cart || cart.items.length === 0) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6 lg:px-8">
-        <svg className="mx-auto size-16 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
-        </svg>
+        <ShoppingCart className="mx-auto size-16 text-neutral-300" aria-hidden="true" />
         <h1 className="mt-4 text-xl font-bold text-neutral-900">Your cart is empty</h1>
         <p className="mt-2 text-neutral-600">Looks like you have not added anything yet.</p>
-        <Link to="/" className="mt-6 inline-block rounded-md bg-primary-700 px-6 py-3 text-sm font-medium text-white hover:bg-primary-900">
+        <Link to="/" className="mt-6 inline-block h-12 rounded-lg bg-primary-900 px-8 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700">
           Start shopping
         </Link>
       </div>
@@ -57,7 +56,7 @@ export default function Cart() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-      <h1 className="mb-6 font-heading text-2xl font-bold text-neutral-900">Shopping Cart</h1>
+      <h1 className="mb-6 text-2xl font-bold text-neutral-900">Shopping Cart</h1>
 
       <div className="space-y-4">
         {cart.items.map((item) => {
@@ -77,7 +76,7 @@ export default function Cart() {
               </div>
 
               <div className="min-w-0 flex-1">
-                <Link to={`/products/${v.product_slug}`} className="text-sm font-medium text-neutral-900 hover:text-primary-700">
+                <Link to={`/products/${v.product_slug}`} className="text-sm font-medium text-neutral-900 hover:text-primary-900">
                   {v.product_name}
                 </Link>
                 <p className="mt-0.5 text-xs text-neutral-500">
@@ -129,11 +128,11 @@ export default function Cart() {
       <div className="mt-8 border-t pt-6">
         <div className="flex items-center justify-between">
           <span className="text-lg font-semibold text-neutral-900">Total</span>
-          <span className="text-2xl font-bold text-primary-700">{formatPrice(cart.total)}</span>
+          <span className="text-2xl font-bold text-neutral-900">{formatPrice(cart.total)}</span>
         </div>
         <button
           disabled
-          className="mt-4 w-full rounded-md bg-primary-700 px-6 py-3 text-sm font-medium text-white hover:bg-primary-900 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-4 h-12 w-full rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400"
         >
           Proceed to Checkout
         </button>

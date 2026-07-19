@@ -15,9 +15,9 @@ export default function ProductCard({ product }: ProductCardProps) {
   const firstVariantId = product.variants[0]?.id;
 
   return (
-    <div className="flex flex-col rounded-lg border border-neutral-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+    <div className="flex flex-col rounded-lg bg-neutral-0 transition-shadow duration-200 hover:shadow-md">
       <Link to={`/products/${product.slug}`} className="group flex flex-col">
-        <div className="aspect-[4/5] w-full overflow-hidden rounded-t-lg bg-neutral-100">
+        <div className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100">
           {product.image ? (
             <img
               src={product.image}
@@ -47,7 +47,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <h3 className="line-clamp-2 text-sm font-semibold text-neutral-900">
             {product.name}
           </h3>
-          <p className="text-base font-bold text-primary-700">
+          <p className="text-base font-bold text-neutral-900">
             {formatPrice(product.price)}
           </p>
         </div>
@@ -56,7 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <button
           onClick={() => firstVariantId && addToCart({ variant_id: firstVariantId, quantity: 1 })}
           disabled={isPending || !firstVariantId}
-          className="w-full rounded-md bg-primary-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-900 disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-12 w-full rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400"
         >
           {isPending ? 'Adding...' : 'Add to Cart'}
         </button>

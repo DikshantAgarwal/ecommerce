@@ -1,8 +1,8 @@
 # UI Design Bible
 
-> **Version:** 1.0  
-> **Last Updated:** 5 July 2026  
-> **Status:** Draft — Visual refinements ongoing
+> **Version:** 2.0  
+> **Last Updated:** 19 July 2026  
+> **Status:** Approved — Active design system
 
 ---
 
@@ -54,20 +54,19 @@ KuHu Apparels is **premium, confident, modern, and personal**. The visual identi
 ### Design Principles
 
 | Principle | Description |
-|---|---|
-| **Clean & Minimal** | Ample whitespace, clear hierarchy, no visual clutter |
-| **Premium Feel** | High-quality imagery, refined color palette, thoughtful details |
-| **Confident Typography** | Bold headings, readable body text |
-| **Personal Touch** | Warmth in interactions, human-centered design |
+|---|---|---|
+| **Clean & Minimal** | Ample whitespace, clear hierarchy, no visual clutter. No badges, no ratings, no huge stickers. |
+| **Green as Accent** | Forest green used sparingly — primary buttons, hover/active states, selected filters. Rest of UI is monochrome. |
+| **Content First** | Product images lead. Typography supports, never competes. Generous image sizes (60% on PDP). |
+| **One Button Style** | Single primary button style everywhere: forest green bg, white text, 10px radius, 48px height. |
 
 ### Mood Board Descriptors
 
-- Minimalist
-- Warm premium
-- Earth tones with gold accents
-- Clean sans-serif
-- High-quality product photography
-- Generous whitespace
+- Minimalist, monochrome with green accents
+- Clean sans-serif throughout (no serif in UI)
+- White backgrounds, thin borders
+- Generous whitespace, high-quality product photography
+- Premium but understated
 
 ---
 
@@ -78,62 +77,57 @@ KuHu Apparels is **premium, confident, modern, and personal**. The visual identi
 ```mermaid
 mindmap
   KuHu Colors
-    Primary
-      Dark Green (#1B4332)
-      Medium Green (#2D6A4F)
+    Primary Green
+      Deep Forest (#1F4D3A)
+      Hover Green (#2B6A4F)
       Light Green (#40916C)
-    Accent
-      Gold (#C4964A)
-      Light Gold (#E6C87A)
+      Pale Green (#95D5B2)
+      Very Pale (#D8F3DC)
     Neutral
-      Off-White (#F8F9FA)
-      Light Gray (#E9ECEF)
-      Medium Gray (#ADB5BD)
-      Dark Gray (#495057)
-      Near Black (#212529)
+      White (#FFFFFF)
+      Section BG (#F8F8F8)
+      Border (#EAEAEA)
+      Secondary Text (#666666)
+      Primary Text (#111111)
     Utility
       Success (#2D936C)
       Error (#E63946)
       Warning (#F4A261)
-      Info (#457B9D)
 ```
 
 #### Detailed Swatches
 
-| Token | Hex | RGB | Usage |
-|---|---|---|---|
-| `--color-primary-900` | `#1B4332` | `27, 67, 50` | Headings, primary backgrounds |
-| `--color-primary-700` | `#2D6A4F` | `45, 106, 79` | Buttons, links, active states |
-| `--color-primary-500` | `#40916C` | `64, 145, 108` | Hover states, secondary elements |
-| `--color-primary-300` | `#95D5B2` | `149, 213, 178` | Borders, subtle backgrounds |
-| `--color-primary-100` | `#D8F3DC` | `216, 243, 220` | Very subtle backgrounds |
+| Token | Hex | Usage |
+|---|---|---|
+| `--color-primary-900` | `#1F4D3A` | Primary buttons, selected states, active nav |
+| `--color-primary-700` | `#2B6A4F` | Hover states on primary elements |
+| `--color-primary-500` | `#40916C` | Secondary hover states |
+| `--color-primary-300` | `#95D5B2` | Subtle borders, backgrounds |
+| `--color-primary-100` | `#D8F3DC` | Very subtle backgrounds |
 
-| Token | Hex | RGB | Usage |
-|---|---|---|---|
-| `--color-accent-700` | `#C4964A` | `196, 150, 74` | Price highlights, badges, CTAs |
-| `--color-accent-500` | `#E6C87A` | `230, 200, 122` | Hover states on accent elements |
-
-| Token | Hex | RGB | Usage |
-|---|---|---|---|
-| `--color-neutral-100` | `#F8F9FA` | `248, 249, 250` | Page background |
-| `--color-neutral-200` | `#E9ECEF` | `233, 236, 239` | Card backgrounds, dividers |
-| `--color-neutral-400` | `#ADB5BD` | `173, 181, 189` | Disabled text, placeholders |
-| `--color-neutral-600` | `#495057` | `73, 80, 87` | Secondary text |
-| `--color-neutral-900` | `#212529` | `33, 37, 41` | Primary text |
+| Token | Hex | Usage |
+|---|---|---|
+| `--color-neutral-0` | `#FFFFFF` | Page background, card backgrounds |
+| `--color-neutral-100` | `#F8F8F8` | Section backgrounds, alternate rows |
+| `--color-neutral-200` | `#EAEAEA` | Borders, dividers, thin rules |
+| `--color-neutral-400` | `#ADB5BD` | Disabled text, placeholders, muted icons |
+| `--color-neutral-600` | `#666666` | Secondary text, captions, labels |
+| `--color-neutral-900` | `#111111` | Primary text, headings |
 
 | Token | Hex | Usage |
 |---|---|---|
 | `--color-success` | `#2D936C` | Success messages, in-stock |
 | `--color-error` | `#E63946` | Error messages, out-of-stock |
 | `--color-warning` | `#F4A261` | Warnings, low stock |
-| `--color-info` | `#457B9D` | Information, tooltips |
 
 ### Color Usage Rules
 
-- **Do not** use pure black (`#000000`) for text. Use `--color-neutral-900` (`#212529`).
-- **Do not** use pure white (`#FFFFFF`) for backgrounds. Use `--color-neutral-100` (`#F8F9FA`).
-- **Accent color** should be used sparingly — for prices, badges, and key CTAs.
-- **Primary green** is the hero color — used for main actions, header, footer.
+- **Green is an accent, not a theme.** Use it sparingly — buttons, hover/active states, selected filters. The majority of the UI is monochrome (white, grays, black).
+- **White background** (`#FFFFFF`) is the default page background. Section backgrounds use `#F8F8F8`.
+- **Primary text:** `#111111` (near black, not pure black).
+- **Secondary text:** `#666666` (not too light, not too dark).
+- **Borders:** `#EAEAEA` — thin, subtle. Used for navbar bottom border, card borders, dividers.
+- **No accent/gold colors.** Removed in v2.0. Green is the only brand color in the UI.
 - Ensure minimum contrast ratio of **4.5:1** for normal text, **3:1** for large text (WCAG AA).
 
 ---
@@ -144,31 +138,26 @@ mindmap
 
 | Usage | Font | Fallback |
 |---|---|---|
-| Headings | `Playfair Display` | `Georgia, serif` |
-| Body | `Inter` | `-apple-system, BlinkMacSystemFont, sans-serif` |
+| Logo / Brand | `Playfair Display` | `Georgia, serif` |
+| UI (headings + body) | `Inter` | `-apple-system, BlinkMacSystemFont, sans-serif` |
 | Mono (code) | `JetBrains Mono` | `monospace` |
+
+> **Rule:** No decorative/serif fonts in the UI. Let the logo carry the personality. All headings, buttons, labels, body text use Inter (clean sans-serif).
 
 ### Font Loading Strategy
 
-```mermaid
-flowchart LR
-    A[Preload fonts in <head>] --> B[Swap display: swap]
-    B --> C[FOUT (Flash of Unstyled Text)]
-    C --> D[Fonts loaded → styled text]
-```
-
 - Use `font-display: swap` to ensure text remains visible during font load.
-- Preload `Playfair Display` (headings) as it's critical for above-the-fold content.
-- Load `Inter` (body) with `font-display: swap` — text is readable with fallback.
+- Load `Inter` with `font-display: swap` — text is readable with fallback.
+- Playfair Display is used **only** for the logo. Load it but it is not critical for the UI.
 - Subset fonts to Latin characters only to reduce file size.
 
 ### Type Scale
 
 | Level | Size | Weight | Line Height | Letter Spacing | Font |
 |---|---|---|---|---|---|
-| **Display** | `4xl` — 3rem (48px) | Bold (700) | 1.1 | -0.02em | Playfair Display |
-| **H1** | `3xl` — 2.25rem (36px) | Bold (700) | 1.2 | -0.02em | Playfair Display |
-| **H2** | `2xl` — 1.5rem (24px) | Bold (700) | 1.3 | -0.01em | Playfair Display |
+| **Display** | `4xl` — 3rem (48px) | Bold (700) | 1.1 | -0.02em | Inter |
+| **H1** | `3xl` — 2.25rem (36px) | Bold (700) | 1.2 | -0.02em | Inter |
+| **H2** | `2xl` — 1.5rem (24px) | Bold (700) | 1.3 | -0.01em | Inter |
 | **H3** | `xl` — 1.25rem (20px) | Semibold (600) | 1.4 | 0 | Inter |
 | **H4** | `lg` — 1.125rem (18px) | Semibold (600) | 1.4 | 0 | Inter |
 | **Body Large** | `lg` — 1.125rem (18px) | Regular (400) | 1.6 | 0 | Inter |
@@ -264,30 +253,26 @@ flowchart LR
 ```css
 :root {
   /* Colors */
-  --color-primary-900: #1B4332;
-  --color-primary-700: #2D6A4F;
+  --color-primary-900: #1F4D3A;
+  --color-primary-700: #2B6A4F;
   --color-primary-500: #40916C;
   --color-primary-300: #95D5B2;
   --color-primary-100: #D8F3DC;
   
-  --color-accent-700: #C4964A;
-  --color-accent-500: #E6C87A;
-  
-  --color-neutral-100: #F8F9FA;
-  --color-neutral-200: #E9ECEF;
+  --color-neutral-0: #FFFFFF;
+  --color-neutral-100: #F8F8F8;
+  --color-neutral-200: #EAEAEA;
   --color-neutral-400: #ADB5BD;
-  --color-neutral-600: #495057;
-  --color-neutral-900: #212529;
+  --color-neutral-600: #666666;
+  --color-neutral-900: #111111;
   
   --color-success: #2D936C;
   --color-error: #E63946;
   --color-warning: #F4A261;
-  --color-info: #457B9D;
 
   /* Typography */
   --font-heading: 'Playfair Display', Georgia, serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-body: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Spacing */
   --space-1: 0.25rem;
@@ -303,7 +288,7 @@ flowchart LR
   /* Radius */
   --radius-sm: 4px;
   --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-lg: 10px;
   --radius-xl: 16px;
   --radius-full: 9999px;
 
@@ -311,7 +296,6 @@ flowchart LR
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
   --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-  --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -324,60 +308,55 @@ flowchart LR
 
 ## 8. Buttons
 
-### Button Hierarchy
+### Button Philosophy
+
+**One primary button style everywhere.** No secondary, tertiary, or outlined variants in the MVP. Every CTA looks the same — forest green, white text, 10px radius, 48px height. This creates consistency and trains users to recognize actionable elements.
 
 | Level | Use Case | Style |
 |---|---|---|
-| **Primary** | Main CTA (Add to Cart, Checkout, Save) | Filled `primary-700`, white text |
-| **Secondary** | Alternative action (Continue Shopping) | Outlined `primary-700` |
-| **Tertiary** | Subtle action (Cancel, Remove) | Text only, `neutral-600` |
-| **Danger** | Destructive action (Delete) | Filled `error` |
+| **Primary** | All CTAs (Add to Cart, Shop Now, Apply, Checkout, Save) | Filled `primary-900` (`#1F4D3A`), white text |
+| **Text Link** | Subtle actions (Cancel, Remove, Clear All) | Text only, `neutral-600`, underlined on hover |
 
 ### Primary Button
 
-```mermaid
-classDiagram
-    class PrimaryButton {
-        bg: primary-700
-        text: white
-        hoverBg: primary-900
-        disabledBg: neutral-200
-        disabledText: neutral-400
-        radius: md
-        font: Inter, 600
-        padding: 12px 24px
-        transition: all 250ms ease
-    }
-```
+| Property | Value |
+|---|---|
+| Background | `primary-900` (`#1F4D3A`) |
+| Text | White |
+| Hover bg | `primary-700` (`#2B6A4F`) |
+| Disabled bg | `neutral-200` (`#EAEAEA`) |
+| Disabled text | `neutral-400` (`#ADB5BD`) |
+| Border radius | `10px` |
+| Font | Inter, Semibold (600) |
+| Height | `48px` (fixed) |
+| Padding | `16px 32px` (horizontal) |
+| Transition | all `200ms ease` |
 
 | State | Background | Text | Border |
 |---|---|---|---|
-| Default | `primary-700` (`#2D6A4F`) | White | None |
-| Hover | `primary-900` (`#1B4332`) | White | None |
+| Default | `primary-900` (`#1F4D3A`) | White | None |
+| Hover | `primary-700` (`#2B6A4F`) | White | None |
 | Active | `primary-900` | White | None |
-| Disabled | `neutral-200` (`#E9ECEF`) | `neutral-400` (`#ADB5BD`) | None |
-| Loading | `primary-700` | White + spinner | None |
+| Disabled | `neutral-200` (`#EAEAEA`) | `neutral-400` (`#ADB5BD`) | None |
+| Loading | `primary-900` | White + spinner | None |
 
 ### Button Sizes
 
-| Size | Padding | Font Size | Icon Size |
+| Size | Height | Padding | Font Size |
 |---|---|---|---|
-| Small (`sm`) | 8px 16px | 0.875rem (14px) | 16px |
-| Default (`md`) | 12px 24px | 1rem (16px) | 20px |
-| Large (`lg`) | 16px 32px | 1.125rem (18px) | 24px |
-| Full width | 12px 24px | 1rem (16px) | 20px |
+| Small (`sm`) | 36px | 12px 20px | 0.875rem (14px) |
+| Default (`md`) | 48px | 16px 32px | 1rem (16px) |
+| Full width | 48px | 16px 32px | 1rem (16px) |
 
 ### Button States Checklist
 
-- [x] Default
-- [x] Hover (darken bg by 10%)
-- [x] Active/Pressed (darken by 15%)
+- [x] Default (forest green)
+- [x] Hover (lighter green)
+- [x] Active/Pressed (darker green)
 - [x] Focus (2px outline, `primary-300`)
-- [x] Disabled (no pointer events, reduced opacity)
+- [x] Disabled (gray, no pointer events)
 - [x] Loading (spinner, disabled)
 - [x] Full width variant
-- [x] Icon + text variant
-- [x] Icon only variant (with tooltip)
 
 ---
 
@@ -472,20 +451,51 @@ classDiagram
 ### Primary Navigation
 
 - **Sticky header** on scroll (mobile and desktop).
-- **Mobile:** Hamburger menu → slide-out drawer (left).
-- **Desktop:** Horizontal nav with dropdown menus.
-- Active page indicated with underline or `primary-700` text.
-- Current: `primary-700` weight `600`.
+- **Height:** 80px (desktop), 64px (mobile).
+- **Border bottom:** 1px solid `#EAEAEA` (thin, subtle).
+- **Background:** White (`#FFFFFF`).
+- **Z-index:** 50.
+- **Green only on hover/active** — default nav links are `neutral-900` or `neutral-600`.
 
-### Navigation Items (Order)
+### Desktop Layout (80px)
 
-1. **Home** (Logo + link)
-2. **Men** → Categories
-3. **Women** → Categories
-4. **Customize** (Customizer page)
-5. **Search** (Icon → expandable input)
-6. **Account** (Icon → dropdown: Login/Register or Profile/Orders)
-7. **Cart** (Icon + badge count)
+```
+┌────────────────────────────────────────────────────────────┐
+│  MEN    WOMEN    THEMES        KuHu        🔍    🛒    👤  │
+│                                                             │
+└────────────────────────────────────────────────────────────┘
+│← left aligned →│     ← center →     │← right aligned →│
+```
+
+- **Left:** Men, Women, Themes (text links, `neutral-600`, `sm` uppercase, hover → green)
+- **Center:** Logo (Playfair Display serif, carries the brand personality)
+- **Right:** Search icon, Cart icon (with badge), Profile icon
+
+### Mobile Layout (64px)
+
+- Logo centered.
+- Hamburger (☰) left — opens slide-out drawer with nav links.
+- Cart icon + Profile icon right.
+- Search icon hidden behind hamburger or shown as a top bar toggle.
+
+### Navigation Items
+
+1. **Men** — Text link, scrolls to section or navigates to `/products?section=men`
+2. **Women** — Text link, navigates to `/products?section=women`
+3. **Themes** — Dropdown on hover (desktop), expandable accordion in mobile drawer
+4. **Logo** — Link to home (`/`)
+5. **Search** — Icon → expands to full input overlay or navigates to search page
+6. **Cart** — Icon + badge count (primary green badge, white text)
+7. **Profile** — Icon → dropdown: Login/Register or Profile/Logout
+
+### Nav Link Styles
+
+| State | Style |
+|---|---|
+| Default | `neutral-600`, `text-sm`, `uppercase`, `tracking-wide` |
+| Hover | `primary-900` (`#1F4D3A`) |
+| Active / Current | `primary-900`, semibold |
+| Mobile drawer | `neutral-900`, `text-base`, full-width tap targets |
 
 ### Breadcrumbs
 
@@ -501,39 +511,29 @@ classDiagram
 ### Product Card Layout (Grid)
 
 ```
-┌────────────────────────────────┐
-│                                │
-│         Product Image          │
-│         (4:5 Aspect)           │
-│                                │
-├────────────────────────────────┤
-│  Category Tag         Favorite │
-│                                │
-│  Product Name                  │
-│  (2 lines max)                │
-│                                │
-│  ₹ 1,499                       │
-│  ~~ ₹ 1,999 ~~  -25%          │
-│                                │
-│  Color Options (3)            │
-│                                │
-│  [ Add to Cart ]              │
-└────────────────────────────────┘
+┌──────────────────┐
+│                  │
+│     IMAGE        │
+│     (4:5)        │
+│                  │
+├──────────────────┤
+│  Product Name    │
+│  ₹999            │
+└──────────────────┘
 ```
+
+**Very clean.** No category tags, no badges, no ratings, no color swatches, no Add to Cart button. Only image + name + price. The product image does the selling.
 
 ### Product Card Specs
 
 | Element | Style |
 |---|---|
-| Image | 4:5 aspect ratio, `object-cover`, lazy loaded |
-| Category tag | `xs`, uppercase, `neutral-400` |
-| Name | `sm`/`base`, `semibold`, max 2 lines, line-clamp |
-| Price (current) | `base`/`lg`, `bold`, `primary-700` |
-| Price (compare) | `sm`, `neutral-400`, line-through |
-| Discount badge | `xs`, `error` text, `error` + 10% bg, pill |
-| Color swatches | `space-3` circles, bordered white on hover |
-| Add to Cart | Full width, `sm` primary button |
-| Favorite | Heart icon, `neutral-400`, `error` when active |
+| Container | White bg, no border, `rounded-lg` (10px) |
+| Image | 4:5 aspect ratio, `object-cover`, `loading="lazy"` |
+| Hover | Subtle `shadow-md` transition, image zoom (scale 1.02), cursor pointer |
+| Name | `text-sm`, `font-medium`, `text-neutral-900`, line-clamp 2 |
+| Price | `text-base`, `font-bold`, `text-neutral-900` |
+| Spacing | `p-3` (image to text gap), no extra padding around the card |
 
 ### Grid Behavior
 
@@ -551,28 +551,29 @@ classDiagram
 
 | Filter | Type | Behavior |
 |---|---|---|
-| Category | Checkbox list | Multiple select, logical AND |
-| Size | Button group | Multiple select (Pill buttons) |
-| Price Range | Range slider or min/max inputs | Debounced (300ms) |
-| Color | Swatch grid | Single select |
+| Themes | Checkbox list | Multiple select |
+| Price Range | Min/max inputs | Debounced (300ms) |
+| Availability | Toggle (In Stock Only) | Single toggle |
 | Sort By | Select dropdown | Re-fetches sorted results |
 
 ### Filter Layout
 
-- **Desktop:** Left sidebar, sticky on scroll.
-- **Mobile:** Slide-out drawer from left (same as nav), toggle with filter icon.
-- Active filters shown as removable pills above product grid.
+- **Desktop:** Left sidebar, sticky on scroll, `w-64`.
+- **Mobile:** Triggered by [Filters] and [Sort] buttons below the page title.
+  - [Filters] opens a bottom sheet or overlay with theme/price/availability.
+  - [Sort] opens a simple select or action sheet with sort options.
+- Active filter count displayed on the [Filters] button (e.g., "Filters (2)").
 - "Clear All" link at top of filter section.
 
 ### Active Filters Pills
 
 ```
-[  Men  ✕ ]  [  XL  ✕ ]  [  ₹500-₹1500  ✕ ]  [ Clear All ]
+[  Anime  ✕ ]  [  ₹500-₹1500  ✕ ]  [ Clear All ]
 ```
 
-- Pill: `neutral-100` bg, `sm`, `neutral-900` text, `✕` icon.
+- Pill: `neutral-100` bg (`#F8F8F8`), `sm`, `neutral-900` text, `✕` icon.
 - Click `✕` to remove individual filter.
-- "Clear All" is a text link, `sm`, `primary-700`.
+- "Clear All" is a text link, `sm`, `neutral-600`.
 
 ---
 
@@ -581,37 +582,37 @@ classDiagram
 ### Layout
 
 ```
-┌──────────────────────────────────────────────────┐
-│  [☰]  KuHu   Men  Women  Customize  [🔍] [👤] [🛒3]│  ← Mobile
-│  KuHu  [Men ▼] [Women ▼]  Customize  🔍  👤  🛒3  │  ← Desktop
-└──────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────┐
+│  MEN    WOMEN    THEMES        KuHu        🔍    🛒    👤  │
+└────────────────────────────────────────────────────────────┘
 ```
 
 ### Header Specs
 
 | Property | Value |
 |---|---|
-| Height (mobile) | 56px |
-| Height (desktop) | 72px |
-| Background | White, 95% opacity (backdrop blur) |
-| Border bottom | 1px `neutral-200` |
+| Height (mobile) | 64px |
+| Height (desktop) | 80px |
+| Background | White (`#FFFFFF`) |
+| Border bottom | 1px `#EAEAEA` |
 | Z-index | 50 |
-| Position | Fixed top |
+| Position | Fixed top, no backdrop blur (opaque white) |
+
+### Desktop Header Behavior
+
+- **Left:** Men, Women, Themes — text links in `text-sm uppercase tracking-wide text-neutral-600`.
+- **Center:** Logo in `font-heading` (Playfair Display), larger size, `text-neutral-900`.
+- **Right:** Search icon, Cart icon (with badge), Profile icon — all 24px, `text-neutral-600`, hover → green.
+- Nav links turn `primary-900` (`#1F4D3A`) on hover/active. Not green by default.
+- No dropdown menus in MVP. Themes click navigates to `/products` with theme filter.
 
 ### Mobile Header Behavior
 
 - Logo centered.
-- Hamburger left.
-- Icons (search, account, cart) right.
-- Cart badge: `primary-700` bg, white text, `xs`, centered on icon.
-
-### Desktop Header Behavior
-
-- Logo left.
-- Navigation center.
-- Icons right.
-- Dropdown menus on hover (Men, Women).
-- Search icon → expands to full input on click.
+- Hamburger (☰) left — opens full-height slide-out drawer.
+- Cart icon right (with badge).
+- Profile icon right (or combined under hamburger).
+- Cart badge: `primary-900` bg (`#1F4D3A`), white text, `xs`, centered on icon.
 
 ---
 
@@ -625,17 +626,17 @@ classDiagram
 │  KuHu Apparels                                    │
 │  Premium fashion, crafted for you.                │
 │                                                   │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌────────┐ │
-│  │ Shop     │ │ Support │ │ Company │ │ Follow │ │
-│  │ Men      │ │ FAQ      │ │ About   │ │ IG     │ │
-│  │ Women    │ │ Shipping │ │ Contact │ │ FB     │ │
-│  │ Customize│ │ Returns  │ │         │ │ X      │ │
-│  └─────────┘ └─────────┘ └─────────┘ └────────┘ │
+│  ┌────────────────┐ ┌────────────────┐           │
+│  │  Customer Care  │ │  Connect       │           │
+│  │  Contact Us     │ │  Instagram     │           │
+│  │  Shipping       │ │  Facebook      │           │
+│  │  Returns        │ │  Twitter / X   │           │
+│  │  FAQ            │ │                │           │
+│  └────────────────┘ └────────────────┘           │
 │                                                   │
 │  ─────────────────────────────────────────────────│
 │                                                   │
 │  © 2026 KuHu Apparels. All rights reserved.       │
-│  Privacy  ·  Terms  ·  Accessibility              │
 └──────────────────────────────────────────────────┘
 ```
 
@@ -643,33 +644,59 @@ classDiagram
 
 | Property | Value |
 |---|---|
-| Background | `primary-900` (`#1B4332`) |
-| Text | White / `primary-300` |
-| Padding | `space-12` top/bottom |
-| Layout | 4 columns (desktop), stacked (mobile) |
+| Background | `#F8F8F8` (section background, not green) |
+| Top border | 1px `#EAEAEA` |
+| Text | `neutral-600` (`#666666`) for links, `neutral-900` for heading |
+| Padding | `py-12` top/bottom |
+| Layout | 2 columns (desktop), stacked (mobile) |
+| Font | Inter, `text-sm` for links, `text-sm font-semibold` for headings |
 
 ---
 
 ## 17. Homepage Layout
 
-### Section Order
+### Section Order (Top to Bottom)
 
-1. **Hero Banner** — Full-width, high-quality lifestyle image, tagline, CTA button
-2. **Featured Categories** — 2-3 category cards (Men, Women, Customize)
-3. **New Arrivals** — Product grid (4-8 products)
-4. **Customization Teaser** — Section promoting the customizer with mockup
-5. **Newsletter Signup** — Email input + CTA (minimal version)
+1. **Navbar** (sticky, 80px)
+2. **Hero Banner** — Full-width, single static banner (no carousel). Bold heading + CTA.
+3. **Popular Themes** — Image cards (4 across desktop, horizontal scroll mobile). Each card = theme image + theme name overlay.
+4. **Featured Products** (optional) — 8-product grid, same ProductCard style. Only if products exist in a "featured" set.
+5. **All Products** — Infinite scroll product grid with filter/sort controls.
 6. **Footer**
 
 ### Hero Banner
 
 | Property | Value |
 |---|---|
-| Height (mobile) | 70vh |
-| Height (desktop) | 80vh |
-| Image | Full-bleed, `object-cover`, dark overlay (gradient) |
-| Text overlay | Centered, white, Display + Body + Button |
-| CTA | Primary button (white outline or filled accent) |
+| Type | Single static banner (not a carousel/slider) |
+| Height (mobile) | 50vh |
+| Height (desktop) | 60vh |
+| Image | Full-bleed, `object-cover`, dark overlay (gradient for text readability) |
+| Text overlay | Left-aligned or centered, white text |
+| Heading | Display-sized, bold sans-serif |
+| Subtext | Body-sized, lighter weight |
+| CTA | Primary button (forest green, white text) |
+| No autoplay, no dots, no arrows | Keep it static |
+
+### Popular Themes Section
+
+```
+┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+│             │ │             │ │             │ │             │
+│  Anime Tee  │ │  Quote Tee  │ │  God Tee    │ │  Music Tee  │
+│             │ │             │ │             │ │             │
+├─────────────┤ ├─────────────┤ ├─────────────┤ ├─────────────┤
+│ Anime       │ │ Quotes      │ │ Gods        │ │ Music       │
+└─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘
+```
+
+| Property | Value |
+|---|---|
+| Layout | 4 cards across (desktop), horizontal snap-scroll (mobile) |
+| Card | Image background + theme name overlay at bottom |
+| Image | 4:5 aspect ratio, `object-cover`, `rounded-lg` |
+| Name overlay | Semi-transparent dark gradient at bottom, white text |
+| Link | Click navigates to `/products?theme={slug}` |
 
 ---
 
@@ -722,35 +749,27 @@ classDiagram
 ┌────────────────────────────────────────────────────┐
 │  Home / Men / T-Shirts / Product Name               │
 │                                                     │
-│  ┌──────────────────┐  ┌────────────────────────┐  │
-│  │                   │  │  Product Name           │  │
-│  │    Image Gallery  │  │  ★★★★☆  (12 reviews)   │  │
-│  │                   │  │                         │  │
-│  │  [Main Image]     │  │  ₹ 1,499  ~~₹1,999~~   │  │
-│  │                   │  │  -25%                   │  │
-│  │  [Thumb][Thumb]   │  │                         │  │
-│  │  [Thumb][Thumb]   │  │  Size:                  │  │
-│  │                   │  │  [S] [M] [L] [XL]      │  │
-│  │                   │  │                         │  │
-│  │                   │  │  Color:                 │  │
-│  │                   │  │  ⚪ ⚫ 🔵 🔴           │  │
-│  │                   │  │                         │  │
-│  │                   │  │  Quantity:  [-] 1 [+]   │  │
-│  │                   │  │                         │  │
-│  │                   │  │  [🛒 Add to Cart]       │  │
-│  │                   │  │  [🎨 Customize]         │  │
-│  │                   │  │                         │  │
-│  │                   │  │  Free shipping on ₹499+ │  │
-│  └──────────────────┘  └────────────────────────┘  │
+│  ┌──────────────────────────┐  ┌────────────────┐  │
+│  │                          │  │  Category       │  │
+│  │                          │  │                 │  │
+│  │       IMAGE (60%)        │  │  Product Name   │  │
+│  │                          │  │                 │  │
+│  │     Large, clean,        │  │  ₹999           │  │
+│  │     no thumbnails        │  │                 │  │
+│  │     no zoom controls     │  │  Description    │  │
+│  │                          │  │                 │  │
+│  │                          │  │  Color:         │  │
+│  │                          │  │  ⚫ ⚪           │  │
+│  │                          │  │                 │  │
+│  │                          │  │  Size:          │  │
+│  │                          │  │  [S] [M] [L]   │  │
+│  │                          │  │                 │  │
+│  │                          │  │  [Add to Cart]  │  │
+│  └──────────────────────────┘  └────────────────┘  │
 │                                                     │
 │  ┌────────────────────────────────────────────┐    │
-│  │  Description                               │    │
-│  │  ─────────────────────────────────────     │    │
-│  │  Product details, material, fit, care...   │    │
-│  └────────────────────────────────────────────┘    │
-│                                                     │
-│  ┌────────────────────────────────────────────┐    │
-│  │  You May Also Like (4 products)            │    │
+│  │  Description (full width below)            │    │
+│  │  Product details, material, fit...         │    │
 │  └────────────────────────────────────────────┘    │
 └────────────────────────────────────────────────────┘
 ```
@@ -759,18 +778,20 @@ classDiagram
 
 | Section | Details |
 |---|---|
-| **Image Gallery** | Main image + 4 thumbnails. Click thumbnail to switch. Pinch-to-zoom on mobile. Hover zoom on desktop. |
-| **Product Info** | Name, rating, price with discount, size selector, color selector, quantity, add-to-cart button, customize button. |
-| **Description** | Accordion or tabs: Description, Material & Care, Size & Fit, Shipping Info. |
-| **Related Products** | Horizontal scroll on mobile, grid on desktop. 4 products from same category. |
+| **Image** | 60% width, 4:5 aspect ratio, `object-cover`. Single image (no gallery/thumbnails in MVP). Click to expand/zoom if needed. |
+| **Product Info** | Category label (`text-sm uppercase tracking-wide text-neutral-600`), name (`text-2xl font-bold`), price (`text-3xl font-bold text-neutral-900`), short description. |
+| **Color Selector** | Circular swatches, 32px, `border-neutral-300` default, `border-neutral-900 ring-2 ring-neutral-900 ring-offset-2` selected. |
+| **Size Selector** | Pill buttons, 40px height, `border-neutral-300` default, `border-neutral-900 bg-neutral-900 text-white` selected. Out of stock: line-through, `text-neutral-300`, `cursor-not-allowed`. |
+| **Add to Cart** | Full-width primary button (48px, 10px radius, forest green). |
+| **Description** | Full width below the fold. Clean typography, generous line height. |
 
 ### Size Selector
 
 - Pill buttons: `[S] [M] [L] [XL]`
-- Available sizes: `primary-700` border, white bg, clickable.
-- Unavailable sizes: `neutral-200` bg, `neutral-400` text, line-through, not clickable.
-- Selected size: `primary-700` bg, white text.
-- Size guide link below selectors.
+- Available sizes: `neutral-300` border, white bg, clickable.
+- Unavailable sizes: `neutral-200` bg, `neutral-300` text, line-through, not clickable.
+- Selected size: `neutral-900` bg, white text.
+- No size guide in MVP.
 
 ---
 
@@ -1189,102 +1210,59 @@ Example: `tsh-001-blk-front-01.webp`
 
 ## 28. Tailwind CSS Mapping
 
-### Custom Tailwind Configuration
+### Custom Tailwind Theme (`index.css`)
 
-```js
-// tailwind.config.js
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          100: '#D8F3DC',
-          300: '#95D5B2',
-          500: '#40916C',
-          700: '#2D6A4F',
-          900: '#1B4332',
-        },
-        accent: {
-          500: '#E6C87A',
-          700: '#C4964A',
-        },
-        neutral: {
-          100: '#F8F9FA',
-          200: '#E9ECEF',
-          400: '#ADB5BD',
-          600: '#495057',
-          900: '#212529',
-        },
-        success: '#2D936C',
-        error: '#E63946',
-        warning: '#F4A261',
-        info: '#457B9D',
-      },
-      fontFamily: {
-        heading: ['Playfair Display', 'Georgia', 'serif'],
-        body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-      },
-      spacing: {
-        18: '4.5rem',
-        30: '7.5rem',
-      },
-      borderRadius: {
-        sm: '4px',
-        md: '8px',
-        lg: '12px',
-        xl: '16px',
-      },
-      boxShadow: {
-        'soft': '0 1px 2px rgba(0,0,0,0.05)',
-        'medium': '0 4px 6px rgba(0,0,0,0.07)',
-        'strong': '0 10px 15px rgba(0,0,0,0.1)',
-        'heavy': '0 20px 25px rgba(0,0,0,0.15)',
-      },
-      animation: {
-        'fade-in': 'fadeIn 200ms ease-out',
-        'slide-up': 'slideUp 300ms ease-out',
-        'slide-down': 'slideDown 300ms ease-out',
-        'scale-in': 'scaleIn 200ms ease-out',
-        'pulse-soft': 'pulseSoft 1500ms ease-in-out infinite',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        slideUp: {
-          '0%': { transform: 'translateY(10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        slideDown: {
-          '0%': { transform: 'translateY(-10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        scaleIn: {
-          '0%': { transform: 'scale(0.95)', opacity: '0' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
-        },
-        pulseSoft: {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.5' },
-        },
-      },
-    },
-  },
-};
+```css
+@import "tailwindcss";
+
+@theme {
+  /* ── Colors ── */
+  --color-primary-900: #1F4D3A;
+  --color-primary-700: #2B6A4F;
+  --color-primary-500: #40916C;
+  --color-primary-300: #95D5B2;
+  --color-primary-100: #D8F3DC;
+
+  --color-neutral-0: #FFFFFF;
+  --color-neutral-100: #F8F8F8;
+  --color-neutral-200: #EAEAEA;
+  --color-neutral-400: #ADB5BD;
+  --color-neutral-600: #666666;
+  --color-neutral-900: #111111;
+
+  --color-success: #2D936C;
+  --color-error: #E63946;
+  --color-warning: #F4A261;
+
+  /* ── Typography ── */
+  --font-heading: "Playfair Display", Georgia, serif;
+  --font-body: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ── Border Radius ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+}
 ```
 
 ### Common Class Patterns
 
 | Component | Tailwind Classes |
 |---|---|
-| Product card | `bg-white rounded-md shadow-soft hover:shadow-medium transition-shadow duration-250` |
-| Primary button | `bg-primary-700 text-white px-6 py-3 rounded-md font-semibold hover:bg-primary-900 transition-colors duration-150` |
-| Text input | `w-full px-4 py-3 border border-neutral-300 rounded-md focus:border-primary-500 focus:ring-2 focus:ring-primary-300 outline-none` |
+| Product card | `bg-neutral-0 rounded-lg hover:shadow-md transition-shadow duration-200` |
+| Primary button | `bg-primary-900 text-white h-12 px-8 rounded-lg font-semibold hover:bg-primary-700 transition-colors duration-200 disabled:bg-neutral-200 disabled:text-neutral-400` |
+| Text input | `w-full h-12 px-4 border border-neutral-200 rounded-lg focus:border-primary-900 focus:ring-2 focus:ring-primary-300 outline-none` |
 | Section container | `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16` |
-| Page heading | `font-heading text-h1 text-neutral-900 mb-6` |
+| Page heading | `text-2xl font-bold text-neutral-900` |
 | Breadcrumb | `text-sm text-neutral-600 [&>span]:text-neutral-900 [&>span]:font-semibold` |
+| Nav link | `text-sm uppercase tracking-wide text-neutral-600 hover:text-primary-900 transition-colors duration-200` |
 
 ---
 

@@ -62,7 +62,7 @@ describe('CartIcon', () => {
       </BrowserRouter>,
     );
 
-    expect(container.querySelector('.bg-primary-700')).not.toBeInTheDocument();
+    expect(container.querySelector('.bg-primary-900')).not.toBeInTheDocument();
   });
 
   it('shows 99+ for large counts', () => {

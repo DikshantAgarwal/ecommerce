@@ -57,7 +57,7 @@ export default function ProductDetail() {
         </p>
         <Link
           to="/"
-          className="mt-6 inline-block text-sm font-semibold text-primary-700 hover:text-primary-900"
+          className="mt-6 inline-block text-sm font-semibold text-neutral-600 hover:text-primary-900"
         >
           &larr; Back to products
         </Link>
@@ -68,7 +68,7 @@ export default function ProductDetail() {
   if (isLoading) {
     return (
       <div className="px-4 py-16 text-center sm:px-6 lg:px-8" role="status">
-        <div className="mx-auto h-64 w-full max-w-md animate-pulse rounded-lg bg-neutral-200" />
+        <div className="mx-auto h-64 w-full max-w-md animate-pulse rounded-lg bg-neutral-100" />
         <div className="mx-auto mt-6 h-6 w-48 animate-pulse rounded bg-neutral-200" />
         <div className="mx-auto mt-3 h-4 w-32 animate-pulse rounded bg-neutral-200" />
         <span className="sr-only">Loading product details...</span>
@@ -87,7 +87,7 @@ export default function ProductDetail() {
         </p>
         <Link
           to="/"
-          className="mt-6 inline-block text-sm font-semibold text-primary-700 hover:text-primary-900"
+          className="mt-6 inline-block text-sm font-semibold text-neutral-600 hover:text-primary-900"
         >
           &larr; Back to products
         </Link>
@@ -106,7 +106,7 @@ export default function ProductDetail() {
         </p>
         <Link
           to="/"
-          className="mt-6 inline-block text-sm font-semibold text-primary-700 hover:text-primary-900"
+          className="mt-6 inline-block text-sm font-semibold text-neutral-600 hover:text-primary-900"
         >
           &larr; Back to products
         </Link>
@@ -116,12 +116,12 @@ export default function ProductDetail() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <nav className="mb-8 text-sm text-neutral-500">
-        <Link to="/" className="hover:text-primary-700">
+      <nav className="mb-8 text-sm text-neutral-600">
+        <Link to="/" className="hover:text-primary-900">
           Home
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-neutral-900">{product.name}</span>
+        <span className="text-neutral-900" aria-current="page">{product.name}</span>
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2">
@@ -143,15 +143,15 @@ export default function ProductDetail() {
 
         <div className="flex flex-col gap-6">
           <div>
-            <p className="mb-2 text-sm font-medium uppercase tracking-wide text-neutral-500">
+            <p className="mb-2 text-sm font-medium uppercase tracking-wide text-neutral-600">
               {product.category_detail.name}
             </p>
-            <h1 className="font-heading text-2xl font-bold text-neutral-900">
+            <h1 className="text-2xl font-bold text-neutral-900">
               {product.name}
             </h1>
           </div>
 
-          <p className="text-3xl font-bold text-primary-700">
+          <p className="text-3xl font-bold text-neutral-900">
             {formatPrice(displayPrice)}
           </p>
 

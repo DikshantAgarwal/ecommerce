@@ -13,7 +13,7 @@ export default function AddToCartButton({ variantId, disabled, className = '' }:
     <button
       onClick={() => mutate({ variant_id: variantId, quantity: 1 })}
       disabled={disabled || isPending}
-      className={`rounded-md bg-primary-700 px-6 py-3 text-sm font-medium text-white transition hover:bg-primary-900 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`h-12 rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 ${className}`}
     >
       {isPending ? 'Adding...' : 'Add to Cart'}
     </button>
