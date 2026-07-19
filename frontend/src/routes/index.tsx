@@ -4,6 +4,8 @@ import Home from '../pages/Home';
 import Login from '../pages/Login';
 import ProductDetail from '../pages/ProductDetail';
 import Cart from '../pages/Cart';
+import Checkout from '../pages/Checkout';
+import OrderConfirmation from '../pages/OrderConfirmation';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 export const router = createBrowserRouter([
@@ -18,7 +20,8 @@ export const router = createBrowserRouter([
       {
         element: <ProtectedRoute />,
         children: [
-          // Protected routes go here (e.g., checkout, orders)
+          { path: 'checkout', element: <Checkout /> },
+          { path: 'orders/:id/confirmation', element: <OrderConfirmation /> },
         ],
       },
     ],

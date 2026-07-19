@@ -130,13 +130,12 @@ export default function Cart() {
           <span className="text-lg font-semibold text-neutral-900">Total</span>
           <span className="text-2xl font-bold text-neutral-900">{formatPrice(cart.total)}</span>
         </div>
-        <button
-          disabled
-          className="mt-4 h-12 w-full rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400"
+        <Link
+          to="/checkout"
+          className="mt-4 flex h-12 w-full items-center justify-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700"
         >
           Proceed to Checkout
-        </button>
-        <p className="mt-2 text-center text-xs text-neutral-400">Checkout coming soon</p>
+        </Link>
       </div>
     </div>
   );
