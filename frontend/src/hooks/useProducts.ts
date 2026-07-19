@@ -1,10 +1,10 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getProducts } from '../services/product.service';
 
-export function useProducts(categorySlug?: string | null, searchQuery?: string) {
+export function useProducts(categorySlug?: string | null, searchQuery?: string, section?: string | null) {
   return useInfiniteQuery({
-    queryKey: ['products', categorySlug, searchQuery],
-    queryFn: ({ pageParam }) => getProducts(categorySlug, searchQuery, pageParam),
+    queryKey: ['products', categorySlug, searchQuery, section],
+    queryFn: ({ pageParam }) => getProducts(categorySlug, searchQuery, pageParam, section),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (!lastPage.next) return undefined;

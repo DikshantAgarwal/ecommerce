@@ -1,9 +1,16 @@
-import type { Product } from './product';
+import type { ProductVariant } from './product';
+
+export interface CartItemVariant extends ProductVariant {
+  product_name: string;
+  product_slug: string;
+  product_image: string;
+  display_price: number;
+}
 
 export interface CartItem {
   id: string;
-  product: number;
-  product_detail: Product;
+  variant: number;
+  variant_detail: CartItemVariant;
   quantity: number;
   created_at: string;
   updated_at: string;
@@ -18,7 +25,7 @@ export interface Cart {
 }
 
 export interface AddToCartPayload {
-  product_id: number;
+  variant_id: number;
   quantity?: number;
 }
 

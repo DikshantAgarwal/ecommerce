@@ -7,7 +7,7 @@ export async function getCart(): Promise<Cart> {
 }
 
 export async function addToCart(payload: AddToCartPayload): Promise<CartItem> {
-  const { data } = await apiClient.post<CartItem>('/cart/items/', payload);
+  const { data } = await apiClient.post<CartItem>('/cart/items/', { variant_id: payload.variant_id, quantity: payload.quantity });
   return data;
 }
 

@@ -1,3 +1,14 @@
+export interface ProductVariant {
+  id: number;
+  size: string;
+  color: string;
+  color_code: string;
+  sku: string;
+  stock_quantity: number;
+  price: number | null;
+  image: string;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -5,6 +16,7 @@ export interface Product {
   description: string;
   price: string;
   stock_quantity: number;
+  image: string;
   created_at: string;
   updated_at: string;
   category: number;
@@ -12,9 +24,11 @@ export interface Product {
     id: number;
     name: string;
     slug: string;
+    section: 'men' | 'women' | 'unisex';
     is_active: boolean;
     description: string;
   };
+  variants: ProductVariant[];
 }
 
 export interface ProductsResponse {

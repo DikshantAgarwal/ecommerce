@@ -5,11 +5,13 @@ export async function getProducts(
   categorySlug?: string | null,
   searchQuery?: string,
   page?: number,
+  section?: string | null,
 ): Promise<ProductsResponse> {
   const params: Record<string, string> = {};
   if (categorySlug) params.category = categorySlug;
   if (searchQuery) params.search = searchQuery;
   if (page) params.page = String(page);
+  if (section) params.section = section;
   const { data } = await apiClient.get<ProductsResponse>('/products/', { params });
   return data;
 }

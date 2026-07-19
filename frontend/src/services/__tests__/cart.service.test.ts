@@ -34,12 +34,12 @@ describe('cart.service', () => {
     expect(result.total).toBe('0.00');
   });
 
-  it('addToCart sends product_id and quantity', async () => {
+  it('addToCart sends variant_id and quantity', async () => {
     const mockItem = {
       data: {
         id: 'item-1',
-        product: 1,
-        product_detail: { id: 1, name: 'Test', price: '10.00' },
+        variant: 1,
+        variant_detail: { id: 1, size: 'M', color: 'Black', display_price: 10.00 },
         quantity: 2,
         created_at: '2026-01-01T00:00:00Z',
         updated_at: '2026-01-01T00:00:00Z',
@@ -47,8 +47,8 @@ describe('cart.service', () => {
     };
     vi.mocked(apiClient.post).mockResolvedValue(mockItem);
 
-    const result = await addToCart({ product_id: 1, quantity: 2 });
-    expect(apiClient.post).toHaveBeenCalledWith('/cart/items/', { product_id: 1, quantity: 2 });
+    const result = await addToCart({ variant_id: 1, quantity: 2 });
+    expect(apiClient.post).toHaveBeenCalledWith('/cart/items/', { variant_id: 1, quantity: 2 });
     expect(result.quantity).toBe(2);
   });
 
@@ -56,8 +56,8 @@ describe('cart.service', () => {
     const mockItem = {
       data: {
         id: 'item-1',
-        product: 1,
-        product_detail: { id: 1, name: 'Test', price: '10.00' },
+        variant: 1,
+        variant_detail: { id: 1, size: 'M', color: 'Black', display_price: 10.00 },
         quantity: 5,
         created_at: '2026-01-01T00:00:00Z',
         updated_at: '2026-01-01T00:00:00Z',
