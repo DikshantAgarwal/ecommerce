@@ -40,7 +40,7 @@ describe('PopularThemes', () => {
     expect(images[1]).toHaveAttribute('alt', 'Quotes');
   });
 
-  it('links each theme to /products', () => {
+  it('links each theme to /products with theme param', () => {
     render(
       <BrowserRouter>
         <PopularThemes />
@@ -48,8 +48,9 @@ describe('PopularThemes', () => {
     );
 
     const links = screen.getAllByRole('link');
-    links.forEach((link) => {
-      expect(link).toHaveAttribute('href', '/products');
-    });
+    expect(links[0]).toHaveAttribute('href', '/products?theme=anime');
+    expect(links[1]).toHaveAttribute('href', '/products?theme=quotes');
+    expect(links[2]).toHaveAttribute('href', '/products?theme=gods');
+    expect(links[3]).toHaveAttribute('href', '/products?theme=music');
   });
 });

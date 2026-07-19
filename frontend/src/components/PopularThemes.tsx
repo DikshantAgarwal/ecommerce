@@ -38,7 +38,7 @@ export default function PopularThemes() {
           {THEMES.map((theme) => (
             <Link
               key={theme.slug}
-              to="/products"
+              to={`/products?theme=${theme.slug}`}
               className="group relative aspect-[4/5] overflow-hidden rounded-lg"
             >
               <img

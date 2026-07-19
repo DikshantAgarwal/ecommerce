@@ -6,6 +6,7 @@ import ProductDetail from '../pages/ProductDetail';
 import Cart from '../pages/Cart';
 import Checkout from '../pages/Checkout';
 import OrderConfirmation from '../pages/OrderConfirmation';
+import Products from '../pages/Products';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 export const router = createBrowserRouter([
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'login', element: <Login /> },
+      { path: 'products', element: <Products /> },
       { path: 'products/:slug', element: <ProductDetail /> },
       { path: 'cart', element: <Cart /> },
       {
