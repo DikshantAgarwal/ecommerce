@@ -12,7 +12,7 @@ from apps.cart.serializers import (
     CartItemWriteSerializer,
     CartSerializer,
 )
-from apps.products.models import Product
+from apps.products.models import ProductVariant
 
 
 def get_cart(request):
@@ -54,15 +54,15 @@ class CartItemCreateAPIView(APIView):
         serializer = CartItemWriteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        product = get_object_or_404(Product, pk=serializer.validated_data['product_id'])
+        variant = get_object_or_404(ProductVariant, pk=serializer.validated_data['variant_id'])
         quantity = serializer.validated_data['quantity']
 
-        if product.stock_quantity < quantity:
+        if variant.stock_quantity < quantity:
             return Response(
                 {
                     'error': {
                         'code': 'stock_error',
-                        'detail': f'Only {product.stock_quantity} units of "{product.name}" available.',
+                        'detail': f'Only {variant.stock_quantity} units of "{variant.product.name} ({variant.color}, {variant.size})" available.',
                     }
                 },
                 status=status.HTTP_409_CONFLICT,
@@ -70,17 +70,17 @@ class CartItemCreateAPIView(APIView):
 
         cart_item, created = CartItem.objects.get_or_create(
             cart=cart,
-            product=product,
+            variant=variant,
             defaults={'quantity': quantity},
         )
         if not created:
             new_qty = cart_item.quantity + quantity
-            if product.stock_quantity < new_qty:
+            if variant.stock_quantity < new_qty:
                 return Response(
                     {
                         'error': {
                             'code': 'stock_error',
-                            'detail': f'Only {product.stock_quantity} units of "{product.name}" available (you already have {cart_item.quantity} in cart).',
+                            'detail': f'Only {variant.stock_quantity} units of "{variant.product.name} ({variant.color}, {variant.size})" available (you already have {cart_item.quantity} in cart).',
                         }
                     },
                     status=status.HTTP_409_CONFLICT,
@@ -103,7 +103,7 @@ class CartItemDetailAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
         try:
-            item = cart.items.select_related('product').get(pk=item_id)
+            item = cart.items.select_related('variant__product').get(pk=item_id)
         except CartItem.DoesNotExist:
             return None, Response(
                 {'error': {'code': 'not_found', 'detail': 'Cart item not found.'}},
@@ -120,12 +120,12 @@ class CartItemDetailAPIView(APIView):
         serializer.is_valid(raise_exception=True)
 
         new_quantity = serializer.validated_data['quantity']
-        if item.product.stock_quantity < new_quantity:
+        if item.variant.stock_quantity < new_quantity:
             return Response(
                 {
                     'error': {
                         'code': 'stock_error',
-                        'detail': f'Only {item.product.stock_quantity} units of "{item.product.name}" available.',
+                        'detail': f'Only {item.variant.stock_quantity} units of "{item.variant.product.name} ({item.variant.color}, {item.variant.size})" available.',
                     }
                 },
                 status=status.HTTP_409_CONFLICT,
@@ -171,8 +171,8 @@ class CartMergeAPIView(APIView):
 
         user_cart, _ = Cart.objects.get_or_create(user=request.user)
 
-        for guest_item in guest_cart.items.select_related('product').all():
-            existing = user_cart.items.filter(product=guest_item.product).first()
+        for guest_item in guest_cart.items.select_related('variant__product').all():
+            existing = user_cart.items.filter(variant=guest_item.variant).first()
             if existing:
                 existing.quantity += guest_item.quantity
                 existing.save()

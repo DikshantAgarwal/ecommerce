@@ -18,5 +18,5 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):
-    list_display = ['id', 'cart', 'product', 'quantity']
+    list_display = ['id', 'cart', 'variant', 'quantity']
     readonly_fields = ['id', 'created_at', 'updated_at']

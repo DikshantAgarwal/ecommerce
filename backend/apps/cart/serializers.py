@@ -1,21 +1,21 @@
 from rest_framework import serializers
 
 from apps.cart.models import Cart, CartItem
-from apps.products.serializers import ProductSerializer
+from apps.products.serializers import ProductVariantSerializer
 
 
 class CartItemSerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(read_only=True)
-    product_detail = ProductSerializer(source='product', read_only=True)
+    variant = serializers.PrimaryKeyRelatedField(read_only=True)
+    variant_detail = ProductVariantSerializer(source='variant', read_only=True)
 
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'product_detail', 'quantity', 'created_at', 'updated_at']
+        fields = ['id', 'variant', 'variant_detail', 'quantity', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
 class CartItemWriteSerializer(serializers.Serializer):
-    product_id = serializers.IntegerField()
+    variant_id = serializers.IntegerField()
     quantity = serializers.IntegerField(min_value=1, default=1)
 
 
@@ -33,7 +33,8 @@ class CartSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def get_total(self, obj):
-        return sum(
-            item.product.price * item.quantity
-            for item in obj.items.select_related('product').all()
-        )
+        total = 0
+        for item in obj.items.select_related('variant__product').all():
+            price = item.variant.price if item.variant.price else item.variant.product.price
+            total += price * item.quantity
+        return total

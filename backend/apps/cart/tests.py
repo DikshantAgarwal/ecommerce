@@ -4,13 +4,12 @@ from rest_framework.test import APIClient
 
 from apps.accounts.models import User
 from apps.cart.models import Cart, CartItem
-from apps.products.models import Category, Product
+from apps.products.models import Category, Product, ProductVariant
 
 
-class CartAPIViewTests(TestCase):
+class CartAPITestBase(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.url = '/api/cart/'
         self.user = User.objects.create_user(
             email='cartuser@example.com',
             full_name='Cart User',
@@ -23,6 +22,20 @@ class CartAPIViewTests(TestCase):
             stock_quantity=10,
             category=self.category,
         )
+        self.variant = ProductVariant.objects.create(
+            product=self.product,
+            size='M',
+            color='Black',
+            color_code='#000000',
+            sku='test-product-black-m',
+            stock_quantity=10,
+        )
+
+
+class CartAPIViewTests(CartAPITestBase):
+    def setUp(self):
+        super().setUp()
+        self.url = '/api/cart/'
 
     def test_get_cart_authenticated_creates_cart(self):
         self.client.force_authenticate(user=self.user)
@@ -34,7 +47,7 @@ class CartAPIViewTests(TestCase):
 
     def test_get_cart_authenticated_returns_existing(self):
         cart = Cart.objects.create(user=self.user)
-        CartItem.objects.create(cart=cart, product=self.product, quantity=2)
+        CartItem.objects.create(cart=cart, variant=self.variant, quantity=2)
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -52,104 +65,80 @@ class CartAPIViewTests(TestCase):
 
     def test_get_cart_total(self):
         cart = Cart.objects.create(user=self.user)
-        CartItem.objects.create(cart=cart, product=self.product, quantity=3)
+        CartItem.objects.create(cart=cart, variant=self.variant, quantity=3)
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['total'], 300.0)
 
 
-class CartItemCreateAPIViewTests(TestCase):
+class CartItemCreateAPIViewTests(CartAPITestBase):
     def setUp(self):
-        self.client = APIClient()
+        super().setUp()
         self.url = '/api/cart/items/'
-        self.user = User.objects.create_user(
-            email='cartuser@example.com',
-            full_name='Cart User',
-        )
-        self.category = Category.objects.create(name='Test Cat', slug='test-cat')
-        self.product = Product.objects.create(
-            name='Test Product',
-            slug='test-product',
-            price=100.00,
-            stock_quantity=10,
-            category=self.category,
-        )
 
     def test_add_item_authenticated(self):
         self.client.force_authenticate(user=self.user)
-        response = self.client.post(self.url, {'product_id': self.product.id, 'quantity': 2}, format='json')
+        response = self.client.post(self.url, {'variant_id': self.variant.id, 'quantity': 2}, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['quantity'], 2)
 
     def test_add_item_defaults_quantity_to_one(self):
         self.client.force_authenticate(user=self.user)
-        response = self.client.post(self.url, {'product_id': self.product.id}, format='json')
+        response = self.client.post(self.url, {'variant_id': self.variant.id}, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['quantity'], 1)
 
     def test_add_item_increments_existing(self):
         self.client.force_authenticate(user=self.user)
-        self.client.post(self.url, {'product_id': self.product.id, 'quantity': 2}, format='json')
-        response = self.client.post(self.url, {'product_id': self.product.id, 'quantity': 3}, format='json')
+        self.client.post(self.url, {'variant_id': self.variant.id, 'quantity': 2}, format='json')
+        response = self.client.post(self.url, {'variant_id': self.variant.id, 'quantity': 3}, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['quantity'], 5)
 
     def test_add_item_insufficient_stock(self):
         self.client.force_authenticate(user=self.user)
-        response = self.client.post(self.url, {'product_id': self.product.id, 'quantity': 20}, format='json')
+        response = self.client.post(self.url, {'variant_id': self.variant.id, 'quantity': 20}, format='json')
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
         self.assertIn('stock_error', response.data['error']['code'])
 
     def test_add_item_increments_beyond_stock(self):
         self.client.force_authenticate(user=self.user)
-        self.client.post(self.url, {'product_id': self.product.id, 'quantity': 8}, format='json')
-        response = self.client.post(self.url, {'product_id': self.product.id, 'quantity': 5}, format='json')
+        self.client.post(self.url, {'variant_id': self.variant.id, 'quantity': 8}, format='json')
+        response = self.client.post(self.url, {'variant_id': self.variant.id, 'quantity': 5}, format='json')
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
         self.assertIn('stock_error', response.data['error']['code'])
 
-    def test_add_item_invalid_product(self):
+    def test_add_item_invalid_variant(self):
         self.client.force_authenticate(user=self.user)
-        response = self.client.post(self.url, {'product_id': 99999, 'quantity': 1}, format='json')
+        response = self.client.post(self.url, {'variant_id': 99999, 'quantity': 1}, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_add_item_guest_with_session(self):
-        response = self.client.post(self.url, {'product_id': self.product.id, 'quantity': 1}, format='json', HTTP_X_SESSION_ID='guest-session')
+        response = self.client.post(self.url, {'variant_id': self.variant.id, 'quantity': 1}, format='json', HTTP_X_SESSION_ID='guest-session')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(Cart.objects.filter(session_id='guest-session', items__product=self.product).exists())
+        self.assertTrue(Cart.objects.filter(session_id='guest-session', items__variant=self.variant).exists())
 
     def test_add_item_guest_without_session(self):
-        response = self.client.post(self.url, {'product_id': self.product.id, 'quantity': 1}, format='json')
+        response = self.client.post(self.url, {'variant_id': self.variant.id, 'quantity': 1}, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_add_item_quantity_zero(self):
         self.client.force_authenticate(user=self.user)
-        response = self.client.post(self.url, {'product_id': self.product.id, 'quantity': 0}, format='json')
+        response = self.client.post(self.url, {'variant_id': self.variant.id, 'quantity': 0}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_item_missing_product_id(self):
+    def test_add_item_missing_variant_id(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.post(self.url, {'quantity': 1}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class CartItemDetailAPIViewTests(TestCase):
+class CartItemDetailAPIViewTests(CartAPITestBase):
     def setUp(self):
-        self.client = APIClient()
-        self.user = User.objects.create_user(
-            email='cartuser@example.com',
-            full_name='Cart User',
-        )
-        self.category = Category.objects.create(name='Test Cat', slug='test-cat')
-        self.product = Product.objects.create(
-            name='Test Product',
-            slug='test-product',
-            price=100.00,
-            stock_quantity=10,
-            category=self.category,
-        )
+        super().setUp()
         self.cart = Cart.objects.create(user=self.user)
-        self.item = CartItem.objects.create(cart=self.cart, product=self.product, quantity=3)
+        self.item = CartItem.objects.create(cart=self.cart, variant=self.variant, quantity=3)
         self.detail_url = f'/api/cart/items/{self.item.id}/'
         self.client.force_authenticate(user=self.user)
 
@@ -185,32 +174,20 @@ class CartItemDetailAPIViewTests(TestCase):
     def test_update_item_from_different_cart(self):
         other_user = User.objects.create_user(email='other@example.com', full_name='Other')
         other_cart = Cart.objects.create(user=other_user)
-        other_item = CartItem.objects.create(cart=other_cart, product=self.product, quantity=1)
+        other_item = CartItem.objects.create(cart=other_cart, variant=self.variant, quantity=1)
         url = f'/api/cart/items/{other_item.id}/'
         response = self.client.patch(url, {'quantity': 2}, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class CartMergeAPIViewTests(TestCase):
+class CartMergeAPIViewTests(CartAPITestBase):
     def setUp(self):
-        self.client = APIClient()
+        super().setUp()
         self.url = '/api/cart/merge/'
-        self.user = User.objects.create_user(
-            email='mergeuser@example.com',
-            full_name='Merge User',
-        )
-        self.category = Category.objects.create(name='Test Cat', slug='test-cat')
-        self.product = Product.objects.create(
-            name='Test Product',
-            slug='test-product',
-            price=100.00,
-            stock_quantity=10,
-            category=self.category,
-        )
 
     def test_merge_guest_into_user_cart(self):
         guest_cart = Cart.objects.create(session_id='guest-session')
-        CartItem.objects.create(cart=guest_cart, product=self.product, quantity=2)
+        CartItem.objects.create(cart=guest_cart, variant=self.variant, quantity=2)
 
         self.client.force_authenticate(user=self.user)
         response = self.client.post(self.url, {}, format='json', HTTP_X_SESSION_ID='guest-session')
@@ -235,10 +212,10 @@ class CartMergeAPIViewTests(TestCase):
 
     def test_merge_combines_with_existing_user_cart_items(self):
         guest_cart = Cart.objects.create(session_id='guest-session')
-        CartItem.objects.create(cart=guest_cart, product=self.product, quantity=2)
+        CartItem.objects.create(cart=guest_cart, variant=self.variant, quantity=2)
 
         user_cart = Cart.objects.create(user=self.user)
-        CartItem.objects.create(cart=user_cart, product=self.product, quantity=1)
+        CartItem.objects.create(cart=user_cart, variant=self.variant, quantity=1)
 
         self.client.force_authenticate(user=self.user)
         response = self.client.post(self.url, {}, format='json', HTTP_X_SESSION_ID='guest-session')
