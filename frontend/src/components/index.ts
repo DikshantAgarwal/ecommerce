@@ -8,3 +8,5 @@ export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as CartIcon } from './CartIcon';
 export { default as AddToCartButton } from './AddToCartButton';
 export { default as Footer } from './Footer';
+export { default as HeroBanner } from './HeroBanner';
+export { default as PopularThemes } from './PopularThemes';

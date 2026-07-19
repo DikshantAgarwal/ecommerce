@@ -7,6 +7,8 @@ import {
   CategoryFilter,
   SearchBar,
   LoadMoreButton,
+  HeroBanner,
+  PopularThemes,
 } from '../components';
 
 const DEBOUNCE_DELAY = 400;
@@ -33,44 +35,52 @@ export default function Home() {
   const products = data?.pages.flatMap((page) => page.results) ?? [];
 
   return (
-    <section className="px-4 py-8 sm:px-6 lg:px-8">
-      <h1 className="mb-6 text-2xl font-bold text-neutral-900">Products</h1>
+    <>
+      <HeroBanner />
 
-      <div className="mb-4">
-        <SearchBar value={searchInput} onChange={setSearchInput} />
-      </div>
+      <PopularThemes />
 
-      <div className="mb-6">
-        <CategoryFilter
-          categories={categories ?? []}
-          selectedSection={selectedSection}
-          selectedCategory={selectedCategory}
-          onSectionChange={setSelectedSection}
-          onCategoryChange={setSelectedCategory}
-          isLoading={categoriesLoading}
-          error={categoriesError}
-        />
-      </div>
+      <section className="bg-neutral-100 py-12 lg:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h2 className="mb-8 text-2xl font-bold text-neutral-900">All Products</h2>
 
-      {isLoading ? (
-        <div className="py-8 text-center text-neutral-500" role="status">
-          Loading products...
-        </div>
-      ) : error ? (
-        <div className="py-8 text-center text-red-600" role="alert">
-          Failed to load products. Please try again later.
-        </div>
-      ) : (
-        <>
-          <ProductGrid products={products} />
-          {hasNextPage && (
-            <LoadMoreButton
-              onClick={() => fetchNextPage()}
-              isLoading={isFetchingNextPage}
+          <div className="mb-6">
+            <SearchBar value={searchInput} onChange={setSearchInput} />
+          </div>
+
+          <div className="mb-6">
+            <CategoryFilter
+              categories={categories ?? []}
+              selectedSection={selectedSection}
+              selectedCategory={selectedCategory}
+              onSectionChange={setSelectedSection}
+              onCategoryChange={setSelectedCategory}
+              isLoading={categoriesLoading}
+              error={categoriesError}
             />
+          </div>
+
+          {isLoading ? (
+            <div className="py-8 text-center text-neutral-600" role="status">
+              Loading products...
+            </div>
+          ) : error ? (
+            <div className="py-8 text-center text-red-600" role="alert">
+              Failed to load products. Please try again later.
+            </div>
+          ) : (
+            <>
+              <ProductGrid products={products} />
+              {hasNextPage && (
+                <LoadMoreButton
+                  onClick={() => fetchNextPage()}
+                  isLoading={isFetchingNextPage}
+                />
+              )}
+            </>
           )}
-        </>
-      )}
-    </section>
+        </div>
+      </section>
+    </>
   );
 }
