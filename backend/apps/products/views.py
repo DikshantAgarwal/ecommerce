@@ -20,11 +20,16 @@ class ProductListAPIView(GenericAPIView):
         products = self.filter_queryset(self.get_queryset())
         category_slug = request.query_params.get('category')
         if category_slug:
-            products = products.filter(category__slug=category_slug)
+            category_slugs = category_slug.split(',')
+            products = products.filter(category__slug__in=category_slugs)
 
         section = request.query_params.get('section')
         if section:
             products = products.filter(category__section=section)
+
+        in_stock = request.query_params.get('in_stock')
+        if in_stock and in_stock.lower() == 'true':
+            products = products.filter(stock_quantity__gt=0)
 
         search_query = request.query_params.get('search')
 
