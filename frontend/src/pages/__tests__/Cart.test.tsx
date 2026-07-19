@@ -22,18 +22,20 @@ function createMockCart(overrides = {}): any {
       items: [
         {
           id: 'item-1',
-          product: 1,
-          product_detail: {
+          variant: 1,
+          variant_detail: {
             id: 1,
-            name: 'Test Shirt',
-            slug: 'test-shirt',
-            price: '29.99',
+            size: 'M',
+            color: 'Black',
+            color_code: '#000000',
+            sku: 'test-shirt-black-m',
             stock_quantity: 10,
-            description: 'A test shirt',
-            category: 1,
-            category_detail: { id: 1, name: 'T-Shirts', slug: 't-shirts', is_active: true, description: '' },
-            created_at: '2026-01-01T00:00:00Z',
-            updated_at: '2026-01-01T00:00:00Z',
+            price: null,
+            image: '',
+            product_name: 'Test Shirt',
+            product_slug: 'test-shirt',
+            product_image: '',
+            display_price: 29.99,
           },
           quantity: 3,
           created_at: '2026-01-01T00:00:00Z',
@@ -115,6 +117,7 @@ describe('Cart', () => {
 
     expect(screen.getByText('Shopping Cart')).toBeInTheDocument();
     expect(screen.getByText('Test Shirt')).toBeInTheDocument();
+    expect(screen.getByText('Black / M')).toBeInTheDocument();
     expect(screen.getAllByText('$89.97')).toHaveLength(2);
   });
 

@@ -60,58 +60,70 @@ export default function Cart() {
       <h1 className="mb-6 font-heading text-2xl font-bold text-neutral-900">Shopping Cart</h1>
 
       <div className="space-y-4">
-        {cart.items.map((item) => (
-          <div key={item.id} className="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm">
-            <div className="flex size-20 shrink-0 items-center justify-center rounded bg-neutral-100 text-neutral-400">
-              <svg className="size-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
+        {cart.items.map((item) => {
+          const v = item.variant_detail;
+          const itemPrice = v.display_price;
 
-            <div className="min-w-0 flex-1">
-              <Link to={`/products/${item.product_detail.slug}`} className="text-sm font-medium text-neutral-900 hover:text-primary-700">
-                {item.product_detail.name}
-              </Link>
-              <p className="mt-1 text-sm text-neutral-500">{formatPrice(item.product_detail.price)}</p>
-            </div>
+          return (
+            <div key={item.id} className="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm">
+              <div className="flex size-20 shrink-0 items-center justify-center rounded bg-neutral-100 text-neutral-400">
+                {v.product_image ? (
+                  <img src={v.product_image} alt={v.product_name} className="size-full object-cover" />
+                ) : (
+                  <svg className="size-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                )}
+              </div>
 
-            <div className="flex items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <Link to={`/products/${v.product_slug}`} className="text-sm font-medium text-neutral-900 hover:text-primary-700">
+                  {v.product_name}
+                </Link>
+                <p className="mt-0.5 text-xs text-neutral-500">
+                  {v.color} / {v.size}
+                </p>
+                <p className="mt-1 text-sm text-neutral-500">{formatPrice(String(itemPrice))}</p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => updateQuantity({ itemId: item.id, payload: { quantity: Math.max(1, item.quantity - 1) } })}
+                  disabled={item.quantity <= 1}
+                  className="flex size-8 items-center justify-center rounded border text-neutral-600 hover:bg-neutral-100 disabled:opacity-30"
+                  aria-label="Decrease quantity"
+                >
+                  -
+                </button>
+                <span className="w-8 text-center text-sm font-medium" aria-label={`Quantity: ${item.quantity}`}>
+                  {item.quantity}
+                </span>
+                <button
+                  onClick={() => updateQuantity({ itemId: item.id, payload: { quantity: item.quantity + 1 } })}
+                  disabled={item.quantity >= v.stock_quantity}
+                  className="flex size-8 items-center justify-center rounded border text-neutral-600 hover:bg-neutral-100 disabled:opacity-30"
+                  aria-label="Increase quantity"
+                >
+                  +
+                </button>
+              </div>
+
+              <p className="w-20 text-right text-sm font-medium text-neutral-900">
+                {formatPrice(String(itemPrice * item.quantity))}
+              </p>
+
               <button
-                onClick={() => updateQuantity({ itemId: item.id, payload: { quantity: Math.max(1, item.quantity - 1) } })}
-                disabled={item.quantity <= 1}
-                className="flex size-8 items-center justify-center rounded border text-neutral-600 hover:bg-neutral-100 disabled:opacity-30"
-                aria-label="Decrease quantity"
+                onClick={() => removeItem(item.id)}
+                className="text-neutral-400 hover:text-red-600"
+                aria-label={`Remove ${v.product_name} from cart`}
               >
-                -
-              </button>
-              <span className="w-8 text-center text-sm font-medium" aria-label={`Quantity: ${item.quantity}`}>
-                {item.quantity}
-              </span>
-              <button
-                onClick={() => updateQuantity({ itemId: item.id, payload: { quantity: item.quantity + 1 } })}
-                disabled={item.quantity >= item.product_detail.stock_quantity}
-                className="flex size-8 items-center justify-center rounded border text-neutral-600 hover:bg-neutral-100 disabled:opacity-30"
-                aria-label="Increase quantity"
-              >
-                +
+                <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
               </button>
             </div>
-
-            <p className="w-20 text-right text-sm font-medium text-neutral-900">
-              {formatPrice((parseFloat(item.product_detail.price) * item.quantity).toFixed(2))}
-            </p>
-
-            <button
-              onClick={() => removeItem(item.id)}
-              className="text-neutral-400 hover:text-red-600"
-              aria-label={`Remove ${item.product_detail.name} from cart`}
-            >
-              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-8 border-t pt-6">

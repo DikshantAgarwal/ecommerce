@@ -12,6 +12,7 @@ import {
 const DEBOUNCE_DELAY = 400;
 
 export default function Home() {
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebounce(searchInput, DEBOUNCE_DELAY);
@@ -27,7 +28,7 @@ export default function Home() {
     hasNextPage,
     fetchNextPage,
     error,
-  } = useProducts(selectedCategory, debouncedSearch);
+  } = useProducts(selectedCategory, debouncedSearch, selectedSection);
 
   const products = data?.pages.flatMap((page) => page.results) ?? [];
 
@@ -42,8 +43,10 @@ export default function Home() {
       <div className="mb-6">
         <CategoryFilter
           categories={categories ?? []}
+          selectedSection={selectedSection}
           selectedCategory={selectedCategory}
-          onSelect={setSelectedCategory}
+          onSectionChange={setSelectedSection}
+          onCategoryChange={setSelectedCategory}
           isLoading={categoriesLoading}
           error={categoriesError}
         />
