@@ -22,6 +22,10 @@ class ProductListAPIView(GenericAPIView):
         if category_slug:
             products = products.filter(category__slug=category_slug)
 
+        section = request.query_params.get('section')
+        if section:
+            products = products.filter(category__section=section)
+
         search_query = request.query_params.get('search')
 
         if search_query:
@@ -43,7 +47,7 @@ class ProductListAPIView(GenericAPIView):
 class ProductDetailAPIView(APIView):
     def get(self, request, slug):
         product = get_object_or_404(Product, slug=slug)
-        serializer = ProductSerializer(product)
+        serializer = ProductSerializer(product, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
