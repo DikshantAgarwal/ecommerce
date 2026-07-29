@@ -12,17 +12,17 @@ function formatPrice(price: string): string {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link to={`/products/${product.slug}`} className="group flex flex-col rounded-lg bg-neutral-0 transition-shadow duration-200 hover:shadow-md">
-      <div className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100">
+      <div className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100  group">
         {product.image ? (
           <img
             src={product.image}
             alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="h-full w-full object-cover transform-gpu transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-neutral-400">
+          <div className="flex h-full items-center justify-center text-neutral-400  overflow-hidden group">
             <svg
-              className="h-12 w-12"
+              className="h-12 w-12 object-cover transition-transform duration-300 group-hover:scale-110"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

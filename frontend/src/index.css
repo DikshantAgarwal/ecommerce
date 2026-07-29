@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@utility group-hover {
+  /* Tells Tailwind v4 to ignore the strict touchscreen media query */
+  .group:hover & {
+    @apply scale-105; /* Or leave empty to fix all group-hover utilities globally */
+  }
+}
+
 @theme {
   --color-primary-900: #1F4D3A;
   --color-primary-700: #2B6A4F;

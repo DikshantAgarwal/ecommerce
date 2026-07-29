@@ -1,14 +1,14 @@
 # Deployment Guide
 
-> **Version:** 1.0  
-> **Last Updated:** 5 July 2026  
+> **Version:** 1.1  
+> **Last Updated:** 29 July 2026  
 > **Status:** Draft
 
 ---
 
 ## Purpose
 
-This document provides step-by-step instructions for setting up local development environments and deploying the KuHu Apparels platform to production. It covers all services: Vercel (frontend), Railway (backend), Neon (database), Cloudinary (images), Resend (emails), and Razorpay (payments).
+This document provides step-by-step instructions for setting up local development environments and deploying the KuHu Apparels platform to production. It covers all services: Vercel (frontend), Railway (backend + PostgreSQL), Cloudinary (images), Resend (emails), and Razorpay (payments).
 
 ---
 
@@ -17,8 +17,7 @@ This document provides step-by-step instructions for setting up local developmen
 ```mermaid
 graph TB
     User[User Browser] --> Vercel[Vercel - Frontend]
-    Vercel --> Railway[Railway - Django Backend]
-    Railway --> Neon[Neon - PostgreSQL]
+    Vercel --> Railway[Railway - Backend + PostgreSQL]
     Railway --> Cloudinary[Cloudinary - Images]
     Railway --> Resend[Resend - Emails]
     Railway --> Razorpay[Razorpay - Payments]
@@ -26,12 +25,18 @@ graph TB
     
     style Vercel fill:#000,color:#fff
     style Railway fill:#7B3FE4,color:#fff
-    style Neon fill:#00E599,color:#000
+    style Railway fill:#00E599,color:#000
     style Cloudinary fill:#3448C5,color:#fff
     style Resend fill:#000,color:#fff
     style Razorpay fill:#02042C,color:#fff
     style GA4 fill:#FF9800,color:#000
 ```
+
+---
+
+## 1.1 Future Improvements
+
+- **Evaluate migration from Railway PostgreSQL to Neon** if database branching, point-in-time recovery, or multi-environment workflows become necessary. For the MVP, Railway's built-in PostgreSQL is simpler, lower latency, and keeps ops under a single provider.
 
 ---
 
@@ -163,32 +168,35 @@ VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 
 ---
 
-## 4. Neon (Database)
+## 4. Database (Railway PostgreSQL)
 
 ### Setup
 
-1. Go to [neon.tech](https://neon.tech) and sign up (GitHub OAuth recommended).
-2. Create a new project.
-3. Copy the connection string from the dashboard.
+Railway provides a built-in PostgreSQL plugin. No external account needed.
 
-### Connection String Format
+1. In your Railway project dashboard, click **New** → **Database** → **Add PostgreSQL**.
+2. Railway automatically injects the `DATABASE_URL` environment variable into your backend service.
+3. No manual configuration or connection string copying required.
+
+### Connection String
+
+Railway auto-generates and injects:
 
 ```
-postgresql://{user}:{password}@{hostname}/{dbname}?sslmode=require
+postgresql://{user}:{password}@{hostname}:{port}/{dbname}
 ```
+
+The `DATABASE_URL` environment variable is automatically available in your Django service — no manual setup needed.
 
 ### Configuration Notes
 
-- Use the **Pooled connection** string for production (includes `-pooler` in hostname).
-- Enable **PgBouncer** for connection pooling (available in Neon free tier).
-- Set `sslmode=require` in production.
+- Railway PostgreSQL includes automated backups.
+- Connection pooling is handled automatically.
+- For local development, use a local PostgreSQL instance or the Railway PostgreSQL plugin's exposed port.
 
-### Branching (Development)
+### Future: Neon Migration
 
-Neon supports database branching. Use branches for:
-- Feature development (branch per feature)
-- Staging environment
-- Testing migrations
+If database branching, point-in-time recovery, or multi-environment workflows become necessary post-MVP, migrate to Neon by swapping the `DATABASE_URL` environment variable. See [Section 1.1](#11-future-improvements).
 
 ---
 
@@ -253,7 +261,7 @@ CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers
 | `DJANGO_SECRET_KEY` | Generate via `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
 | `DJANGO_DEBUG` | `False` |
 | `DJANGO_ALLOWED_HOSTS` | `{railway-domain}.railway.app, kuhuapparels.com, www.kuhuapparels.com` |
-| `DATABASE_URL` | Neon connection string |
+| `DATABASE_URL` | Injected automatically by Railway PostgreSQL plugin |
 | `CORS_ALLOWED_ORIGINS` | `https://kuhuapparels.vercel.app, https://kuhuapparels.com` |
 | `GOOGLE_OAUTH_CLIENT_ID` | Google OAuth client ID |
 | `GOOGLE_OAUTH_CLIENT_SECRET` | Google OAuth client secret |
@@ -530,7 +538,7 @@ jobs:
 - [ ] `SECRET_KEY` is a strong, unique value (not the default)
 - [ ] `ALLOWED_HOSTS` configured for production domains
 - [ ] `CORS_ALLOWED_ORIGINS` set to production frontend URL
-- [ ] Database migrations have been applied
+- [ ] Database migrations have been applied (`python manage.py migrate`)
 - [ ] Static files collected (`python manage.py collectstatic`)
 - [ ] Cloudinary configuration verified
 - [ ] Razorpay live keys configured
@@ -587,7 +595,7 @@ TODO: Set up uptime monitoring (e.g., UptimeRobot free tier, or Railway's built-
 
 ### Database Backups
 
-- **Neon** provides automatic backups (point-in-time recovery).
+- **Railway PostgreSQL** provides automatic backups.
 - For additional safety:
   - Weekly `pg_dump` via cron job or Railway cron.
   - Store backups in Cloudinary or S3-compatible storage.
@@ -619,8 +627,7 @@ TODO: Set up uptime monitoring (e.g., UptimeRobot free tier, or Railway's built-
 | Service | Free Tier | Paid Tier (If Needed) |
 |---|---|---|
 | Vercel | 100GB bandwidth, 6000 build mins | $20/month (Pro) |
-| Railway | $5 credit | $5/month (Starter) |
-| Neon | 500MB storage | $19/month (Launch) |
+| Railway | $5 credit (covers backend + PostgreSQL) | $5/month (Starter) |
 | Cloudinary | 25GB storage, 25GB bandwidth | $89/month (Plus) |
 | Resend | 100 emails/day | $10/month (250K emails) |
 | Razorpay | No monthly fee | Pay per transaction (2% + GST) |
@@ -632,7 +639,7 @@ TODO: Set up uptime monitoring (e.g., UptimeRobot free tier, or Railway's built-
 
 ## 17. Open Questions
 
-- [ ] Should we use Railway's built-in PostgreSQL add-on instead of Neon?
+- [x] Resolved: Using Railway's built-in PostgreSQL add-on for MVP. Revisit if branching/PITR needed post-launch.
 - [ ] Do we need a staging environment (separate Railway project)?
 - [ ] Should we implement a CDN for static files (Cloudinary serves media, but what about Django static files)?
 - [ ] What monitoring/alerting setup should we use?
