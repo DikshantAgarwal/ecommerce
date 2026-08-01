@@ -43,6 +43,9 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
 
+    class Meta:
+        ordering = ['-created_at']
+
     def __str__(self):
         return self.name
 

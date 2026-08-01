@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| **Date** | 2026-07-14 |
-| **Current Sprint** | Sprint 1 (Foundation & Auth: 6 Jul — 12 Jul) |
+| **Date** | 2026-07-29 |
+| **Current Sprint** | Sprint 2 (Cart & Orders: 13 Jul — 19 Jul) |
 | **MVP Deadline** | 10 August 2026 |
-| **Status** | 🟡 On Track |
+| **Status** | 🟢 On Track |
 
 ---
 
@@ -16,6 +16,7 @@
 | [2026-07-07](#2026-07-07) | Product detail page, reusable components, slug routing |
 | [2026-07-14](#2026-07-14) | Category filter, search, infinite scrolling |
 | [2026-07-18](#2026-07-18) | Google OAuth + Cart backend + frontend, JWT auth, Tailwind theme, CORS fix |
+| [2026-07-29](#2026-07-29) | Railway deployment — backend live, 502 debugging, Docker/gunicorn setup |
 
 ---
 
@@ -23,9 +24,9 @@
 
 | Health | Milestone | Focus | Completion |
 |---|---|---|---|
-| Complete | Sprint 1 — Foundation & Auth | Cart Frontend | ~35% toward MVP |
+| ✅ In Progress | Sprint 2 — Cart & Orders | Railway Deployment | ~42% toward MVP |
 
-Products backend ~90% complete. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation.
+Products backend ~90% complete. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation. Backend deployed to Railway — live at kuhu-apparels-production.up.railway.app.
 
 ---
 
@@ -73,32 +74,24 @@ Products backend ~90% complete. Frontend component architecture established. Goo
 | Cart (Full Stack) | ✅ Complete | 100% |
 | Documentation | ✅ Complete | 100% |
 | Testing | ❌ Not Started | 0% |
-| Deployment | ❌ Not Started | 0% |
+| Deployment | 🟡 In Progress | ~10% |
 
 ---
 
 ## 🚧 Current Sprint
 
-### Completed (14/14)
+### Sprint 2 — Cart & Orders (Jul 13 – Jul 19)
 
-- [x] Product detail page (Frontend)
-- [x] Product detail routing (`/products/:id`)
-- [x] ProductCard → ProductDetail navigation
-- [x] `useProduct()` hook and `getProduct()` service
-- [x] Home page refactored into reusable component architecture
-- [x] ProductGrid and ProductCard components created
-- [x] Backend: Product Detail API migrated to slug-based routing
-- [x] Backend: Product filtering, searching, ordering, pagination completed and tested
-- [x] ADRs 021-022: Social-only login decision documented
-- [x] Category Filter UI (horizontal pill buttons with loading/error states)
-- [x] Search UI with 400ms debounce
-- [x] Infinite scrolling with `useInfiniteQuery` + Load More button
-- [x] Google OAuth Backend: `django-allauth` + JWT token exchange endpoint
-- [x] Google OAuth Frontend: Google Sign-In button, Zustand auth store, Axios interceptor, ProtectedRoute, Login page
+**Completed (Cart — Backend + Frontend, Orders Backend, Railway Deployment started)**
+- [x] Cart Model + endpoints (CRUD, guest merge, stock validation)
+- [x] Cart Frontend (page, add-to-cart, icon badge, quantity controls)
+- [x] Orders backend (Order + OrderItem models, create order from cart)
+- [x] Railway Deployment — backend containerized and live at kuhu-apparels-production.up.railway.app
 
-### Remaining (0)
-
-Sprint 1 complete — all 14 tasks delivered.
+**Remaining (Orders Frontend — Checkout, Payments)**
+- [ ] Checkout Page (Frontend)
+- [ ] Razorpay Integration (Backend + Frontend)
+- [ ] Order Confirmation + Email Notifications
 
 ### Blocked
 
@@ -108,38 +101,29 @@ Nothing currently blocked.
 
 ## 🎯 Current Focus
 
-**Current Feature:** Google OAuth — ✅ Complete
+**Current Feature:** Railway Deployment — 🟡 In Progress
 
 **What was delivered:**
-- `django-allauth` configured with Google provider
-- `POST /api/auth/google/` — verifies Google ID token via `google-auth` library
-- New Django User created on first sign-in; existing user updated on subsequent sign-ins
-- JWT access (15 min) + refresh (7 days) returned on success
-- `POST /api/auth/token/refresh/` — refresh endpoint via SimpleJWT
-- `GET /api/auth/me/` — protected profile endpoint
-- `PATCH /api/auth/me/` — update full_name / avatar
-- 197 lines of tests covering login, refresh, profile, and auth errors
-- Frontend: GoogleSignInButton, auth Zustand store, Axios interceptor, ProtectedRoute, Login page
-- Frontend tests for all components and services
+- Backend deployed to Railway via Dockerfile builder
+- Railway containerized build with `gunicorn` + `$PORT` binding
+- Production settings configured: `whitenoise`, `dj-database-url`, SSL, CORS
+- `railway.json` with build + deploy configuration
+- All deployment issues resolved: port binding, settings module, SSL headers, missing transitive deps
 
-**Authentication flow:** Google ID Token → Backend verification → JWT → Stored in localStorage → Axios interceptor attaches Bearer header → Protected routes redirect to /login when unauthenticated
+**Remaining:**
+- Run migrations manually or fix migration hang in startCommand
+- Deploy frontend to Vercel
+- Update CORS to production frontend URL
+
+**Learning:** Dockerfile basics, Railway platform, gunicorn, `$PORT` env var, Django production settings
 
 ---
 
 ## ⏭️ What's Next
 
-1. **Cart Frontend** — Cart page, add-to-cart flow (Sprint 2)
-2. **Railway Deployment** — Deploy backend + frontend skeleton to catch infra issues early
-
-
-
-## 📌 End of Day Summary
-
-- **Biggest achievement:** Frontend component architecture established with `ProductGrid`, `ProductCard`, and `ProductDetail` — production-ready, reusable, and tested
-- **Overall project completion:** ~20% toward MVP
-- **Sprint completion:** 10/14 tasks (71%), 5 days remaining in Sprint 1
-- **Current feature:** Google OAuth Backend
-- **Tomorrow's objective:** Begin Google OAuth backend integration (django-allauth + token exchange endpoint)
+1. **Checkout + Payments** — Checkout page, Razorpay integration, order confirmation (Sprint 3)
+2. **Vercel Frontend Deployment** — Deploy frontend to production
+3. **Cart / Orders remaining items** — Frontend for checkout flow
 
 ---
 
@@ -259,3 +243,47 @@ Nothing currently blocked.
 - Tailwind v4 `@theme` block added with `primary` color palette (dark green) and `font-heading`
 
 - **Next up:** Sprint 2 — Railway Deployment, Orders Backend
+
+---
+
+<a name="2026-07-29"></a>
+## 2026-07-29
+
+### ✅ Completed Today
+
+**Backend — Railway Deployment**
+- Dockerized Django backend with `gunicorn` + `whitenoise` + `dj-database-url`
+- `railway.json` configured with Dockerfile builder and startCommand
+- Production settings: SSL headers, secure cookies, CORS for production
+- Debugged and fixed 502 error: app must bind to `$PORT` (not hardcoded 8000)
+- Fixed `DJANGO_SETTINGS_MODULE` value (had leading space causing import error)
+- Added missing `requests` transitive dependency
+- Backend live at `https://kuhu-apparels-production.up.railway.app/`
+
+**Architecture / Learning**
+- Dockerfile: `FROM`, `WORKDIR`, `COPY`, `RUN`, `CMD` basics
+- Railway: Dockerfile builder vs Nixpacks, `$PORT` env var, `railway.json`
+- Gunicorn: WSGI server, `--bind`, `--workers`, `--timeout`
+- Django production: `SECRET_KEY`, `ALLOWED_HOSTS`, `DATABASE_URL` as env vars
+- Migrate hangs in startCommand → run separately via `railway run`
+
+### 🎯 Current Focus
+
+**Feature:** Railway Deployment — Partial (backend live, frontend pending)
+
+**Definition of Done progress:**
+- [x] Dockerfile created with production dependencies
+- [x] Production settings with whitenoise, dj-database-url, SSL
+- [x] Backend accessible at Railway URL (200 OK)
+- [ ] Frontend deployed to Vercel
+- [ ] CORS configured for production frontend URL
+- [ ] Migrations applied on Railway PostgreSQL
+
+### 📌 End of Day
+
+- **Biggest achievement:** First successful Railway deployment — backend is live and responding
+- **Overall project completion:** ~42% toward MVP
+- **Current feature:** Railway Deployment
+- **Tomorrow:** Run migrations on Railway, deploy frontend to Vercel, start Checkout + Payments
+
+---
