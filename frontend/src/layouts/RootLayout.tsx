@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet } from 'react-router';
-import { Search, ShoppingCart, User, Menu, X } from 'lucide-react';
+import { Search, User, Menu, X } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
 import { CartIcon, Footer } from '../components';
 

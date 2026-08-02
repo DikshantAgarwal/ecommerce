@@ -22,7 +22,6 @@ export default function CategoryFilter({
   selectedCategory,
   onSectionChange,
   onCategoryChange,
-  isLoading,
   error,
 }: CategoryFilterProps) {
   if (error) {
