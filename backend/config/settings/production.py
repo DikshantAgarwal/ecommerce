@@ -27,10 +27,8 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-STORAGES = {
-    'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-    },
+STORAGES['staticfiles'] = {
+    'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
 }
 
 REST_FRAMEWORK = {

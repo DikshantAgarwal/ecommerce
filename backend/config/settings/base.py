@@ -143,7 +143,9 @@ if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
         'SECURE': True,
         'PREFIX': '',
     }
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    STORAGES = {
+        'default': {'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage'},
+    }
     INSTALLED_APPS += ['cloudinary_storage']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
