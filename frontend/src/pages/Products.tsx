@@ -153,16 +153,33 @@ export default function Products() {
 
           <div className="min-w-0 flex-1">
             {isLoading ? (
-              <div className="py-8 text-center text-neutral-600" role="status">
-                Loading products...
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 lg:gap-6" role="status">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="aspect-[4/5] rounded-lg bg-neutral-200" />
+                    <div className="mt-3 h-4 w-2/3 rounded bg-neutral-200" />
+                    <div className="mt-2 h-4 w-1/3 rounded bg-neutral-200" />
+                  </div>
+                ))}
+                <span className="sr-only">Loading products...</span>
               </div>
             ) : error ? (
-              <div className="py-8 text-center text-red-600" role="alert">
-                Failed to load products. Please try again later.
+              <div className="flex flex-col items-center py-16 text-center" role="alert">
+                <p className="text-lg font-semibold text-neutral-900">
+                  Something went wrong
+                </p>
+                <p className="mt-2 text-neutral-600">
+                  We could not load the products. Please try again.
+                </p>
               </div>
             ) : products.length === 0 ? (
-              <div className="py-8 text-center text-neutral-600">
-                No products found. Try adjusting your filters.
+              <div className="flex flex-col items-center py-16 text-center">
+                <p className="text-lg font-semibold text-neutral-900">
+                  No products found
+                </p>
+                <p className="mt-2 text-neutral-600">
+                  Try adjusting your filters or search.
+                </p>
               </div>
             ) : (
               <>

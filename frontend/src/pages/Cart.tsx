@@ -65,15 +65,18 @@ export default function Cart() {
 
           return (
             <div key={item.id} className="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm">
-              <div className="flex size-20 shrink-0 items-center justify-center rounded bg-neutral-100 text-neutral-400">
+              <Link
+                to={`/products/${v.product_slug}`}
+                className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded bg-neutral-100 text-neutral-400"
+              >
                 {v.product_image ? (
-                  <img src={v.product_image} alt={v.product_name} className="size-full object-cover" />
+                  <img src={v.product_image} alt={v.product_name} className="size-full object-cover" loading="lazy" />
                 ) : (
                   <svg className="size-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 )}
-              </div>
+              </Link>
 
               <div className="min-w-0 flex-1">
                 <Link to={`/products/${v.product_slug}`} className="text-sm font-medium text-neutral-900 hover:text-primary-900">
@@ -89,7 +92,7 @@ export default function Cart() {
                 <button
                   onClick={() => updateQuantity({ itemId: item.id, payload: { quantity: Math.max(1, item.quantity - 1) } })}
                   disabled={item.quantity <= 1}
-                  className="flex size-8 items-center justify-center rounded border text-neutral-600 hover:bg-neutral-100 disabled:opacity-30"
+                  className="flex size-8 items-center justify-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-100 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
                   aria-label="Decrease quantity"
                 >
                   -
@@ -100,7 +103,7 @@ export default function Cart() {
                 <button
                   onClick={() => updateQuantity({ itemId: item.id, payload: { quantity: item.quantity + 1 } })}
                   disabled={item.quantity >= v.stock_quantity}
-                  className="flex size-8 items-center justify-center rounded border text-neutral-600 hover:bg-neutral-100 disabled:opacity-30"
+                  className="flex size-8 items-center justify-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-100 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
                   aria-label="Increase quantity"
                 >
                   +
@@ -113,7 +116,7 @@ export default function Cart() {
 
               <button
                 onClick={() => removeItem(item.id)}
-                className="text-neutral-400 hover:text-red-600"
+                className="rounded p-1 text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
                 aria-label={`Remove ${v.product_name} from cart`}
               >
                 <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,7 +135,7 @@ export default function Cart() {
         </div>
         <Link
           to="/checkout"
-          className="mt-4 flex h-12 w-full items-center justify-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700"
+          className="mt-4 flex h-12 w-full items-center justify-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
         >
           Proceed to Checkout
         </Link>

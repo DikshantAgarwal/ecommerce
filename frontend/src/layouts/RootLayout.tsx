@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Outlet } from 'react-router';
+import { Link, Outlet, useLocation } from 'react-router';
 import { Search, User, Menu, X } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
 import { CartIcon, Footer } from '../components';
@@ -10,10 +10,20 @@ const NAV_LINKS = [
   { label: 'Themes', to: '/products' },
 ];
 
+function isLinkActive(link: (typeof NAV_LINKS)[number], current: string, section: string | null): boolean {
+  const [, query = ''] = link.to.split('?');
+  if (query.startsWith('section=')) {
+    return link.to.startsWith(current) && section === query.replace('section=', '');
+  }
+  return current === link.to;
+}
+
 export default function RootLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const user = useAuthStore((s) => s.user);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { pathname, search } = useLocation();
+  const section = new URLSearchParams(search).get('section');
 
   return (
     <div className="min-h-screen bg-neutral-0">
@@ -24,19 +34,27 @@ export default function RootLayout() {
               <Link
                 key={link.label}
                 to={link.to}
-                className="text-sm uppercase tracking-wide text-neutral-600 transition-colors duration-200 hover:text-primary-900"
+                aria-current={isLinkActive(link, pathname, section) ? 'page' : undefined}
+                className={`text-sm uppercase tracking-wide transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 ${
+                  isLinkActive(link, pathname, section)
+                    ? 'text-primary-900'
+                    : 'text-neutral-600 hover:text-primary-900'
+                }`}
               >
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          <Link to="/" className="font-heading text-2xl font-bold text-neutral-900">
+          <Link
+            to="/"
+            className="font-heading text-3xl font-bold tracking-tight text-neutral-900 transition-colors duration-200 hover:text-primary-900"
+          >
             KuHu
           </Link>
 
           <div className="flex flex-1 items-center justify-end gap-6">
-            <button className="text-neutral-600 transition-colors duration-200 hover:text-primary-900" aria-label="Search">
+            <button className="rounded text-neutral-600 transition-colors duration-200 hover:text-primary-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700" aria-label="Search">
               <Search className="size-6" />
             </button>
             <CartIcon />
@@ -59,13 +77,13 @@ export default function RootLayout() {
         <div className="flex h-full items-center justify-between px-4 md:hidden">
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="text-neutral-600"
+            className="rounded text-neutral-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
             aria-label="Open menu"
           >
             <Menu className="size-6" />
           </button>
 
-          <Link to="/" className="font-heading text-xl font-bold text-neutral-900">
+          <Link to="/" className="font-heading text-xl font-bold tracking-tight text-neutral-900 transition-colors duration-200 hover:text-primary-900">
             KuHu
           </Link>
 
@@ -83,7 +101,7 @@ export default function RootLayout() {
               <span className="font-heading text-xl font-bold text-neutral-900">KuHu</span>
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-neutral-600"
+                className="rounded text-neutral-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
                 aria-label="Close menu"
               >
                 <X className="size-6" />
@@ -95,7 +113,12 @@ export default function RootLayout() {
                   key={link.label}
                   to={link.to}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-base font-medium text-neutral-900 transition-colors hover:text-primary-900"
+                  aria-current={isLinkActive(link, pathname, section) ? 'page' : undefined}
+                  className={`text-base font-medium transition-colors ${
+                    isLinkActive(link, pathname, section)
+                      ? 'text-primary-900'
+                      : 'text-neutral-900 hover:text-primary-900'
+                  }`}
                 >
                   {link.label}
                 </Link>
@@ -116,7 +139,7 @@ export default function RootLayout() {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
                 >
                   <User className="size-4" />
                   Sign In

@@ -35,25 +35,31 @@ export default function PopularThemes() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="mb-8 text-2xl font-bold text-neutral-900">Popular Themes</h2>
 
-        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-4 md:gap-6 md:overflow-visible md:pb-0">
-          {THEMES.map((theme) => (
-            <Link
-              key={theme.name}
-              to={`/products?theme=${encodeURIComponent(theme.match)}`}
-              className="group relative aspect-[4/5] w-64 shrink-0 snap-center overflow-hidden rounded-lg border border-neutral-300 border-opacity-50 shadow-sm md:w-auto md:shadow-none"
-            >
-              <img
-                src={theme.image}
-                alt={theme.name}
-                className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 pointer-events-none [background:linear-gradient(to_right,rgba(0,0,0,0.3),transparent_12%)] md:hidden" aria-hidden="true" />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 pt-12">
-                <span className="text-lg font-semibold text-white">{theme.name}</span>
-              </div>
-            </Link>
-          ))}
+        <div className="relative">
+          <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-4 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-4 md:gap-6 md:overflow-visible md:pb-0 md:scroll-px-0">
+            {THEMES.map((theme) => (
+              <Link
+                key={theme.name}
+                to={`/products?theme=${encodeURIComponent(theme.match)}`}
+                className="group relative aspect-[4/5] w-64 shrink-0 snap-center overflow-hidden rounded-lg border border-neutral-300 border-opacity-50 shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 md:w-auto md:shadow-none"
+              >
+                <img
+                  src={theme.image}
+                  alt={theme.name}
+                  className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 pointer-events-none [background:linear-gradient(to_right,rgba(0,0,0,0.3),transparent_12%)] md:hidden" aria-hidden="true" />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 pt-12">
+                  <span className="text-lg font-semibold text-white">{theme.name}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div
+            className="pointer-events-none absolute inset-y-0 right-0 hidden w-12 [background:linear-gradient(to_left,rgba(255,255,255,0.9),transparent)] md:hidden"
+            aria-hidden="true"
+          />
         </div>
       </div>
     </section>

@@ -11,18 +11,19 @@ function formatPrice(price: string): string {
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <Link to={`/products/${product.slug}`} className="group flex flex-col rounded-lg bg-neutral-0 transition-shadow duration-200 hover:shadow-md">
-      <div className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100  group">
+    <Link to={`/products/${product.slug}`} className="group flex cursor-pointer flex-col rounded-lg bg-neutral-0 transition-shadow duration-200 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700">
+      <div className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100 group">
         {product.image ? (
           <img
             src={product.image}
             alt={product.name}
-            className="h-full w-full object-cover transform-gpu transition-transform duration-300 group-hover:scale-105"
+            className="h-full w-full object-cover transform-gpu transition-transform duration-300 group-hover:scale-[1.02]"
+            loading="lazy"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-neutral-400  overflow-hidden group">
+          <div className="flex h-full items-center justify-center text-neutral-400 overflow-hidden group">
             <svg
-              className="h-12 w-12 object-cover transition-transform duration-300 group-hover:scale-110"
+              className="h-12 w-12 object-cover transition-transform duration-300 group-hover:scale-105"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -38,8 +39,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
       </div>
-      <div className="flex flex-1 flex-col gap-1.5 p-4">
-        <h3 className="line-clamp-2 text-sm font-semibold text-neutral-900">
+      <div className="flex flex-1 flex-col gap-1.5 p-3">
+        <h3 className="line-clamp-2 text-sm font-medium text-neutral-900">
           {product.name}
         </h3>
         <p className="text-base font-bold text-neutral-900">

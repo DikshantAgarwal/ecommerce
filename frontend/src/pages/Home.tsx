@@ -27,12 +27,24 @@ export default function Home() {
           </div>
 
           {isLoading ? (
-            <div className="py-8 text-center text-neutral-600" role="status">
-              Loading products...
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-6" role="status">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-[4/5] rounded-lg bg-neutral-200" />
+                  <div className="mt-3 h-4 w-2/3 rounded bg-neutral-200" />
+                  <div className="mt-2 h-4 w-1/3 rounded bg-neutral-200" />
+                </div>
+              ))}
+              <span className="sr-only">Loading products...</span>
             </div>
           ) : error ? (
-            <div className="py-8 text-center text-red-600" role="alert">
-              Failed to load products. Please try again later.
+            <div className="flex flex-col items-center py-16 text-center" role="alert">
+              <p className="text-lg font-semibold text-neutral-900">
+                Something went wrong
+              </p>
+              <p className="mt-2 text-neutral-600">
+                We could not load the featured products. Please try again.
+              </p>
             </div>
           ) : (
             <ProductGrid products={teaserProducts} />

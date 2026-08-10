@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router';
 import { useProduct } from '../hooks/useProduct';
-import { AddToCartButton } from '../components';
+import { AddToCartButton, ProductImageZoom } from '../components';
 
 function formatPrice(price: string | number): string {
   return `$${Number(price).toFixed(2)}`;
@@ -124,24 +124,22 @@ export default function ProductDetail() {
         <span className="text-neutral-900" aria-current="page">{product.name}</span>
       </nav>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100">
+      <div className="grid gap-8 lg:grid-cols-5">
+        <div className="lg:col-span-3">
           {displayImage ? (
-            <img
-              src={displayImage}
-              alt={product.name}
-              className="h-full w-full object-cover"
-            />
+            <ProductImageZoom src={displayImage} alt={product.name} />
           ) : (
-            <div className="flex h-full items-center justify-center text-neutral-400">
-              <svg className="h-20 w-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+            <div className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100">
+              <div className="flex h-full items-center justify-center text-neutral-400">
+                <svg className="h-20 w-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
             </div>
           )}
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 lg:col-span-2">
           <div>
             <p className="mb-2 text-sm font-medium uppercase tracking-wide text-neutral-600">
               {product.category_detail.name}
@@ -172,7 +170,7 @@ export default function ProductDetail() {
                       .sort((a, b) => ['S', 'M', 'L', 'XL', 'XXL'].indexOf(a.size) - ['S', 'M', 'L', 'XL', 'XXL'].indexOf(b.size))[0]?.size;
                     setSelectedSize(firstSize ?? null);
                   }}
-                  className={`size-9 rounded-full border-2 transition-all ${
+                  className={`size-9 rounded-full border-2 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 ${
                     selectedColor === v.color_code
                       ? 'border-neutral-900 ring-2 ring-neutral-900 ring-offset-2'
                       : 'border-neutral-300 hover:border-neutral-500'
@@ -199,7 +197,7 @@ export default function ProductDetail() {
                       key={v.size}
                       onClick={() => setSelectedSize(v.size)}
                       disabled={outOfStock}
-                      className={`h-10 min-w-10 rounded-md border px-3 text-sm font-medium transition-all ${
+                      className={`h-10 min-w-10 rounded-md border px-3 text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 ${
                         isSelected
                           ? 'border-neutral-900 bg-neutral-900 text-white'
                           : outOfStock

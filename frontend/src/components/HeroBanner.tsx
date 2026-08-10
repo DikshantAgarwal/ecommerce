@@ -24,7 +24,7 @@ export default function HeroBanner() {
           </p>
           <Link
             to="/products"
-            className="mt-8 inline-flex h-12 items-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700"
+            className="mt-8 inline-flex h-12 items-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             Shop Now
           </Link>
