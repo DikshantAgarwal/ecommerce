@@ -11,7 +11,7 @@ from apps.products.serializers import CategorySerializer, ProductSerializer
 
 
 class ProductListAPIView(GenericAPIView):
-    queryset = Product.objects.select_related('category').all()
+    queryset = Product.objects.select_related('category').filter(is_active=True, category__is_active=True)
     serializer_class = ProductSerializer
     pagination_class = ProductPagination
     ALLOWED_ORDERING_FIELDS = {'price', '-price', 'created_at', '-created_at'}
@@ -51,14 +51,17 @@ class ProductListAPIView(GenericAPIView):
 
 class ProductDetailAPIView(APIView):
     def get(self, request, slug):
-        product = get_object_or_404(Product, slug=slug)
+        product = get_object_or_404(
+            Product.objects.filter(is_active=True, category__is_active=True),
+            slug=slug,
+        )
         serializer = ProductSerializer(product, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CategoryListAPIView(APIView):
     def get(self, request):
-        categories = Category.objects.all()
+        categories = Category.objects.filter(is_active=True)
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

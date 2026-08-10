@@ -8,6 +8,7 @@
 
 | Version | Date | Summary |
 |---|---|---|
+| [v1.4.0](#140---2026-08-10) | 2026-08-10 | Variants, homepage, listing filters, checkout flow (orders backend + pages) |
 | [v1.3.0](#130---2026-07-18) | 2026-07-18 | Cart backend + frontend, guest support, merge, Add to Cart buttons |
 | [v1.2.0](#120---2026-07-18) | 2026-07-18 | Google OAuth full auth flow, JWT, frontend integration |
 | [v1.1.0](#110---2026-07-07) | 2026-07-07 | Product detail page, reusable components, slug routing, Bruno testing |
@@ -97,7 +98,64 @@
 
 ---
 
-<a name="130---2026-07-18"></a>
+<a name="140---2026-08-10"></a>
+## [1.4.0] — 2026-08-10
+
+### Added
+
+- **Product Variants**
+  - `ProductVariant` model (color, size, stock_quantity, price override) with migrations, slug-based image naming.
+  - Product detail page color/size selector with image swap.
+  - Cart refactored to variant-based items (`CartItem.variant` FK, stock validated at variant level).
+  - Order items reference variants; variant price falls back to product price.
+
+- **Homepage (Phase 2)**
+  - `HeroBanner`, `PopularThemes`, and "All Products" sections.
+  - Homepage cleanup and theme filtering across listing.
+
+- **Product Listing (Phase 3)**
+  - `FilterSidebar` (desktop), `SortSelect`, `MobileFilterDrawer`, `ActiveFilterPills`.
+  - Category/search/sort filters compose and reset to page 1 on change.
+
+- **Checkout Flow (Phase 4)**
+  - Orders backend — `Order` + `OrderItem` models, `POST /api/orders/` creates an order from the cart with stock validation + decrement inside `transaction.atomic`, `GET /api/orders/:id/` (ownership-scoped).
+  - `Checkout` page (order summary, place-order button), `OrderConfirmation` page (order items, status, total).
+  - `useOrder`, `useCreateOrder` hooks and `order.service`; `/orders/:id/confirmation` route.
+  - Checkout / confirmation prepare the flow for Rivers — Razorpay payment integration is next.
+  - 52 frontend tests + 47 backend tests passing (variant-aware cart tests added).
+
+### Changed
+
+- **Cart** — items now store a `ProductVariant` reference instead of a raw product; stock validation moved to variant level.
+- **Production settings** — `x-session-id` allowed in CORS headers; DRF restricted to JSON renderer (fixes production browser 500).
+- **Deployment** — `vercel.json` added with SPA rewrites and security headers; frontend TS build errors fixed; Railway backend production-ready.
+
+### Project Status at v1.4.0
+
+| Area | Status |
+|---|---|
+| Project Configuration | ✅ Complete |
+| Architecture Documentation | ✅ Complete |
+| UI Design Bible | ✅ Complete |
+| Deployment Guide | ✅ Complete |
+| Accounts Backend | ✅ Complete |
+| Products Backend | ✅ ~95% Complete |
+| Cart Backend | ✅ Complete |
+| Cart Frontend | ✅ Complete |
+| Orders Backend | ✅ Complete |
+| Checkout Frontend | ✅ Complete |
+| Variants (Full Stack) | ✅ Complete |
+| Payments Backend | ❌ Not Started |
+| Reviews Backend | ❌ Not Started |
+| Coupons Backend | ❌ Not Started |
+| Frontend Pages | ⏳ ~70% Complete |
+| Component Architecture | ✅ Established |
+| Authentication (Google OAuth) | ✅ Complete |
+| Tests | ✅ 52 frontend + 47 backend |
+| CI/CD | ❌ Not Started |
+| Docker | ✅ Complete |
+
+---
 ## [1.3.0] — 2026-07-18
 
 ### Added
@@ -264,19 +322,16 @@
 
 Sprint 1 (6 Jul — 18 Jul) delivered: product listing with filtering/search/infinite scroll, product detail with slug routing, Google OAuth full auth flow (backend + frontend), reusable component architecture.
 
-### Sprint 2 (13 Jul — 19 Jul)
-
-Sprint 2 is the current sprint.
+### Sprint 2 (13 Jul — 19 Jul) — ✅ Complete
 
 - [x] Cart backend: Cart & CartItem models, add/view/update/remove endpoints
 - [x] Frontend: Cart page, add-to-cart flow
-- [ ] Orders backend: Order model, create order from cart
+- [x] Orders backend: Order model, create order from cart
+- [x] Checkout page + Order confirmation flow (released in v1.4.0)
 
 ### Planned for Sprint 3 (20 Jul — 26 Jul)
 
-- [ ] Checkout page (Frontend)
 - [ ] Razorpay payment integration
-- [ ] Order confirmation flow
 - [ ] Email notifications via Resend
 
 ### Planned for Sprint 4 (27 Jul — 2 Aug)

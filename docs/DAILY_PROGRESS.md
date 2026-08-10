@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| **Date** | 2026-07-29 |
-| **Current Sprint** | Sprint 2 (Cart & Orders: 13 Jul — 19 Jul) |
+| **Date** | 2026-08-10 |
+| **Current Sprint** | Sprint 5 (Launch Prep) |
 | **MVP Deadline** | 10 August 2026 |
 | **Status** | 🟢 On Track |
 
@@ -17,6 +17,7 @@
 | [2026-07-14](#2026-07-14) | Category filter, search, infinite scrolling |
 | [2026-07-18](#2026-07-18) | Google OAuth + Cart backend + frontend, JWT auth, Tailwind theme, CORS fix |
 | [2026-07-29](#2026-07-29) | Railway deployment — backend live, 502 debugging, Docker/gunicorn setup |
+| [2026-08-10](#2026-08-10) | Phases 2–4 done — homepage, filters/sort, checkout+orders; variants; deployment finished |
 
 ---
 
@@ -24,9 +25,9 @@
 
 | Health | Milestone | Focus | Completion |
 |---|---|---|---|
-| ✅ In Progress | Sprint 2 — Cart & Orders | Railway Deployment | ~42% toward MVP |
+| ✅ In Progress | Sprint 5 — Launch Prep | Checkout flow done; Payments (Razorpay) pending | ~62% toward MVP |
 
-Products backend ~90% complete. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation. Backend deployed to Railway — live at kuhu-apparels-production.up.railway.app.
+Products backend ~95% complete with variants. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1-2 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation. Orders backend + checkout flow complete end-to-end (cart → order → confirmation, stock decrement). Backend deployed to Railway; Vercel config added for frontend.
 
 ---
 
@@ -63,35 +64,37 @@ Products backend ~90% complete. Frontend component architecture established. Goo
 
 | Area | Status | Progress |
 |---|---|---|
-| Backend — Products | ✅ Complete | ~90% |
+| Backend — Products | ✅ Complete | ~95% |
 | Backend — Accounts | ✅ Complete | ~100% |
 | Backend — Cart | ✅ Complete | ~100% |
-| Backend — Orders | ❌ Not Started | 0% |
+| Backend — Orders | ✅ Complete | ~100% |
 | Backend — Payments | ❌ Not Started | 0% |
-| Frontend — Pages | 🟡 In Progress | ~55% |
+| Frontend — Pages | 🟡 In Progress | ~70% |
 | Frontend — Components | ✅ Complete | 100% |
 | Authentication (Google OAuth) | ✅ Complete | 100% |
 | Cart (Full Stack) | ✅ Complete | 100% |
+| Checkout (Full Stack) | ✅ Complete | 100% |
+| Variants (Full Stack) | ✅ Complete | 100% |
 | Documentation | ✅ Complete | 100% |
-| Testing | ❌ Not Started | 0% |
-| Deployment | 🟡 In Progress | ~10% |
+| Testing | 🟡 In Progress | ~55% |
+| Deployment | 🟡 In Progress | ~60% |
 
 ---
 
 ## 🚧 Current Sprint
 
-### Sprint 2 — Cart & Orders (Jul 13 – Jul 19)
+### Sprint 2 — Cart & Orders (Jul 13 – Jul 19) — ✅ Complete
 
-**Completed (Cart — Backend + Frontend, Orders Backend, Railway Deployment started)**
+**Completed**
 - [x] Cart Model + endpoints (CRUD, guest merge, stock validation)
 - [x] Cart Frontend (page, add-to-cart, icon badge, quantity controls)
 - [x] Orders backend (Order + OrderItem models, create order from cart)
-- [x] Railway Deployment — backend containerized and live at kuhu-apparels-production.up.railway.app
+- [x] Checkout Page + Order Confirmation (Frontend)
+- [x] Railway Deployment — backend containerized and live
 
-**Remaining (Orders Frontend — Checkout, Payments)**
-- [ ] Checkout Page (Frontend)
+**Remaining (Sprint 3 — Payments)**
 - [ ] Razorpay Integration (Backend + Frontend)
-- [ ] Order Confirmation + Email Notifications
+- [ ] Order Confirmation Email Notifications
 
 ### Blocked
 
@@ -101,29 +104,30 @@ Nothing currently blocked.
 
 ## 🎯 Current Focus
 
-**Current Feature:** Railway Deployment — 🟡 In Progress
+**Current Feature:** Checkout flow — ✅ Complete. Next: Razorpay Payments
 
 **What was delivered:**
-- Backend deployed to Railway via Dockerfile builder
-- Railway containerized build with `gunicorn` + `$PORT` binding
-- Production settings configured: `whitenoise`, `dj-database-url`, SSL, CORS
-- `railway.json` with build + deploy configuration
-- All deployment issues resolved: port binding, settings module, SSL headers, missing transitive deps
+- Homepage (Phase 2) — HeroBanner, PopularThemes, All Products sections
+- Product listing (Phase 3) — FilterSidebar, SortSelect, MobileFilterDrawer, ActiveFilterPills
+- Checkout (Phase 4) — Orders backend (create from cart, stock decrement), Checkout page, Order Confirmation page
+- Product variants — color/size selection on detail page, variant-aware cart and orders
+- Backend live on Railway; Vercel SPA config + security headers added
+- 52 frontend tests + 47 backend tests passing
 
 **Remaining:**
-- Run migrations manually or fix migration hang in startCommand
-- Deploy frontend to Vercel
-- Update CORS to production frontend URL
+- Razorpay payment integration
+- Order confirmation emails
+- Frontend deploy to Vercel (config committed)
 
-**Learning:** Dockerfile basics, Railway platform, gunicorn, `$PORT` env var, Django production settings
+**Learning:** Variant-based cart/orders, `transaction.atomic` for order creation, Vercel SPA rewrites
 
 ---
 
 ## ⏭️ What's Next
 
-1. **Checkout + Payments** — Checkout page, Razorpay integration, order confirmation (Sprint 3)
+1. **Payments (Sprint 3)** — Razorpay integration, order confirmation emails
 2. **Vercel Frontend Deployment** — Deploy frontend to production
-3. **Cart / Orders remaining items** — Frontend for checkout flow
+3. **Launch Prep (Sprint 5)** — Smoke test full purchase flow, launch checklist
 
 ---
 
@@ -285,5 +289,64 @@ Nothing currently blocked.
 - **Overall project completion:** ~42% toward MVP
 - **Current feature:** Railway Deployment
 - **Tomorrow:** Run migrations on Railway, deploy frontend to Vercel, start Checkout + Payments
+
+---
+
+<a name="2026-08-10"></a>
+## 2026-08-10
+
+### ✅ Completed Today
+
+**Backend**
+- `ProductVariant` model (color, size, stock, price override) with migrations; slug constraints for product/variant images
+- Orders app — `Order` + `OrderItem` models, `POST /api/orders/` creates order from cart with stock validation + decrement inside `transaction.atomic`, `GET /api/orders/:id/` for ownership-scoped order detail
+- Cart refactored to variant-based items (variant FK, stock checked at variant level)
+- Production settings finalized: `x-session-id` in CORS headers, DRF JSON-only renderer (fixes browser 500)
+
+**Frontend**
+- Phase 2 Homepage — `HeroBanner`, `PopularThemes`, "All Products" sections; homepage clean-up, theme filtering
+- Phase 3 Listing — `FilterSidebar`, `SortSelect`, `MobileFilterDrawer`, `ActiveFilterPills`; filter/sort/search compose together
+- Phase 4 Checkout — `Checkout` page (order summary, place order), `OrderConfirmation` page, `useOrder`/`useCreateOrder` hooks, `order.service`, `/orders/:id/confirmation` route
+- Product detail color/size selection with variant-aware `AddToCartButton`; `ProductCard` without CTA on listing, nav/products routing fixes
+- `vercel.json` — SPA rewrites + `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` headers; TS build errors fixed
+
+**Architecture / Learning**
+- Variant-aware cart and orders — `CartItem.variant` and `OrderItem.variant` FK, variant price fallback to product price
+- `transaction.atomic` with per-variant stock decrement during order creation
+- Vercel SPA rewrites for React Router client-side routing
+
+**Testing**
+- 52 frontend tests passing (14 files) — added HeroBanner, PopularThemes, FilterSidebar, ActiveFilterPills, SortSelect
+- 47 backend tests passing (accounts, products, cart) — cart tests extended for variant support
+
+**Documentation**
+- None this session
+
+### 🎯 Current Focus
+
+**Feature:** Product Variants + Homepage + Listing Filters + Checkout — ✅ Complete end-to-end (browse → filter → select variant → cart → order → confirmation)
+
+**Definition of Done progress:**
+- [x] ProductVariant model + migrations
+- [x] Detail page color/size selection
+- [x] Cart variant support (add/update/remove)
+- [x] Orders backend creates order from cart, decrements stock
+- [x] Checkout page with order summary + place order
+- [x] Order confirmation page with order items + status
+- [x] Homepage HeroBanner / PopularThemes / All Products
+- [x] Listing filters, sort, mobile filter drawer
+- [x] Vercel SPA config with security headers
+- [x] Tests: 52 frontend + 47 backend passing
+- [ ] Razorpay payment integration
+- [ ] Order confirmation emails
+
+### 📌 End of Day
+
+- **Biggest achievement:** Full purchase flow works end-to-end — user can browse, filter, pick a variant (color/size), add to cart, place an order, and see confirmation with stock decremented
+- **Overall project completion:** ~62% toward MVP
+- **Sprint completion:** Sprint 2 (Cart & Orders) fully complete; Phase 2-4 delivered
+- **Current feature:** Checkout complete → **Payments (Razorpay)** next
+- **Remaining blocker:** Payments not started (0%), order email pending, frontend not yet deployed to Vercel
+- **Tomorrow:** Razorpay integration, Vercel frontend deploy, smoke test full purchase
 
 ---
