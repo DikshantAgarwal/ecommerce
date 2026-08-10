@@ -21,8 +21,8 @@ export default function Footer() {
   return (
     <footer className="border-t border-neutral-200 bg-neutral-100">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 lg:grid-cols-4">
+          <div className="col-span-2 lg:col-span-2">
             <Link to="/" className="font-heading text-xl font-bold text-neutral-900">
               KuHu Apparels
             </Link>
@@ -35,12 +35,12 @@ export default function Footer() {
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-900">
               Customer Care
             </h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-1">
               {CUSTOMER_CARE_LINKS.map((link) => (
                 <li key={link.label}>
                   <Link
                     to={link.to}
-                    className="text-sm text-neutral-600 transition-colors hover:text-primary-900"
+                    className="inline-block py-1.5 text-sm text-neutral-600 transition-colors hover:text-primary-900"
                   >
                     {link.label}
                   </Link>
@@ -53,14 +53,14 @@ export default function Footer() {
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-900">
               Connect
             </h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-1">
               {CONNECT_LINKS.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
                     target={link.href.startsWith('http') ? '_blank' : undefined}
                     rel="noopener noreferrer"
-                    className="text-sm text-neutral-600 transition-colors hover:text-primary-900"
+                    className="inline-block py-1.5 text-sm text-neutral-600 transition-colors hover:text-primary-900"
                   >
                     {link.label}
                   </a>
@@ -70,12 +70,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-neutral-200 pt-6 text-sm text-neutral-600 sm:flex-row">
+        <div className="mt-10 flex flex-col items-center gap-4 border-t border-neutral-200 pt-6 text-sm text-neutral-600 sm:flex-row sm:justify-between">
           <p>&copy; {new Date().getFullYear()} KuHu Apparels. All rights reserved.</p>
           <button
             type="button"
             onClick={backToTop}
-            className="inline-flex items-center gap-1 rounded transition-colors hover:text-primary-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
+            className="inline-flex w-full items-center justify-center gap-1 rounded-lg py-3 text-sm transition-colors hover:text-primary-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 sm:w-auto sm:py-0"
           >
             Back to top
             <ChevronDown aria-hidden="true" className="size-4 rotate-180" />
