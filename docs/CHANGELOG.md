@@ -8,6 +8,7 @@
 
 | Version | Date | Summary |
 |---|---|---|
+| [v1.5.0](#150---2026-08-10) | 2026-08-10 | Real-product catalog (4 themes), Cloudinary images, full production deployment |
 | [v1.4.0](#140---2026-08-10) | 2026-08-10 | Variants, homepage, listing filters, checkout flow (orders backend + pages) |
 | [v1.3.0](#130---2026-07-18) | 2026-07-18 | Cart backend + frontend, guest support, merge, Add to Cart buttons |
 | [v1.2.0](#120---2026-07-18) | 2026-07-18 | Google OAuth full auth flow, JWT, frontend integration |
@@ -95,6 +96,46 @@
 | Tests | ❌ Not Started |
 | CI/CD | ❌ Not Started |
 | Docker | ❌ Not Started |
+
+---
+
+<a name="150---2026-08-10"></a>
+## [1.5.0] — 2026-08-10
+
+### Added
+
+- **Real-Product Catalog**
+  - 4 live themes: Gods & Mythology, Premium, Alcohol, Motivation & Quotes (Men + Women).
+  - Seeded 31 products / 232 variants from 58 real design files via idempotent `seed_catalog` command.
+  - `Product.is_active` flag + migration; views filter to active products only; old catalog deactivated.
+
+- **Cloudinary Image Hosting (ADR-009)**
+  - `cloudinary` + `django-cloudinary-storage` wired through `STORAGES['default']` (env-driven, `PREFIX=''`).
+  - `sync_cloudinary` command uploaded 263 product/variant images as extension-less public_ids; all URLs verified 200.
+  - Cloudinary-aware seeding so production stores asset-matching names.
+
+- **Production Deployment**
+  - Backend on Railway serving the new catalog (migrate + seed against prod Postgres).
+  - Frontend on Vercel with root directory set to `frontend` and the 4-theme `PopularThemes` + mobile snap slider.
+
+### Changed
+
+- **Settings** — Cloudinary storage via `STORAGES` dict (fixes Django 5 `DEFAULT_FILE_STORAGE`/`STORAGES` conflict); CORS now tolerates trailing slashes; staticfiles backend preserved.
+- **.gitignore** — `backend/media/new-images/` source folder tracked so production can seed.
+- **PopularThemes** — rebuilt around the 4 live themes with a mobile snap-scroll slider.
+
+### Project Status at v1.5.0
+
+| Area | Status |
+|---|---|
+| Products backend (variants) | ✅ |
+| Catalog with real images | ✅ |
+| Cart | ✅ |
+| Orders / Checkout | ✅ |
+| Production deployment (Railway + Vercel) | ✅ |
+| Payments (Razorpay) | ⏳ In progress |
+| Order emails | ⏳ Pending |
+| Image lens/magnifier + UI polish | ⏳ Pending |
 
 ---
 

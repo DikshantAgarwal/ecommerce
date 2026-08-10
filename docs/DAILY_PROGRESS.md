@@ -18,6 +18,7 @@
 | [2026-07-18](#2026-07-18) | Google OAuth + Cart backend + frontend, JWT auth, Tailwind theme, CORS fix |
 | [2026-07-29](#2026-07-29) | Railway deployment — backend live, 502 debugging, Docker/gunicorn setup |
 | [2026-08-10](#2026-08-10) | Phases 2–4 done — homepage, filters/sort, checkout+orders; variants; deployment finished |
+| [2026-08-10](#2026-08-10-catalog) | Real-product catalog shipped — 4-theme catalog, 263 Cloudinary images, full prod deploy |
 
 ---
 
@@ -25,7 +26,7 @@
 
 | Health | Milestone | Focus | Completion |
 |---|---|---|---|
-| ✅ In Progress | Sprint 5 — Launch Prep | Checkout flow done; Payments (Razorpay) pending | ~62% toward MVP |
+| ✅ In Progress | Sprint 5 — Launch Prep | Production catalog + deploy done; Payments (Razorpay) pending | ~66% toward MVP |
 
 Products backend ~95% complete with variants. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1-2 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation. Orders backend + checkout flow complete end-to-end (cart → order → confirmation, stock decrement). Backend deployed to Railway; Vercel config added for frontend.
 
@@ -348,5 +349,54 @@ Nothing currently blocked.
 - **Current feature:** Checkout complete → **Payments (Razorpay)** next
 - **Remaining blocker:** Payments not started (0%), order email pending, frontend not yet deployed to Vercel
 - **Tomorrow:** Razorpay integration, Vercel frontend deploy, smoke test full purchase
+
+---
+
+<a name="2026-08-10-catalog"></a>
+## 2026-08-10 (Catalog + Deployment)
+
+### ✅ Completed Today
+
+**Catalog — Real product images**
+- Replaced placeholder themes with 4 live themes: **Gods & Mythology, Premium, Alcohol, Motivation & Quotes** (each in Men + Women)
+- Seeded **31 products / 232 variants** from `backend/media/new-images/` (58 real design files) — idempotent `seed_catalog` command
+- `Product.is_active` flag added (migration 0011) + views filter to active products/categories; old catalog deactivated, not deleted
+- Slug collision support via `DESIGN_HINTS` (e.g. `women-challenge-quotes`)
+- Image folder hygiene: removed `:Zone.Identifier` files and duplicate `.jpeg.jpeg` extensions, normalized folder casing
+
+**Cloudinary media hosting (ADR-009 implemented)**
+- `cloudinary` + `django-cloudinary-storage` added; Cloudinary storage wired via `STORAGES['default']` (env-driven, `PREFIX=''`)
+- `sync_cloudinary` command uploaded all **263 images** as extension-less public_ids (`products/<slug>` / `products/<sku>`); cleaned up legacy `.jpeg`-suffixed orphans
+- All 263 product/variant URLs verified returning 200 from `res.cloudinary.com`
+- Cloudinary-aware seeding: production `seed_catalog` now stores extension-less names matching uploaded assets
+
+**Production deployment**
+- Backend live on Railway with the new catalog (migrate + seed against production Postgres)
+- Fixed prod boot failures: `DEFAULT_FILE_STORAGE`/`STORAGES` mutually-exclusive error (Django 5), missing staticfiles backend, CORS trailing-slash rejection
+- `backend/media/new-images/` now tracked in git (`.gitignore` exception) so Railway can seed
+- Frontend live on Vercel: root directory set to `frontend`, Vercel builds latest `master` code, `PopularThemes` rebuilt with the 4 live themes + mobile snap slider
+
+### 🎯 Current Focus
+
+**Feature:** Production launch for real-product catalog — ✅ Complete
+
+**Definition of Done progress:**
+- [x] 4-theme catalog seeded (31 products / 232 variants)
+- [x] All images uploaded to Cloudinary and URLs verified
+- [x] Backend deployed and serving new catalog from Railway
+- [x] Frontend deployed to Vercel with 4-theme PopularThemes
+- [x] Production `seed_catalog` works (source images shipped in git)
+- [ ] Product detail image lens/magnifier zoom
+- [ ] UI polish items (logo, mobile slider polish, etc.)
+- [ ] Razorpay payment integration
+- [ ] Order confirmation emails
+
+### 📌 End of Day
+
+- **Biggest achievement:** The storefront now serves a real catalog with real product images from Cloudinary in production — no more placeholder/demo data
+- **Overall project completion:** ~66% toward MVP
+- **Sprint completion:** Sprint 5 — production catalog + full deployment delivered
+- **Current feature:** Catalog + Deployment done → **UI polish tasks** next
+- **Remaining blocker:** Payments not started (0%), order email pending, image lens/magnifier + UI polish pending
 
 ---
