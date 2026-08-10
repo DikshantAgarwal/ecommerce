@@ -34,7 +34,7 @@ describe('ActiveFilterPills', () => {
   it('renders price range pill', () => {
     render(<ActiveFilterPills {...defaultProps} priceMin="10" priceMax="50" />);
 
-    expect(screen.getByText('$10 – $50')).toBeInTheDocument();
+    expect(screen.getByText('₹10 – ₹50')).toBeInTheDocument();
   });
 
   it('renders in stock pill', () => {

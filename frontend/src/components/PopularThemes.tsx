@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { ArrowRight } from 'lucide-react';
 import ThemeCarousel from './ThemeCarousel';
 
 interface Theme {
@@ -32,31 +33,50 @@ const THEMES: Theme[] = [
 
 export default function PopularThemes() {
   return (
-    <section className="py-12 lg:py-16">
+    <section className="py-10 lg:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 className="mb-8 text-2xl font-bold text-neutral-900">Popular Themes</h2>
+        <div className="mb-8 flex items-baseline justify-between gap-4">
+          <h2 className="text-2xl font-bold text-neutral-900">
+            Popular Themes
+          </h2>
+          <Link
+            to="/products"
+            className="hidden text-sm font-semibold text-neutral-600 transition-colors hover:text-primary-900 sm:inline-flex sm:items-center sm:gap-1"
+          >
+            Shop All
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </div>
 
         <div className="md:hidden">
           <ThemeCarousel themes={THEMES} />
         </div>
 
-        <div className="hidden md:grid md:grid-cols-4 md:gap-6">
+        <div className="hidden gap-6 md:grid md:grid-cols-4">
           {THEMES.map((theme) => (
             <Link
               key={theme.name}
               to={`/products?theme=${encodeURIComponent(theme.match)}`}
-              className="group relative aspect-[4/5] overflow-hidden rounded-lg border border-neutral-300/70 bg-neutral-100 shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 hover:shadow-md"
+              className="group flex flex-col overflow-hidden rounded-lg border border-neutral-200 bg-neutral-0 transition-shadow duration-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
             >
-              <img
-                src={theme.image}
-                alt={theme.name}
-                loading="lazy"
-                decoding="async"
-                className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 pt-12">
-                <span className="text-lg font-semibold text-white">{theme.name}</span>
+              <div className="aspect-[4/5] w-full overflow-hidden bg-neutral-100">
+                <img
+                  src={theme.image}
+                  alt={theme.name}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                />
               </div>
+              <span className="flex items-center justify-between gap-2 px-4 py-3 sm:px-5">
+                <span className="text-sm font-semibold text-neutral-900">
+                  {theme.name}
+                </span>
+                <ArrowRight
+                  aria-hidden="true"
+                  className="size-4 -translate-x-1 text-primary-900 opacity-0 transition duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+                />
+              </span>
             </Link>
           ))}
         </div>

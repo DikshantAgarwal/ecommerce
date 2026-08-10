@@ -2,10 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router';
 import { useProduct } from '../hooks/useProduct';
 import { AddToCartButton, ProductImageZoom } from '../components';
-
-function formatPrice(price: string | number): string {
-  return `$${Number(price).toFixed(2)}`;
-}
+import { formatPrice } from '../utils/format';
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -116,32 +113,32 @@ export default function ProductDetail() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <nav className="mb-8 text-sm text-neutral-600" aria-label="Breadcrumb">
+      <nav className="mb-6 text-sm text-neutral-600 sm:mb-10" aria-label="Breadcrumb">
         <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <li>
-            <Link to="/" className="hover:text-primary-900">
+            <Link to="/" className="transition-colors hover:text-primary-900">
               Home
             </Link>
           </li>
-          <li aria-hidden="true">→</li>
+          <li aria-hidden="true" className="text-neutral-400">/</li>
           {product.category_detail.section && (
             <>
               <li>
                 <Link
                   to={`/products?section=${product.category_detail.section}`}
-                  className="capitalize hover:text-primary-900"
+                  className="capitalize transition-colors hover:text-primary-900"
                 >
                   {product.category_detail.section}
                 </Link>
               </li>
-              <li aria-hidden="true">→</li>
+              <li aria-hidden="true" className="text-neutral-400">/</li>
             </>
           )}
-          <li className="text-neutral-900" aria-current="page">{product.name}</li>
+          <li className="truncate text-neutral-900" aria-current="page">{product.name}</li>
         </ol>
       </nav>
 
-      <div className="grid gap-8 lg:grid-cols-5">
+      <div className="grid gap-10 lg:grid-cols-5 lg:gap-16">
         <div className="lg:col-span-3">
           {displayImage ? (
             <ProductImageZoom src={displayImage} alt={product.name} />
@@ -156,26 +153,30 @@ export default function ProductDetail() {
           )}
         </div>
 
-        <div className="flex flex-col gap-6 lg:col-span-2">
+        <div className="flex flex-col gap-8 lg:col-span-2 lg:pt-4">
           <div>
-            <p className="mb-2 text-sm font-medium uppercase tracking-wide text-neutral-600">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
               {product.category_detail.name}
             </p>
-            <h1 className="text-2xl font-bold text-neutral-900">
+            <h1 className="text-3xl font-bold text-neutral-900 sm:text-4xl">
               {product.name}
             </h1>
           </div>
 
-          <p className="text-3xl font-bold text-neutral-900">
+          <p className="text-2xl font-bold text-neutral-900 sm:text-3xl">
             {formatPrice(displayPrice)}
           </p>
+
+          <div className="border-t border-neutral-200" />
 
           <p className="leading-relaxed text-neutral-600">
             {product.description}
           </p>
 
+          <div className="border-t border-neutral-200" />
+
           <div>
-            <p className="mb-2 text-sm font-medium text-neutral-700">Color</p>
+            <p className="mb-3 text-sm font-semibold text-neutral-900">Color</p>
             <div className="flex gap-2">
               {colors.map((v) => (
                 <button
@@ -187,7 +188,7 @@ export default function ProductDetail() {
                       .sort((a, b) => ['S', 'M', 'L', 'XL', 'XXL'].indexOf(a.size) - ['S', 'M', 'L', 'XL', 'XXL'].indexOf(b.size))[0]?.size;
                     setSelectedSize(firstSize ?? null);
                   }}
-                  className={`size-9 rounded-full border-2 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 ${
+                  className={`size-10 rounded-full border-2 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 ${
                     selectedColor === v.color_code
                       ? 'border-neutral-900 ring-2 ring-neutral-900 ring-offset-2'
                       : 'border-neutral-300 hover:border-neutral-500'
@@ -202,7 +203,7 @@ export default function ProductDetail() {
 
           {selectedColor && (
             <div>
-              <p className="mb-2 text-sm font-medium text-neutral-700">
+              <p className="mb-3 text-sm font-semibold text-neutral-900">
                 Size
               </p>
               <div className="flex flex-wrap gap-2">
@@ -214,7 +215,8 @@ export default function ProductDetail() {
                       key={v.size}
                       onClick={() => setSelectedSize(v.size)}
                       disabled={outOfStock}
-                      className={`h-10 min-w-10 rounded-md border px-3 text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 ${
+                      aria-pressed={isSelected}
+                      className={`h-11 min-w-11 rounded-lg border px-4 text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 ${
                         isSelected
                           ? 'border-neutral-900 bg-neutral-900 text-white'
                           : outOfStock
@@ -237,7 +239,7 @@ export default function ProductDetail() {
           <AddToCartButton
             variantId={selectedVariant?.id ?? product.variants[0]?.id}
             disabled={!selectedVariant || !inStock}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto sm:min-w-64"
           />
         </div>
       </div>

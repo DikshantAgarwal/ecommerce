@@ -1,29 +1,29 @@
 import { Link } from 'react-router';
 import type { Product } from '../types';
+import { formatPrice } from '../utils/format';
 
 interface ProductCardProps {
   product: Product;
 }
 
-function formatPrice(price: string): string {
-  return `$${parseFloat(price).toFixed(2)}`;
-}
-
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <Link to={`/products/${product.slug}`} className="group flex cursor-pointer flex-col rounded-lg bg-neutral-0 transition-shadow duration-200 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700">
-      <div className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100 group">
+    <Link
+      to={`/products/${product.slug}`}
+      className="group flex cursor-pointer flex-col rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
+    >
+      <div className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100">
         {product.image ? (
           <img
             src={product.image}
             alt={product.name}
-            className="h-full w-full object-cover transform-gpu transition-transform duration-300 group-hover:scale-[1.02]"
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-neutral-400 overflow-hidden group">
+          <div className="flex h-full items-center justify-center text-neutral-400">
             <svg
-              className="h-12 w-12 object-cover transition-transform duration-300 group-hover:scale-105"
+              className="h-12 w-12 object-cover"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -39,11 +39,11 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
       </div>
-      <div className="flex flex-1 flex-col gap-1.5 p-3">
+      <div className="flex flex-1 flex-col gap-1 pt-3">
         <h3 className="line-clamp-2 text-sm font-medium text-neutral-900">
           {product.name}
         </h3>
-        <p className="text-base font-bold text-neutral-900">
+        <p className="text-sm font-semibold text-neutral-600">
           {formatPrice(product.price)}
         </p>
       </div>

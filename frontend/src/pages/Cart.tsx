@@ -1,10 +1,7 @@
 import { Link } from 'react-router';
 import { ShoppingCart } from 'lucide-react';
 import { useCart, useUpdateCartItem, useRemoveCartItem } from '../hooks/useCart';
-
-function formatPrice(price: string): string {
-  return `$${parseFloat(price).toFixed(2)}`;
-}
+import { formatPrice } from '../utils/format';
 
 export default function Cart() {
   const { data: cart, isLoading, error } = useCart();
@@ -85,7 +82,7 @@ export default function Cart() {
                 <p className="mt-0.5 text-xs text-neutral-500">
                   {v.color} / {v.size}
                 </p>
-                <p className="mt-1 text-sm text-neutral-500">{formatPrice(String(itemPrice))}</p>
+                <p className="mt-1 text-sm text-neutral-600">{formatPrice(String(itemPrice))}</p>
               </div>
 
               <div className="flex items-center gap-2">

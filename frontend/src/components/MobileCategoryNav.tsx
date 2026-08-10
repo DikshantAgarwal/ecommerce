@@ -58,7 +58,7 @@ export default function MobileCategoryNav() {
   const themesActive = Boolean(theme) || open;
 
   const tabClass = (active: boolean) =>
-    `relative flex h-full min-w-0 items-center justify-center gap-1 whitespace-nowrap text-sm transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary-700 ${
+    `relative flex h-full min-w-[7rem] shrink-0 flex-1 items-center justify-center gap-1 whitespace-nowrap text-sm transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary-700 ${
       active
         ? 'font-semibold text-primary-900'
         : 'font-normal text-neutral-600 hover:text-primary-900'
@@ -66,14 +66,14 @@ export default function MobileCategoryNav() {
 
   const underline = (active: boolean) =>
     active ? (
-      <span aria-hidden="true" className="absolute inset-x-4 bottom-0 h-0.5 bg-primary-900" />
+      <span aria-hidden="true" className="absolute bottom-0 left-0 right-0 mx-auto h-0.5 w-10 bg-primary-900" />
     ) : null;
 
   return (
     <>
       <nav
         aria-label="Primary sections"
-        className="absolute inset-x-0 top-full z-40 grid h-11 grid-cols-3 border-b border-neutral-200 bg-neutral-0 md:hidden"
+        className="absolute inset-x-0 top-full z-40 flex h-11 w-full items-stretch overflow-x-auto border-b border-neutral-200 bg-neutral-0 md:hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <Link
           to={menLink!.to}
@@ -116,7 +116,7 @@ export default function MobileCategoryNav() {
           ref={panelRef}
           role="region"
           aria-label="Theme selector"
-          className="absolute inset-x-0 top-[7.75rem] z-40 border-t border-neutral-200 bg-neutral-0 shadow-[0_16px_32px_rgba(0,0,0,0.10)] md:hidden"
+          className="absolute inset-x-0 top-[6.25rem] z-40 border-t border-neutral-200 bg-neutral-0 shadow-[0_16px_32px_rgba(0,0,0,0.10)] md:hidden"
         >
           <div className="p-4">
             <p className="mb-3 px-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">

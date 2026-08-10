@@ -2,10 +2,7 @@ import { Link } from 'react-router';
 import { useCart } from '../hooks/useCart';
 import { useCreateOrder } from '../hooks/useOrder';
 import { ShoppingCart } from 'lucide-react';
-
-function formatPrice(price: string | number): string {
-  return `$${Number(price).toFixed(2)}`;
-}
+import { formatPrice } from '../utils/format';
 
 export default function Checkout() {
   const { data: cart, isLoading, error } = useCart();

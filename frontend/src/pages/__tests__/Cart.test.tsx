@@ -118,7 +118,7 @@ describe('Cart', () => {
     expect(screen.getByText('Shopping Cart')).toBeInTheDocument();
     expect(screen.getByText('Test Shirt')).toBeInTheDocument();
     expect(screen.getByText('Black / M')).toBeInTheDocument();
-    expect(screen.getAllByText('$89.97')).toHaveLength(2);
+    expect(screen.getAllByText('₹89.97')).toHaveLength(2);
   });
 
   it('shows item quantity', () => {
@@ -143,6 +143,6 @@ describe('Cart', () => {
     );
 
     expect(screen.getByText('Total')).toBeInTheDocument();
-    expect(screen.getAllByText('$89.97')).toHaveLength(2);
+    expect(screen.getAllByText('₹89.97')).toHaveLength(2);
   });
 });

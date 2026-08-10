@@ -1,10 +1,7 @@
 import { Link, useParams } from 'react-router';
 import { useOrder } from '../hooks/useOrder';
 import { CheckCircle } from 'lucide-react';
-
-function formatPrice(price: string | number): string {
-  return `$${Number(price).toFixed(2)}`;
-}
+import { formatPrice } from '../utils/format';
 
 export default function OrderConfirmation() {
   const { id } = useParams<{ id: string }>();

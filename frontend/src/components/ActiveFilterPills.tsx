@@ -54,7 +54,7 @@ export default function ActiveFilterPills({
 
       {(priceMin || priceMax) && (
         <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-3 py-1 text-sm text-neutral-900">
-          {priceMin ? `$${priceMin}` : '$0'} – {priceMax ? `$${priceMax}` : '∞'}
+          {priceMin ? `₹${priceMin}` : '₹0'} – {priceMax ? `₹${priceMax}` : '∞'}
           <button
             onClick={onClearPrice}
             className="text-neutral-400 transition-colors hover:text-neutral-900"

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router';
-import { Search, User, Menu, X } from 'lucide-react';
+import { User, Menu, X } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
 import { CartIcon, Footer, MobileCategoryNav } from '../components';
 import { NAV_LINKS, isLinkActive } from '../utils/nav';
@@ -14,9 +14,9 @@ export default function RootLayout() {
 
   return (
     <div className="min-h-screen bg-neutral-0">
-      <header className="fixed top-0 z-50 h-20 w-full border-b border-neutral-200 bg-neutral-0 md:h-20">
-        <div className="mx-auto hidden h-full max-w-7xl items-center px-4 sm:px-6 lg:px-8 md:flex">
-          <nav className="flex flex-1 items-center gap-8">
+      <header className="fixed top-0 z-50 w-full border-b border-neutral-200 bg-neutral-0">
+        <div className="mx-auto hidden h-20 max-w-7xl items-center px-4 sm:px-6 lg:px-8 md:flex">
+          <nav className="flex flex-1 items-center gap-10">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.label}
@@ -24,7 +24,7 @@ export default function RootLayout() {
                 aria-current={isLinkActive(link, pathname, section) ? 'page' : undefined}
                 className={`text-sm uppercase tracking-wide transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 ${
                   isLinkActive(link, pathname, section)
-                    ? 'text-primary-900'
+                    ? 'font-semibold text-primary-900'
                     : 'text-neutral-600 hover:text-primary-900'
                 }`}
               >
@@ -35,18 +35,15 @@ export default function RootLayout() {
 
           <Link
             to="/"
-            className="font-heading text-3xl font-bold tracking-tight text-neutral-900 transition-colors duration-200 hover:text-primary-900"
+            className="font-heading text-4xl font-bold tracking-tight text-neutral-900 transition-colors duration-200 hover:text-primary-900"
           >
             KuHu
           </Link>
 
-          <div className="flex flex-1 items-center justify-end gap-6">
-            <button className="rounded text-neutral-600 transition-colors duration-200 hover:text-primary-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700" aria-label="Search">
-              <Search className="size-6" />
-            </button>
+          <div className="flex flex-1 items-center justify-end gap-4">
             <CartIcon />
             {isAuthenticated && user ? (
-              <Link to="/" className="text-neutral-600 transition-colors duration-200 hover:text-primary-900" aria-label="Profile">
+              <Link to="/" className="p-2 text-neutral-600 transition-colors duration-200 hover:text-primary-900" aria-label="Profile">
                 {user.avatar ? (
                   <img src={user.avatar} alt="" className="size-6 rounded-full" />
                 ) : (
@@ -54,27 +51,27 @@ export default function RootLayout() {
                 )}
               </Link>
             ) : (
-              <Link to="/login" className="text-neutral-600 transition-colors duration-200 hover:text-primary-900" aria-label="Sign in">
+              <Link to="/login" className="p-2 text-neutral-600 transition-colors duration-200 hover:text-primary-900" aria-label="Sign in">
                 <User className="size-6" />
               </Link>
             )}
           </div>
         </div>
 
-        <div className="flex h-full items-center justify-between px-4 md:hidden">
+        <div className="flex h-14 items-center justify-between px-4 md:hidden">
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="rounded text-neutral-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
+            className="-ml-2 rounded p-2 text-neutral-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
             aria-label="Open menu"
           >
             <Menu className="size-6" />
           </button>
 
-          <Link to="/" className="font-heading text-xl font-bold tracking-tight text-neutral-900 transition-colors duration-200 hover:text-primary-900">
+          <Link to="/" className="font-heading text-2xl font-bold tracking-tight text-neutral-900 transition-colors duration-200 hover:text-primary-900">
             KuHu
           </Link>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center">
             <CartIcon />
           </div>
         </div>
@@ -139,7 +136,7 @@ export default function RootLayout() {
         </div>
       )}
 
-      <main className="pt-[calc(5rem+2.75rem)] md:pt-20">
+      <main className="pt-[calc(3.5rem+2.75rem)] md:pt-20">
         <Outlet />
       </main>
 

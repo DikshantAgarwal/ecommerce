@@ -1,28 +1,37 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router';
 import HeroBanner from '../HeroBanner';
 
 describe('HeroBanner', () => {
-  it('renders heading', () => {
+  it('renders the editorial carousel region', () => {
     render(
       <BrowserRouter>
         <HeroBanner />
       </BrowserRouter>,
     );
 
-    expect(screen.getByText((content) => content.includes('Premium Fashion,'))).toBeInTheDocument();
-    expect(screen.getByText((content) => content.includes('Crafted for You'))).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Featured editorial' })).toBeInTheDocument();
   });
 
-  it('renders subtext', () => {
+  it('renders active slide heading', () => {
     render(
       <BrowserRouter>
         <HeroBanner />
       </BrowserRouter>,
     );
 
-    expect(screen.getByText(/Discover custom apparel/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Premium Fashion,');
+  });
+
+  it('renders active slide copy', () => {
+    render(
+      <BrowserRouter>
+        <HeroBanner />
+      </BrowserRouter>,
+    );
+
+    expect(screen.getByText(/Quiet luxury prints/)).toBeInTheDocument();
   });
 
   it('renders CTA link to /products', () => {
@@ -34,5 +43,21 @@ describe('HeroBanner', () => {
 
     const cta = screen.getByRole('link', { name: 'Shop Now' });
     expect(cta).toHaveAttribute('href', '/products');
+  });
+
+  it('navigates to the next slide with the right arrow key', () => {
+    const { container } = render(
+      <BrowserRouter>
+        <HeroBanner />
+      </BrowserRouter>,
+    );
+
+    const region = container.querySelector('[role="group"]') as HTMLElement;
+    expect(region).not.toBeNull();
+
+    fireEvent.keyDown(region, { key: 'ArrowRight' });
+    fireEvent.scroll(region);
+
+    expect(screen.getByText(/Streetwear that speaks/)).toBeInTheDocument();
   });
 });
