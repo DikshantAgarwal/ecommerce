@@ -8,6 +8,7 @@
 
 | Version | Date | Summary |
 |---|---|---|
+| [v1.6.0](#160---2026-08-10) | 2026-08-10 | Storefront UI polish — lens/lightbox zoom, breadcrumbs + section nav, unified infinite theme carousel |
 | [v1.5.0](#150---2026-08-10) | 2026-08-10 | Real-product catalog (4 themes), Cloudinary images, full production deployment |
 | [v1.4.0](#140---2026-08-10) | 2026-08-10 | Variants, homepage, listing filters, checkout flow (orders backend + pages) |
 | [v1.3.0](#130---2026-07-18) | 2026-07-18 | Cart backend + frontend, guest support, merge, Add to Cart buttons |
@@ -96,6 +97,43 @@
 | Tests | ❌ Not Started |
 | CI/CD | ❌ Not Started |
 | Docker | ❌ Not Started |
+
+---
+
+<a name="160---2026-08-10"></a>
+## [1.6.0] — 2026-08-10
+
+### Added
+
+- **Product Image Zoom**
+  - Hover lens/magnifier on the product detail image with a full-view lightbox that also supports hover magnification; loading state and focus ring included.
+
+- **Breadcrumb & Section Navigation**
+  - `Home → section → product` breadcrumb on the product detail page; the Products page derives the selected section from URL params so section links work without a reload.
+
+- **Unified Theme Carousel**
+  - Single `ThemeCarousel` replacing the mobile-only 3D stack carousel and desktop static grid — infinite looping (3 cycles), drag + keyboard (←/→) navigation, snap scrolling, `prefers-reduced-motion` support, and focus management exposing only the active slide (with an "Explore the … collection →" hint).
+
+- **Polish pass (10 items)**
+  - Product card hover (scale + shadow), header logo, hero/slider polish, PDP layout tightening, muted/loading/disabled states on Add to Cart, Load More, and hero buttons, focus-visible rings, Cart row polish, Home page cleanup.
+
+### Changed
+
+- **PopularThemes** — rebuilt around the unified carousel; `ThemeStackCarousel` removed and exported as `ThemeCarousel`.
+- **Tests** — 57 frontend tests passing (15 files). `PopularThemes` tests target the looping carousel (3 render cycles, single accessible front slide, arrow-key navigation); `ProductImageZoom` tests added. `tsc -b` clean.
+
+### Project Status at v1.6.0
+
+| Area | Status |
+|---|---|
+| Products backend (variants) | ✅ |
+| Catalog with real images | ✅ |
+| Cart | ✅ |
+| Orders / Checkout | ✅ |
+| Production deployment (Railway + Vercel) | ✅ |
+| UI polish (zoom, carousel, breadcrumb, states) | ✅ |
+| Payments (Razorpay) | ⏳ Not started |
+| Order emails | ⏳ Pending |
 
 ---
 

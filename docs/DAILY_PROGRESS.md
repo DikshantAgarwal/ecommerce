@@ -19,6 +19,7 @@
 | [2026-07-29](#2026-07-29) | Railway deployment — backend live, 502 debugging, Docker/gunicorn setup |
 | [2026-08-10](#2026-08-10) | Phases 2–4 done — homepage, filters/sort, checkout+orders; variants; deployment finished |
 | [2026-08-10](#2026-08-10-catalog) | Real-product catalog shipped — 4-theme catalog, 263 Cloudinary images, full prod deploy |
+| [2026-08-10](#2026-08-10-ui-polish) | UI polish complete — lens/lightbox zoom, breadcrumb + section nav, unified theme carousel, logo, states, focus rings |
 
 ---
 
@@ -26,9 +27,9 @@
 
 | Health | Milestone | Focus | Completion |
 |---|---|---|---|
-| ✅ In Progress | Sprint 5 — Launch Prep | Production catalog + deploy done; Payments (Razorpay) pending | ~66% toward MVP |
+| ✅ In Progress | Sprint 5 — Launch Prep | UI polish done; Payments (Razorpay) + order emails pending | ~70% toward MVP |
 
-Products backend ~95% complete with variants. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1-2 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation. Orders backend + checkout flow complete end-to-end (cart → order → confirmation, stock decrement). Backend deployed to Railway; Vercel config added for frontend.
+Products backend ~95% complete with variants. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1-2 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation. Orders backend + checkout flow complete end-to-end (cart → order → confirmation, stock decrement). Backend deployed to Railway; frontend live on Vercel with the real catalog. Storefront UI polish complete (lens/lightbox zoom, breadcrumbs, section nav, unified theme carousel, loading/empty states, focus rings).
 
 ---
 
@@ -70,15 +71,16 @@ Products backend ~95% complete with variants. Frontend component architecture es
 | Backend — Cart | ✅ Complete | ~100% |
 | Backend — Orders | ✅ Complete | ~100% |
 | Backend — Payments | ❌ Not Started | 0% |
-| Frontend — Pages | 🟡 In Progress | ~70% |
+| Frontend — Pages | ✅ Complete | ~85% |
 | Frontend — Components | ✅ Complete | 100% |
+| UI Polish (zoom, carousel, breadcrumb, states) | ✅ Complete | 100% |
 | Authentication (Google OAuth) | ✅ Complete | 100% |
 | Cart (Full Stack) | ✅ Complete | 100% |
 | Checkout (Full Stack) | ✅ Complete | 100% |
 | Variants (Full Stack) | ✅ Complete | 100% |
 | Documentation | ✅ Complete | 100% |
-| Testing | 🟡 In Progress | ~55% |
-| Deployment | 🟡 In Progress | ~60% |
+| Testing | 🟡 In Progress | ~60% |
+| Deployment | ✅ Complete | 100% |
 
 ---
 
@@ -398,5 +400,43 @@ Nothing currently blocked.
 - **Sprint completion:** Sprint 5 — production catalog + full deployment delivered
 - **Current feature:** Catalog + Deployment done → **UI polish tasks** next
 - **Remaining blocker:** Payments not started (0%), order email pending, image lens/magnifier + UI polish pending
+
+---
+
+<a name="2026-08-10-ui-polish"></a>
+## 2026-08-10 (UI Polish)
+
+### ✅ Completed Today
+
+**Frontend**
+- `ProductImageZoom` — hover lens/magnifier on product detail image + click-to-open full-view lightbox with hover magnification; focus ring, loading state
+- **Breadcrumb** on ProductDetail — `Home → section → product`, section link derived from URL params; Products page reads selected section from the URL so section nav works without a reload
+- **Theme carousel** — replaced the mobile-only 3D stack carousel + desktop static grid with a single unified `ThemeCarousel` that works on every breakpoint: infinite looping (3 cycles), horizontal drag + keyboard (←/→) navigation, snap scrolling, `prefers-reduced-motion` support, focus management (only the active slide is focusable/tabbable), and "Explore the … collection →" active-slide hint
+- **10 polish items**: product card hover (tilt/scale + shadow), header logo, hero/slider polish, PDP layout tightening, Add to Cart / Load More / hero button states, global focus-visible rings, Cart page row polish, Home page cleanup
+- Barrel exports updated: `ThemeStackCarousel` → `ThemeCarousel`; `PopularThemes` consumes the unified carousel
+
+**Testing**
+- 57 frontend tests passing (15 files, +5 vs last report) — rewrote `PopularThemes` tests for the looping carousel (3 render cycles, single accessible front slide, arrow-key navigation to next slide) and added `ProductImageZoom` tests; `tsc -b` clean
+
+### 🎯 Current Focus
+
+**Feature:** Storefront UI Polish — ✅ Complete (closes remaining DoD items from the Catalog feature)
+
+**Definition of Done progress:**
+- [x] Product detail image lens/magnifier zoom + lightbox
+- [x] UI polish items (logo, carousel/slider, card hover, PDP layout, states, focus rings)
+- [x] Breadcrumb + section navigation without page reload
+- [x] Unified theme carousel across all breakpoints
+- [x] Tests updated and passing (57 frontend)
+- [ ] Razorpay payment integration
+- [ ] Order confirmation emails
+
+### 📌 End of Day
+
+- **Biggest achievement:** Browsing experience is polished end-to-end — lens/lightbox image viewing, breadcrumbs, section nav, and one smooth infinite theme carousel on mobile and desktop alike
+- **Overall project completion:** ~70% toward MVP
+- **Current feature:** UI polish done → **Payments (Razorpay) + order emails** next
+- **Remaining blocker:** Payments not started (0%), order confirmation emails pending
+- **Tomorrow:** Razorpay integration (backend + frontend), order confirmation email, smoke test full purchase flow
 
 ---
