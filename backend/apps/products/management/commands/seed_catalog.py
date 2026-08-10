@@ -181,6 +181,13 @@ class Command(BaseCommand):
         self.stdout.write('   🧹 Old catalog hidden (all previous products deactivated)')
 
     def _save_image(self, field, source_path, subdir, name):
+        cloudinary_enabled = bool(getattr(settings, 'CLOUDINARY_CLOUD_NAME', ''))
+        if cloudinary_enabled:
+            # Cloudinary assets already exist (uploaded via sync_cloudinary);
+            # store the extension-less public_id so field.url resolves to them.
+            stem = os.path.splitext(name)[0]
+            field.name = f"{subdir}/{stem}"
+            return
         if not os.path.isfile(source_path):
             return
         target_dir = os.path.join(settings.MEDIA_ROOT, subdir)
