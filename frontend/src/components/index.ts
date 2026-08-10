@@ -15,3 +15,4 @@ export { default as SortSelect } from './SortSelect';
 export { default as ActiveFilterPills } from './ActiveFilterPills';
 export { default as MobileFilterDrawer } from './MobileFilterDrawer';
 export { default as ProductImageZoom } from './ProductImageZoom';
+export { default as ThemeStackCarousel } from './ThemeStackCarousel';

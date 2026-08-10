@@ -3,6 +3,13 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router';
 import PopularThemes from '../PopularThemes';
 
+const EXPECTED_HREFS = [
+  '/products?theme=gods%20%26%20mythology',
+  '/products?theme=motivation%20%26%20quotes',
+  '/products?theme=premium',
+  '/products?theme=alcohol',
+];
+
 describe('PopularThemes', () => {
   it('renders section heading', () => {
     render(
@@ -14,17 +21,19 @@ describe('PopularThemes', () => {
     expect(screen.getByText('Popular Themes')).toBeInTheDocument();
   });
 
-  it('renders the four live theme cards', () => {
+  it('renders the four theme cards across carousel and desktop grid', () => {
     render(
       <BrowserRouter>
         <PopularThemes />
       </BrowserRouter>,
     );
 
-    expect(screen.getByText('God')).toBeInTheDocument();
-    expect(screen.getByText('Quotes')).toBeInTheDocument();
-    expect(screen.getByText('Premium')).toBeInTheDocument();
-    expect(screen.getByText('Alcohol')).toBeInTheDocument();
+    // Text queries match regardless of aria-hidden; each theme label appears
+    // once in the carousel stack and once in the desktop grid.
+    expect(screen.getAllByText('God')).toHaveLength(2);
+    expect(screen.getAllByText('Quotes')).toHaveLength(2);
+    expect(screen.getAllByText('Premium')).toHaveLength(2);
+    expect(screen.getAllByText('Alcohol')).toHaveLength(2);
   });
 
   it('renders theme images with alt text', () => {
@@ -35,22 +44,21 @@ describe('PopularThemes', () => {
     );
 
     const images = screen.getAllByRole('img');
-    expect(images).toHaveLength(4);
+    expect(images).toHaveLength(5);
     expect(images[0]).toHaveAttribute('alt', 'God');
-    expect(images[1]).toHaveAttribute('alt', 'Quotes');
   });
 
-  it('links each theme to /products with the category name param', () => {
+  it('links the front carousel theme and all grid themes to /products', () => {
     render(
       <BrowserRouter>
         <PopularThemes />
       </BrowserRouter>,
     );
 
-    const links = screen.getAllByRole('link');
-    expect(links[0]).toHaveAttribute('href', '/products?theme=gods%20%26%20mythology');
-    expect(links[1]).toHaveAttribute('href', '/products?theme=motivation%20%26%20quotes');
-    expect(links[2]).toHaveAttribute('href', '/products?theme=premium');
-    expect(links[3]).toHaveAttribute('href', '/products?theme=alcohol');
+    const hrefs = screen.getAllByRole('link').map((l) => l.getAttribute('href'));
+    expect(hrefs.filter((h) => h === EXPECTED_HREFS[0])).toHaveLength(2);
+    expect(hrefs.filter((h) => h === EXPECTED_HREFS[1])).toHaveLength(1);
+    expect(hrefs.filter((h) => h === EXPECTED_HREFS[2])).toHaveLength(1);
+    expect(hrefs.filter((h) => h === EXPECTED_HREFS[3])).toHaveLength(1);
   });
 });

@@ -116,12 +116,29 @@ export default function ProductDetail() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <nav className="mb-8 text-sm text-neutral-600">
-        <Link to="/" className="hover:text-primary-900">
-          Home
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-neutral-900" aria-current="page">{product.name}</span>
+      <nav className="mb-8 text-sm text-neutral-600" aria-label="Breadcrumb">
+        <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <li>
+            <Link to="/" className="hover:text-primary-900">
+              Home
+            </Link>
+          </li>
+          <li aria-hidden="true">→</li>
+          {product.category_detail.section && (
+            <>
+              <li>
+                <Link
+                  to={`/products?section=${product.category_detail.section}`}
+                  className="capitalize hover:text-primary-900"
+                >
+                  {product.category_detail.section}
+                </Link>
+              </li>
+              <li aria-hidden="true">→</li>
+            </>
+          )}
+          <li className="text-neutral-900" aria-current="page">{product.name}</li>
+        </ol>
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-5">

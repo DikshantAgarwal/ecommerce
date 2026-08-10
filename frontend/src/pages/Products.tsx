@@ -30,7 +30,7 @@ export default function Products() {
 
   const { data: categories } = useCategories();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [selectedSection] = useState<string | null>(sectionFromUrl);
+  const selectedSection = sectionFromUrl;
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState('');
   const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
