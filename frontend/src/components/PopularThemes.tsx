@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import ThemeStackCarousel from './ThemeStackCarousel';
+import ThemeCarousel from './ThemeCarousel';
 
 interface Theme {
   name: string;
@@ -36,22 +36,23 @@ export default function PopularThemes() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="mb-8 text-2xl font-bold text-neutral-900">Popular Themes</h2>
 
-        {/* Mobile: 3D stacked swipe carousel */}
-        <ThemeStackCarousel themes={THEMES} />
+        <div className="md:hidden">
+          <ThemeCarousel themes={THEMES} />
+        </div>
 
-        {/* Desktop: static 4-column grid */}
         <div className="hidden md:grid md:grid-cols-4 md:gap-6">
           {THEMES.map((theme) => (
             <Link
               key={theme.name}
               to={`/products?theme=${encodeURIComponent(theme.match)}`}
-              className="group relative aspect-[4/5] overflow-hidden rounded-lg border border-neutral-300 border-opacity-50 shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 md:shadow-none"
+              className="group relative aspect-[4/5] overflow-hidden rounded-lg border border-neutral-300/70 bg-neutral-100 shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 hover:shadow-md"
             >
               <img
                 src={theme.image}
                 alt={theme.name}
-                className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 loading="lazy"
+                decoding="async"
+                className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 pt-12">
                 <span className="text-lg font-semibold text-white">{theme.name}</span>

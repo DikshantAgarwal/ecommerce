@@ -2,21 +2,8 @@ import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router';
 import { Search, User, Menu, X } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
-import { CartIcon, Footer } from '../components';
-
-const NAV_LINKS = [
-  { label: 'Men', to: '/products?section=men' },
-  { label: 'Women', to: '/products?section=women' },
-  { label: 'Themes', to: '/products' },
-];
-
-function isLinkActive(link: (typeof NAV_LINKS)[number], current: string, section: string | null): boolean {
-  const [, query = ''] = link.to.split('?');
-  if (query.startsWith('section=')) {
-    return link.to.startsWith(current) && section === query.replace('section=', '');
-  }
-  return current === link.to;
-}
+import { CartIcon, Footer, MobileCategoryNav } from '../components';
+import { NAV_LINKS, isLinkActive } from '../utils/nav';
 
 export default function RootLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -91,6 +78,8 @@ export default function RootLayout() {
             <CartIcon />
           </div>
         </div>
+
+        <MobileCategoryNav />
       </header>
 
       {mobileMenuOpen && (
@@ -150,7 +139,7 @@ export default function RootLayout() {
         </div>
       )}
 
-      <main className="pt-20">
+      <main className="pt-[calc(5rem+2.75rem)] md:pt-20">
         <Outlet />
       </main>
 
