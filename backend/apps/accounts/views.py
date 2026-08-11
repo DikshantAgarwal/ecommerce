@@ -76,6 +76,7 @@ class GoogleLoginAPIView(APIView):
             'email': user.email,
             'full_name': user.full_name,
             'avatar': user.avatar,
+            'is_staff': user.is_staff,
         }).data
 
         return Response({
@@ -95,6 +96,7 @@ class UserProfileAPIView(APIView):
             'email': user.email,
             'full_name': user.full_name,
             'avatar': user.avatar,
+            'is_staff': user.is_staff,
         })
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -119,6 +121,7 @@ class UserProfileAPIView(APIView):
             'email': user.email,
             'full_name': user.full_name,
             'avatar': user.avatar,
+            'is_staff': user.is_staff,
         })
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 

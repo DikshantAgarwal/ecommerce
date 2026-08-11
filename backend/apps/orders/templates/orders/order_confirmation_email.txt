@@ -1,0 +1,19 @@
+KuHu Apparels — Order {{ order_id_short }} ({{ order.get_payment_status_display }})
+
+Thank you for your order! Placed {{ order.created_at|date:"F j, Y" }}.
+
+{% for item in items %}- {{ item.variant.product.name }} ({{ item.variant.color }} / {{ item.variant.size }}) × {{ item.quantity }} — ₹{{ item.total_price }}
+{% endfor %}
+Total: ₹{{ order.total }}
+
+{% if shipping_address %}Shipping to:
+{{ shipping_address.name }}
+{{ shipping_address.address_line1 }}{% if shipping_address.address_line2 %}
+{{ shipping_address.address_line2 }}{% endif %}
+{{ shipping_address.city }}, {{ shipping_address.state }} {{ shipping_address.postal_code }}
+{{ shipping_address.country }}
+{{ shipping_address.phone }}
+{% endif %}
+{% if site_url %}View your order: {{ site_url }}/orders/{{ order.id }}/confirmation{% endif %}
+
+KuHu Apparels — kuhuapparels.com

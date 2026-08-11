@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.orders.models import Order
+from apps.orders.email_service import send_order_confirmation_email
 from apps.payments.serializers import PaymentInitiateSerializer
 from apps.payments.services import (
     CashfreeError,
@@ -101,11 +102,15 @@ class PaymentWebhookAPIView(View):
 
         payment_status = payment_data.get('payment_status', '')
         if event_type in SUCCESS_EVENTS or payment_status == 'SUCCESS':
+            was_paid = order.payment_status == Order.PaymentStatus.PAID
             order.payment_status = Order.PaymentStatus.PAID
             order.status = Order.Status.CONFIRMED
+            order.save(update_fields=['payment_status', 'status', 'updated_at'])
+            if not was_paid:
+                send_order_confirmation_email(order)
         elif event_type in FAILED_EVENTS or payment_status in ('FAILED', 'USER_DROPPED', 'CANCELLED'):
             order.payment_status = Order.PaymentStatus.FAILED
-        order.save(update_fields=['payment_status', 'status', 'updated_at'])
+            order.save(update_fields=['payment_status', 'updated_at'])
 
         return HttpResponse('Ok', status=200)
 
@@ -122,10 +127,11 @@ class PaymentStatusAPIView(APIView):
         if order.cashfree_order_id:
             try:
                 cashfree_status = fetch_order_status(order.cashfree_order_id)
-                if cashfree_status == 'PAID':
+                if cashfree_status == 'PAID' and order.payment_status != Order.PaymentStatus.PAID:
                     order.payment_status = Order.PaymentStatus.PAID
                     order.status = Order.Status.CONFIRMED
                     order.save(update_fields=['payment_status', 'status', 'updated_at'])
+                    send_order_confirmation_email(order)
             except CashfreeError as exc:
                 logger.warning('Cashfree fetch-order failed for %s: %s', order.id, exc)
 

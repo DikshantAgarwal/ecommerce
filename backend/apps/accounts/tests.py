@@ -33,6 +33,7 @@ class GoogleLoginAPIViewTests(TestCase):
         self.assertEqual(response.data['user']['email'], 'test@example.com')
         self.assertEqual(response.data['user']['full_name'], 'Test User')
         self.assertEqual(response.data['user']['avatar'], 'https://example.com/avatar.jpg')
+        self.assertEqual(response.data['user']['is_staff'], False)
         self.assertTrue(User.objects.filter(email='test@example.com').exists())
 
     @patch('apps.accounts.views.id_token.verify_oauth2_token')

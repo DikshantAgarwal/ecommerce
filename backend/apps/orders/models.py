@@ -53,6 +53,24 @@ class Order(models.Model):
     def __str__(self):
         return f"Order {self.id} ({self.get_status_display()})"
 
+    def get_shipping_address(self):
+        if (
+            not self.shipping_name
+            and not self.shipping_address_line1
+            and not self.shipping_city
+        ):
+            return None
+        return {
+            'name': self.shipping_name,
+            'phone': self.shipping_phone,
+            'address_line1': self.shipping_address_line1,
+            'address_line2': self.shipping_address_line2,
+            'city': self.shipping_city,
+            'state': self.shipping_state,
+            'postal_code': self.shipping_postal_code,
+            'country': self.shipping_country,
+        }
+
 
 class OrderItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -63,6 +63,7 @@ class UserSerializer(serializers.Serializer):
     email = serializers.EmailField(read_only=True)
     full_name = serializers.CharField()
     avatar = serializers.URLField(required=False, allow_blank=True)
+    is_staff = serializers.BooleanField(read_only=True)
 
 
 class UserUpdateSerializer(serializers.Serializer):

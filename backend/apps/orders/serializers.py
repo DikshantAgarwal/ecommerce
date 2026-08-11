@@ -41,22 +41,7 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
 
     def get_shipping_address(self, obj):
-        if (
-            not obj.shipping_name
-            and not obj.shipping_address_line1
-            and not obj.shipping_city
-        ):
-            return None
-        return {
-            'name': obj.shipping_name,
-            'phone': obj.shipping_phone,
-            'address_line1': obj.shipping_address_line1,
-            'address_line2': obj.shipping_address_line2,
-            'city': obj.shipping_city,
-            'state': obj.shipping_state,
-            'postal_code': obj.shipping_postal_code,
-            'country': obj.shipping_country,
-        }
+        return obj.get_shipping_address()
 
     def validate_shipping_address_id(self, value):
         if value is None:

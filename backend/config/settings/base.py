@@ -156,6 +156,21 @@ AUTH_USER_MODEL = 'accounts.User'
 
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
 
+# Frontend origin (for emails, return URLs)
+FRONTEND_URL = os.environ.get('FRONTEND_URL', '').rstrip('/')
+
+# Email (Resend via SMTP — ADR-011)
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.resend.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'resend')
+EMAIL_HOST_PASSWORD = os.environ.get('RESEND_API_KEY', '')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true').lower() == 'true'
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'RESEND_FROM_EMAIL',
+    'KuHu Apparels <noreply@kuhuapparels.com>',
+)
+
 # Cashfree Payments
 CASHFREE_CLIENT_ID = os.environ.get('CASHFREE_CLIENT_ID', '')
 CASHFREE_CLIENT_SECRET = os.environ.get('CASHFREE_CLIENT_SECRET', '')

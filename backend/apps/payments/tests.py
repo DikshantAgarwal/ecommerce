@@ -1,6 +1,7 @@
 import uuid
 from unittest import mock
 
+from django.core import mail
 from django.test import TestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -37,6 +38,19 @@ class PaymentAPITestBase(TestCase):
         )
         self.order = Order.objects.create(user=self.user, total=100.00)
         self.client.force_authenticate(user=self.user)
+
+    def add_cart_item(self):
+        from apps.cart.models import Cart, CartItem
+        from apps.orders.models import OrderItem
+        cart = Cart.objects.create(user=self.user)
+        CartItem.objects.create(cart=cart, variant=self.variant, quantity=2)
+        OrderItem.objects.create(
+            order=self.order,
+            variant=self.variant,
+            quantity=2,
+            unit_price=50.00,
+            total_price=100.00,
+        )
 
 
 class PaymentInitiateAPIViewTests(PaymentAPITestBase):
@@ -196,6 +210,89 @@ class PaymentWebhookAPIViewTests(PaymentAPITestBase):
         self.order.refresh_from_db()
         self.assertEqual(self.order.payment_status, Order.PaymentStatus.PAID)
         self.assertEqual(self.order.status, Order.Status.CONFIRMED)
+
+    @override_settings(CASHFREE_CLIENT_SECRET='test-secret')
+    def test_success_webhook_sends_confirmation_email(self):
+        self.add_cart_item()
+        self.assertEqual(len(mail.outbox), 0)
+
+        response = self._post_webhook()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.to, [self.user.email])
+        self.assertIn('confirmed', email.subject)
+        self.assertIn('Test Product', email.body)
+        self.assertIn('Total: ₹100.00', email.body)
+        self.assertEqual(len(email.alternatives), 1)
+        html_body, content_type = email.alternatives[0]
+        self.assertEqual(content_type, 'text/html')
+        self.assertIn('Order', html_body)
+
+    @override_settings(CASHFREE_CLIENT_SECRET='test-secret')
+    def test_success_webhook_email_includes_shipping_snapshot(self):
+        from apps.accounts.models import Address
+        Address.objects.create(
+            user=self.user,
+            name='Pay User',
+            phone='9876543210',
+            address_line1='123 Test Street',
+            city='Bengaluru',
+            state='Karnataka',
+            postal_code='560001',
+            country='India',
+        )
+        self.order.shipping_name = 'Pay User'
+        self.order.shipping_phone = '9876543210'
+        self.order.shipping_address_line1 = '123 Test Street'
+        self.order.shipping_city = 'Bengaluru'
+        self.order.shipping_state = 'Karnataka'
+        self.order.shipping_postal_code = '560001'
+        self.order.shipping_country = 'India'
+        self.order.save()
+
+        self._post_webhook()
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('Shipping to', mail.outbox[0].body)
+        self.assertIn('Bengaluru, Karnataka 560001', mail.outbox[0].body)
+        self.assertIn('9876543210', mail.outbox[0].body)
+
+    @override_settings(CASHFREE_CLIENT_SECRET='test-secret')
+    def test_success_webhook_sends_email_only_once(self):
+        self.add_cart_item()
+        self._post_webhook()
+        self.assertEqual(len(mail.outbox), 1)
+
+        response = self._post_webhook()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+
+    @override_settings(CASHFREE_CLIENT_SECRET='test-secret')
+    def test_failed_webhook_sends_no_email(self):
+        self.add_cart_item()
+        payload = {
+            'type': 'PAYMENT_FAILED_WEBHOOK',
+            'data': {
+                'order': {'order_id': str(self.order.id)},
+                'payment': {'payment_status': 'FAILED'},
+            },
+        }
+        import json, base64, hashlib, hmac
+        raw = __import__('json').dumps(payload)
+        message = (self.timestamp + raw).encode('utf-8')
+        digest = hmac.new(self.secret.encode('utf-8'), message, hashlib.sha256).digest()
+        signature = base64.b64encode(digest).decode('utf-8')
+        response = self.client.post(
+            self.url,
+            data=raw,
+            content_type='text/plain',
+            HTTP_X_WEBHOOK_TIMESTAMP=self.timestamp,
+            HTTP_X_WEBHOOK_SIGNATURE=signature,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 0)
 
     @override_settings(CASHFREE_CLIENT_SECRET='test-secret')
     def test_failed_webhook_marks_failed(self):
