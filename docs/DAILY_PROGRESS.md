@@ -25,6 +25,7 @@
 | [2026-08-11](#2026-08-11-cashfree-live) | Cashfree integration live — order placement unblocked (production JWT auth fix), full purchase flow smoke-tested |
 | [2026-08-11](#2026-08-11-shipping-orders) | Shipping-address snapshot, staff order list, order confirmation email, fulfillment view, retry UI, admin 500 fixed |
 | [2026-08-11](#2026-08-11-resend-api) | Order confirmation email moved SMTP→Resend HTTPS API (Railway blocks SMTP 587); staff-status bootstrap fix |
+| [2026-08-11](#2026-08-11-shipping-orders) | Shipping-address snapshot at checkout, staff order-list API, admin 500 fixed, payment-not-completed retry UI |
 
 ---
 
@@ -33,6 +34,7 @@
 | Health | Milestone | Focus | Completion |
 |---|---|---|---|
 | ✅ In Progress | Sprint 5 — Launch Prep | Admin fixed; shipping snapshots + staff order list + emails + fulfillment view done; analytics/CI/order-history pending | ~82% toward MVP |
+
 
 Products backend ~95% complete with variants. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1-2 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation. Orders backend + checkout flow complete end-to-end (cart → order → confirmation, stock decrement). Backend deployed to Railway; frontend live on Vercel with the real catalog. Storefront UI polish complete (lens/lightbox zoom, breadcrumbs, section nav, unified theme carousel, loading/empty states, focus rings). Cashfree payment integration live in test mode — full purchase flow verified end-to-end (production JWT auth restored so order placement works).
 
