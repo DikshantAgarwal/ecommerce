@@ -23,6 +23,7 @@
 | [2026-08-11](#2026-08-11-storefront-ux-fixes) | ₹ pricing, edit-carousel + editorial hero, ₹-aware cart, logout, compact hero, dedupe filters, carousel perf, scroll-to-top |
 | [2026-08-11](#2026-08-11-payment-gateway) | Payment gateway decision — Cashfree over Razorpay (support + pricing); docs updated across ADR, roadmap, API, deploy, checklist |
 | [2026-08-11](#2026-08-11-cashfree-live) | Cashfree integration live — order placement unblocked (production JWT auth fix), full purchase flow smoke-tested |
+| [2026-08-11](#2026-08-11-shipping-orders) | Shipping-address snapshot, staff order list, order confirmation email, fulfillment view, retry UI, admin 500 fixed |
 
 ---
 
@@ -30,7 +31,7 @@
 
 | Health | Milestone | Focus | Completion |
 |---|---|---|---|
-| ✅ In Progress | Sprint 5 — Launch Prep | UI polish done; Payments (Cashfree) core flow live; order emails pending | ~78% toward MVP |
+| ✅ In Progress | Sprint 5 — Launch Prep | Admin fixed; shipping snapshots + staff order list + emails + fulfillment view done; analytics/CI/order-history pending | ~82% toward MVP |
 
 Products backend ~95% complete with variants. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1-2 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation. Orders backend + checkout flow complete end-to-end (cart → order → confirmation, stock decrement). Backend deployed to Railway; frontend live on Vercel with the real catalog. Storefront UI polish complete (lens/lightbox zoom, breadcrumbs, section nav, unified theme carousel, loading/empty states, focus rings). Cashfree payment integration live in test mode — full purchase flow verified end-to-end (production JWT auth restored so order placement works).
 
@@ -565,5 +566,51 @@ Nothing currently blocked.
 - **Tomorrow:** Order confirmation email, exercise failure/retry paths
 
 ---
+
+<a name="2026-08-11-shipping-orders"></a>
+## 2026-08-11 (Shipping Snapshot + Order List + Emails + Fulfillment)
+
+### ✅ Completed Today
+
+**Backend**
+- **Shipping-address snapshot at checkout** — `Order` gains `shipping_*` snapshot fields (name/phone/lines/city/state/postal_code/country) so delivery info survives the user later editing/deleting the address-book entry (migration `0003_order_shipping_address_line1_and_more.py`). `POST /api/orders/` accepts optional `shipping_address_id`, validates it belongs to `request.user`, and copies the fields onto the order.
+- **Staff order-list API** — `GET /api/orders/` for delivery/fulfillment (`IsAdminUser`), folded into `OrderListCreateAPIView` so the frontend's existing `POST /orders/` URL is unchanged. `OrderSerializer` exposes a nested `shipping_address` object (`null` when absent).
+- **Order confirmation email (Resend — ADR-011)** — `email_service` + HTML/text templates (order, items, total, shipping snapshot, view link) via `EmailMultiAlternatives` over Resend SMTP; failures logged and never break the webhook. Sent once on the PAID transition in both the Cashfree webhook and the status-poll path. Config from `RESEND_API_KEY`/`RESEND_FROM_EMAIL`/`FRONTEND_URL`; locmem backend under tests. `Order.get_shipping_address()` became the single source of truth.
+- **`is_staff` surfaced** on the user profile + Google-login serializer (drives the frontend staff gate).
+- **Production admin 500 root-caused & fixed** — the `/admin/login/` 500 was `ValueError: Missing staticfiles manifest entry for 'admin/css/base.css'`. The Docker build ran `collectstatic` under `config.settings.local` (no `STORAGES` → no manifest) while runtime uses `CompressedManifestStaticFilesStorage`. Fixes: `base.py` always defines `STORAGES` with `ManifestStaticFilesStorage`; new `start.sh` runs `collectstatic` + `migrate` at start; `Dockerfile` uses `start.sh`.
+
+**Frontend**
+- **Fulfillment view** — new `/fulfillment` page (staff-only) with status filter tabs + counts and order cards (id, user, totals, status + payment badges, line items, shipping snapshot). `useOrders` hook + `getOrders` service; staff nav links in desktop header + mobile menu; non-staff see access-restricted; backend enforces `IsAdminUser`.
+- **Payment-not-completed retry state** — `OrderConfirmation` rewritten with a 20s grace period (`NOT_COMPLETED_TIMEOUT_MS = 20000`) before showing "Payment Not Completed" with "Retry Payment" via `useInitiatePayment`/`openCashfreeCheckout`; new 6-test `OrderConfirmation.test.tsx` (fake timers).
+- **Checkout sends selected address** — `Checkout.handlePay` sends `selectedAddress.id`; `createOrder`/`useCreateOrder` take a `CreateOrderPayload`; `Order` type exposes `shipping_address`.
+
+**Architecture / Learning**
+- **Split-settings manifest pitfall** — `manage.py` defaults to `config.settings.local` but `wsgi.py` uses `production`; a storage mismatch between build-time `collectstatic` and runtime static serving silently broke every `{% static %}` render in production.
+- **Railway shell ≠ traffic container** — changes made in a deployment Shell are ephemeral to that container; durable fixes must happen at image build / start time.
+- Shipping-address snapshot over a pure FK — delivery info must survive address-book edits/deletes.
+
+### 🎯 Current Focus
+
+**Feature:** Order fulfillment/delivery (shipping snapshot + order list + email + frontend view) — ✅ Complete; Payment failure/retry UI — ✅ Complete
+
+**Definition of Done progress:**
+- [x] Order stores a shipping-address snapshot at checkout
+- [x] `POST /api/orders/` accepts + validates `shipping_address_id` (ownership-checked)
+- [x] `GET /api/orders/` staff order list for delivery/fulfillment
+- [x] Order confirmation email on payment success (needs `RESEND_API_KEY` in prod)
+- [x] Fulfillment frontend view over the order-list API
+- [x] Payment-not-completed state with retry on confirmation page
+- [x] Backend (92) + frontend (108) tests passing; tsc/lint/build clean
+
+### 📌 End of Day
+
+- **Biggest achievement:** Full order lifecycle — immutable shipping snapshots, staff order list, confirmation emails, and a staff fulfillment UI — plus the production admin back online (static-manifest build fix)
+- **Overall project completion:** ~82% toward MVP
+- **Current feature:** Order fulfillment/delivery + emails — complete; remaining: order-history page/customer self-service, analytics, CI/CD
+- **Remaining blocker:** Set `RESEND_API_KEY`/`RESEND_FROM_EMAIL`/`FRONTEND_URL` on Railway for emails to send in production
+- **Tomorrow:** Push + deploy; wire analytics (GA4) / CI / remaining launch-checklist items
+
+---
+
 
 ---

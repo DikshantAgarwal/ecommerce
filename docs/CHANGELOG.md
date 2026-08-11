@@ -8,6 +8,7 @@
 
 | Version | Date | Summary |
 |---|---|---|
+| [v1.7.0](#170---2026-08-11) | 2026-08-11 | Shipping-address snapshot, staff order-list API, order confirmation email, fulfillment view, retry UI, prod admin fix |
 | [v1.6.0](#160---2026-08-10) | 2026-08-10 | Storefront UI polish — lens/lightbox zoom, breadcrumbs + section nav, unified infinite theme carousel |
 | [v1.5.0](#150---2026-08-10) | 2026-08-10 | Real-product catalog (4 themes), Cloudinary images, full production deployment |
 | [v1.4.0](#140---2026-08-10) | 2026-08-10 | Variants, homepage, listing filters, checkout flow (orders backend + pages) |
@@ -97,6 +98,52 @@
 | Tests | ❌ Not Started |
 | CI/CD | ❌ Not Started |
 | Docker | ❌ Not Started |
+
+---
+
+<a name="170---2026-08-11"></a>
+## [1.7.0] — 2026-08-11
+
+### Added
+
+- **Shipping-Address Snapshot on Orders**
+  - `Order` now stores a full `shipping_*` snapshot (name/phone/address lines/city/state/postal_code/country) captured at checkout, so delivery info survives the user later editing or deleting the address-book entry.
+  - `POST /api/orders/` accepts an optional `shipping_address_id`, validates it belongs to the requesting user, and copies its fields onto the order (migration `0003_order_shipping_address_line1_and_more.py`).
+
+- **Staff Order-List API (Fulfillment)**
+  - `GET /api/orders/` returns all orders for staff (`IsAdminUser`) for delivery/fulfillment, with items and a nested `shipping_address`. Folded into `OrderListCreateAPIView` so the existing `POST /orders/` URL is unchanged.
+  - `OrderSerializer` exposes `shipping_address` (object or `null`).
+
+- **Order Confirmation Email (Resend — ADR-011)**
+  - New `email_service` with HTML + text templates (order number, items, total, shipping snapshot, view-order link) sent via `EmailMultiAlternatives` over Resend SMTP; failures are logged and never break the payment webhook.
+  - Fired once when an order transitions to `paid` — in both the Cashfree webhook and the status-poll path.
+  - `Order.get_shipping_address()` extracted as the single source of truth (shared with `OrderSerializer`); config from `RESEND_API_KEY`/`RESEND_FROM_EMAIL`/`FRONTEND_URL`; locmem backend under test settings.
+
+- **Fulfillment Frontend View**
+  - New `/fulfillment` page (staff-only, `IsAdminUser`) with status filter tabs + counts, and order cards showing ID, user, totals, status + payment badges, line items, and the shipping snapshot.
+  - `useOrders` hook + `getOrders` service; staff nav links in the desktop header and mobile menu; `is_staff` surfaced on the user profile/Google-login serializer; non-staff see an access-restricted state.
+
+### Changed
+
+- **OrderConfirmation payment-not-completed state** — a 20s grace window (`NOT_COMPLETED_TIMEOUT_MS = 20000`) before showing "Payment Not Completed" with a "Retry Payment" action via `useInitiatePayment`/`openCashfreeCheckout`; new 6-test `OrderConfirmation.test.tsx`.
+- **Checkout sends the selected address** — `Checkout.handlePay` sends `selectedAddress.id`; `createOrder`/`useCreateOrder` accept a `CreateOrderPayload`; `Order` type gains `shipping_address`.
+- **Production admin 500 fixed** — root cause was `ValueError: Missing staticfiles manifest entry for 'admin/css/base.css'`. The Docker build ran `collectstatic` under `local` settings (no `STORAGES` → no manifest) while runtime uses `CompressedManifestStaticFilesStorage`. `base.py` now always defines `STORAGES` with `ManifestStaticFilesStorage`; the Cloudinary block only overrides `default` (media) storage; new `start.sh` runs `collectstatic` + `migrate` at start; `Dockerfile` uses `start.sh`.
+- **Tests** — backend 92 passing (order snapshot + list + 4 email tests), frontend 108 passing (OrderConfirmation, Fulfillment, order.service); `tsc -b`, lint, build clean.
+
+### Project Status at v1.7.0
+
+| Area | Status |
+|---|---|
+| Products backend (variants) | ✅ |
+| Catalog with real images | ✅ |
+| Cart | ✅ |
+| Orders / Checkout | ✅ |
+| Shipping-address snapshot + order list | ✅ |
+| Order confirmation email | ✅ (needs `RESEND_API_KEY` in prod) |
+| Fulfillment frontend view | ✅ |
+| Production deployment (Railway + Vercel) | ✅ |
+| Prod admin (static manifest fix) | ✅ |
+| Payments (Cashfree) — core + retry/cancel | ✅ |
 
 ---
 
