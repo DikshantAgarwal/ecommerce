@@ -1,8 +1,12 @@
 import apiClient from '../api/client';
 import type { Order } from '../types';
 
-export async function createOrder(): Promise<Order> {
-  const { data } = await apiClient.post<Order>('/orders/');
+export interface CreateOrderPayload {
+  shipping_address_id: string;
+}
+
+export async function createOrder(payload: CreateOrderPayload): Promise<Order> {
+  const { data } = await apiClient.post<Order>('/orders/', payload);
   return data;
 }
 

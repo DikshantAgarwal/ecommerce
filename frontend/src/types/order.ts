@@ -11,6 +11,17 @@ export interface OrderItem {
   size: string;
 }
 
+export interface OrderShippingAddress {
+  name: string;
+  phone: string;
+  address_line1: string;
+  address_line2: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+}
+
 export interface Order {
   id: string;
   user: string;
@@ -18,6 +29,7 @@ export interface Order {
   payment_status: 'unpaid' | 'pending' | 'paid' | 'failed';
   total: string;
   items: OrderItem[];
+  shipping_address: OrderShippingAddress | null;
   created_at: string;
   updated_at: string;
 }

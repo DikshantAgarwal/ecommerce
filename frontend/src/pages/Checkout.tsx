@@ -16,7 +16,8 @@ export default function Checkout() {
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
   function handlePay() {
-    placeOrder(undefined, {
+    if (!selectedAddress) return;
+    placeOrder({ shipping_address_id: selectedAddress.id }, {
       onSuccess: (order) => {
         const returnUrl = `${window.location.origin}/orders/${order.id}/confirmation`;
         initiate(
