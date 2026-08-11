@@ -10,8 +10,8 @@ RUN pip install --no-cache-dir -r requirements/production.txt
 
 COPY backend/ .
 
-RUN python manage.py collectstatic --noinput
+RUN chmod +x start.sh && python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-CMD gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 120
+CMD ./start.sh
