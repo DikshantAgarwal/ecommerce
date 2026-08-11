@@ -24,6 +24,7 @@
 | [2026-08-11](#2026-08-11-payment-gateway) | Payment gateway decision — Cashfree over Razorpay (support + pricing); docs updated across ADR, roadmap, API, deploy, checklist |
 | [2026-08-11](#2026-08-11-cashfree-live) | Cashfree integration live — order placement unblocked (production JWT auth fix), full purchase flow smoke-tested |
 | [2026-08-11](#2026-08-11-shipping-orders) | Shipping-address snapshot, staff order list, order confirmation email, fulfillment view, retry UI, admin 500 fixed |
+| [2026-08-11](#2026-08-11-resend-api) | Order confirmation email moved SMTP→Resend HTTPS API (Railway blocks SMTP 587); staff-status bootstrap fix |
 
 ---
 
@@ -609,6 +610,45 @@ Nothing currently blocked.
 - **Current feature:** Order fulfillment/delivery + emails — complete; remaining: order-history page/customer self-service, analytics, CI/CD
 - **Remaining blocker:** Set `RESEND_API_KEY`/`RESEND_FROM_EMAIL`/`FRONTEND_URL` on Railway for emails to send in production
 - **Tomorrow:** Push + deploy; wire analytics (GA4) / CI / remaining launch-checklist items
+
+---
+
+<a name="2026-08-11-resend-api"></a>
+## 2026-08-11 (Order Email SMTP→API Fix + Staff Bootstrap)
+
+### ✅ Completed Today
+
+**Backend — email delivery root cause + fix**
+- **Root-caused no-email bug:** production order-confirmation emails weren't arriving. Confirmed via socket test that Railway's container egress firewall blocks outbound **SMTP port 587** (`port 587: timed out`), so the SMTP path (`smtp.resend.com:587`) could never connect in production.
+- **Switched to Resend HTTPS API** — `apps/orders/email_service.py` now `requests.post`s to `https://api.resend.com/emails` (port 443) with `Authorization: Bearer {RESEND_API_KEY}`, timeout 15, returns bool, logs send errors. Removed SMTP settings from `config/settings/base.py`; added dedicated `RESEND_API_KEY` setting; deduplicated `FRONTEND_URL`; dropped `EMAIL_BACKEND=locmem` from `config/settings/test.py`.
+- **Template money formatting** — text + HTML templates use `|floatformat:2` on item totals and order total (was rendering `₹100.0` instead of `₹100.00`).
+- **Tests** — webhook/status tests mock `send_order_confirmation_email`; added `OrderEmailServiceTests` (payload shape/to/auth header/no-key short-circuit/API error handling/shipping snapshot in HTML). Full backend suite: **95 tests OK**.
+
+**Frontend**
+- **Staff-status bootstrap fix** — sessions persisted before `is_staff` was added kept a stale user in the Zustand store, hiding the staff Fulfillment link until re-login/refresh. New `useRefreshProfile` hook fetches `GET /auth/me/` on boot (when authenticated) and updates the auth store, so `user.is_staff` (and thus the Fulfillment entry + gate) is always current. Wired into `RootLayout`. `tsc`/lint/build clean; 108 frontend tests passing.
+
+**Documentation**
+- `docs/handbook/06_Deployment_Guide.md` Resend section updated: API-based setup, the SMTP 587 pitfall on Railway, and how to verify delivery from Railway Shell.
+
+### 🎯 Current Focus
+
+**Feature:** Order confirmation emails — ✅ working via Resend HTTPS API (committed locally, **not yet pushed/deployed**)
+
+**Definition of Done progress:**
+- [x] Root cause: Railway egress firewall blocks SMTP 587
+- [x] Email rewritten to Resend HTTPS API (port 443) with Bearer auth
+- [x] Money formatting fixed (`floatformat:2`)
+- [x] Backend (95) + frontend (108) tests passing; tsc/lint/build clean
+- [x] `RESEND_API_KEY` confirmed set on Railway
+- [ ] Push `master` + verify a live email from production after deploy
+
+### 📌 End of Day
+
+- **Biggest achievement:** Diagnosed why paid orders produced no email (Railway blocks SMTP 587) and switched delivery to Resend's HTTPS API, plus fixed stale staff status so the Fulfillment UI shows without re-login
+- **Overall project completion:** ~82% toward MVP
+- **Current feature:** Order email fix — code complete, needs push + production verification
+- **Blocked:** Cannot `git push` from this environment (no GitHub credentials) — user must push locally; stack of 4 commits (`03fdfe5`, `03875ed`, `0905399`, staff-bootstrap) pending push
+- **Next:** User runs `git push origin master` → Railway auto-deploys → verify email from Railway Shell → optionally add order-status PATCH so staff can move orders through fulfillment
 
 ---
 
