@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { useCart } from '../hooks/useCart';
 import { useCreateOrder } from '../hooks/useOrder';
 import { useInitiatePayment } from '../hooks/usePayment';
 import { openCashfreeCheckout } from '../lib/cashfree';
+import { ShippingAddressForm } from '../components';
+import type { Address } from '../types/address';
 import { ShoppingCart } from 'lucide-react';
 import { formatPrice } from '../utils/format';
 
@@ -10,6 +13,7 @@ export default function Checkout() {
   const { data: cart, isLoading, error } = useCart();
   const { mutate: placeOrder, isPending: isPlacing } = useCreateOrder();
   const { mutate: initiate, isPending: isInitiating } = useInitiatePayment();
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
   function handlePay() {
     placeOrder(undefined, {
@@ -76,7 +80,10 @@ export default function Checkout() {
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="mb-8 text-2xl font-bold text-neutral-900">Checkout</h1>
 
-      <div className="space-y-4">
+      <ShippingAddressForm onAddressChange={setSelectedAddress} />
+
+      <div className="mt-8 space-y-4">
+        <h2 className="text-lg font-semibold text-neutral-900">Order Summary</h2>
         {cart.items.map((item) => {
           const v = item.variant_detail;
           const itemPrice = v.display_price;
@@ -109,10 +116,10 @@ export default function Checkout() {
         </div>
         <button
           onClick={handlePay}
-          disabled={isPending}
+          disabled={isPending || !selectedAddress}
           className="mt-4 h-12 w-full rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 disabled:hover:bg-neutral-200"
         >
-          {isPending ? 'Redirecting to payment...' : 'Proceed to Pay'}
+          {isPending ? 'Redirecting to payment...' : selectedAddress ? 'Proceed to Pay' : 'Select shipping address to continue'}
         </button>
         <Link
           to="/cart"

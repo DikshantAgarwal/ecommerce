@@ -1,4 +1,46 @@
+import re
+
 from rest_framework import serializers
+
+from .models import Address
+
+
+INDIAN_PINCODE_RE = re.compile(r'^\d{6}$')
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = [
+            'id', 'name', 'phone', 'address_line1', 'address_line2',
+            'city', 'state', 'postal_code', 'country', 'is_default',
+        ]
+        read_only_fields = ['id']
+
+    def validate_phone(self, value):
+        if len(value.replace('+', '')) < 10:
+            raise serializers.ValidationError("Phone number must be at least 10 digits.")
+        return value
+
+    def validate_postal_code(self, value):
+        if not INDIAN_PINCODE_RE.match(value):
+            raise serializers.ValidationError("Postal code must be a 6-digit PIN code.")
+        return value
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        if not Address.objects.filter(user=user).exists():
+            validated_data['is_default'] = True
+        return Address.objects.create(user=user, **validated_data)
+
+    def update(self, instance, validated_data):
+        if validated_data.get('is_default'):
+            Address.objects.filter(
+                user=instance.user
+            ).exclude(pk=instance.pk).update(is_default=False)
+        elif not Address.objects.filter(user=instance.user, is_default=True).exclude(pk=instance.pk).exists():
+            validated_data['is_default'] = True
+        return super().update(instance, validated_data)
 
 
 class GoogleSocialLoginSerializer(serializers.Serializer):

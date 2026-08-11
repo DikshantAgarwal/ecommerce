@@ -17,3 +17,4 @@ export { default as MobileFilterDrawer } from './MobileFilterDrawer';
 export { default as ProductImageZoom } from './ProductImageZoom';
 export { default as ThemeCarousel } from './ThemeCarousel';
 export { default as MobileCategoryNav } from './MobileCategoryNav';
+export { default as ShippingAddressForm } from './ShippingAddressForm';

@@ -22,6 +22,7 @@
 | [2026-08-10](#2026-08-10-ui-polish) | UI polish complete — lens/lightbox zoom, breadcrumb + section nav, unified theme carousel, logo, states, focus rings |
 | [2026-08-11](#2026-08-11-storefront-ux-fixes) | ₹ pricing, edit-carousel + editorial hero, ₹-aware cart, logout, compact hero, dedupe filters, carousel perf, scroll-to-top |
 | [2026-08-11](#2026-08-11-payment-gateway) | Payment gateway decision — Cashfree over Razorpay (support + pricing); docs updated across ADR, roadmap, API, deploy, checklist |
+| [2026-08-11](#2026-08-11-cashfree-live) | Cashfree integration live — order placement unblocked (production JWT auth fix), full purchase flow smoke-tested |
 
 ---
 
@@ -29,9 +30,9 @@
 
 | Health | Milestone | Focus | Completion |
 |---|---|---|---|
-| ✅ In Progress | Sprint 5 — Launch Prep | UI polish done; Payments (Cashfree) + order emails pending | ~72% toward MVP |
+| ✅ In Progress | Sprint 5 — Launch Prep | UI polish done; Payments (Cashfree) core flow live; order emails pending | ~78% toward MVP |
 
-Products backend ~95% complete with variants. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1-2 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation. Orders backend + checkout flow complete end-to-end (cart → order → confirmation, stock decrement). Backend deployed to Railway; frontend live on Vercel with the real catalog. Storefront UI polish complete (lens/lightbox zoom, breadcrumbs, section nav, unified theme carousel, loading/empty states, focus rings).
+Products backend ~95% complete with variants. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1-2 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation. Orders backend + checkout flow complete end-to-end (cart → order → confirmation, stock decrement). Backend deployed to Railway; frontend live on Vercel with the real catalog. Storefront UI polish complete (lens/lightbox zoom, breadcrumbs, section nav, unified theme carousel, loading/empty states, focus rings). Cashfree payment integration live in test mode — full purchase flow verified end-to-end (production JWT auth restored so order placement works).
 
 ---
 
@@ -522,6 +523,46 @@ Nothing currently blocked.
 - **Current feature:** Payments (Cashfree)
 - **Remaining blocker:** Payments not started (0%), order confirmation emails pending
 - **Tomorrow:** Cashfree integration (backend + frontend), order confirmation email, smoke test full purchase flow
+
+---
+
+<a name="2026-08-11-cashfree-live"></a>
+## 2026-08-11 (Cashfree Live + Order Flow Fixes)
+
+### ✅ Completed Today
+
+**Backend**
+- **Cashfree integration (test mode)** — `apps/payments` with `create-order`, signature-verified webhook, and status endpoints; `Order.payment_status` + `cashfree_order_id`; `User.phone`; 16 new backend payment tests. Frontend: Cashfree v3 SDK checkout + confirmation polling (`usePaymentStatus`). Env wired via `CASHFREE_*`/`VITE_CASHFREE_APP_ID`.
+- **Production JWT auth restored** — root-cause fix for checkout 403. `config/settings/production.py` redefined `REST_FRAMEWORK` outright, dropping `DEFAULT_AUTHENTICATION_CLASSES` (SimpleJWT) inherited from `base.py`. Every `IsAuthenticated` view (orders, payments, `auth/me`) ran anonymous → 403 `"Authentication credentials were not provided."` Cart kept working only because it's `AllowAny`. Fix: `**REST_FRAMEWORK` spread so the JSON renderer is restricted without wiping JWT auth. Verified production settings load with `JWTAuthentication`.
+
+**Frontend**
+- **JWT refresh on 403** — axios response interceptor now refreshes on both 401 and 403 (SimpleJWT returns 403 with no `WWW-Authenticate`), retrying once with the new token; single-flight refresh queue.
+- **Empty-cart flash during checkout** — order creation deletes cart items and invalidates the cart query, so checkout briefly re-rendered empty while payment was still initiating. `isPending` now covers payment initiation (`isPlacing || isInitiating`) and the empty-cart screen is gated behind `&& !isPending`.
+
+**Testing / Verification**
+- **Full purchase flow smoke-tested in production** — user confirmed success flow works end-to-end (cart → order → Cashfree payment → confirmation).
+- Backend payment tests: 16 passed. Frontend: 74 tests passed (17 files); `tsc -b` clean, lint clean.
+
+### 🎯 Current Focus
+
+**Feature:** Payments (Cashfree) — ✅ Core flow live (test mode)
+
+**Definition of Done progress:**
+- [x] Payment gateway decision (Cashfree over Razorpay)
+- [x] Plan/docs updated for Cashfree
+- [x] Cashfree backend integration (order creation, webhook verification, status)
+- [x] Cashfree frontend checkout integration (SDK checkout, response handling)
+- [x] Payment success flow smoke-tested (test mode)
+- [ ] Payment failure/retry flows
+- [ ] Order confirmation email on payment success
+
+### 📌 End of Day
+
+- **Biggest achievement:** Order placement unblocked — production was silently running without JWT auth, and the fix let a real purchase go through the full Cashfree flow end-to-end
+- **Overall project completion:** ~78% toward MVP
+- **Current feature:** Payments (Cashfree) — core flow live
+- **Remaining blocker:** Order confirmation email pending; payment failure/retry UI not exercised
+- **Tomorrow:** Order confirmation email, exercise failure/retry paths
 
 ---
 

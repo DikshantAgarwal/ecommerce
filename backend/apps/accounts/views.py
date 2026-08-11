@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from rest_framework import status
@@ -7,8 +8,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import User
-from .serializers import GoogleSocialLoginSerializer, UserSerializer, UserUpdateSerializer
+from .models import Address, User
+from .serializers import (
+    AddressSerializer,
+    GoogleSocialLoginSerializer,
+    UserSerializer,
+    UserUpdateSerializer,
+)
 
 
 class GoogleLoginAPIView(APIView):
@@ -115,3 +121,54 @@ class UserProfileAPIView(APIView):
             'avatar': user.avatar,
         })
         return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+
+class AddressListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        addresses = Address.objects.filter(user=request.user)
+        serializer = AddressSerializer(addresses, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = AddressSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class AddressDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, request, pk):
+        return get_object_or_404(Address, pk=pk, user=request.user)
+
+    def put(self, request, pk):
+        address = self.get_object(request, pk)
+        serializer = AddressSerializer(address, data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        address = self.get_object(request, pk)
+        if address.is_default:
+            next_default = Address.objects.filter(user=request.user).exclude(pk=address.pk).first()
+            if next_default:
+                next_default.is_default = True
+                next_default.save(update_fields=['is_default'])
+        address.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AddressSetDefaultAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        address = get_object_or_404(Address, pk=pk, user=request.user)
+        Address.objects.filter(user=request.user).exclude(pk=address.pk).update(is_default=False)
+        address.is_default = True
+        address.save(update_fields=['is_default'])
+        serializer = AddressSerializer(address)
+        return Response(serializer.data, status=status.HTTP_200_OK)
