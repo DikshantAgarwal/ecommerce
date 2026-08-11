@@ -1,16 +1,45 @@
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useOrder } from '../hooks/useOrder';
-import { usePaymentStatus } from '../hooks/usePayment';
+import { useInitiatePayment, usePaymentStatus } from '../hooks/usePayment';
+import { openCashfreeCheckout } from '../lib/cashfree';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { formatPrice } from '../utils/format';
+
+const NOT_COMPLETED_TIMEOUT_MS = 20000;
 
 export default function OrderConfirmation() {
   const { id } = useParams<{ id: string }>();
   const { data: order, isLoading, error } = useOrder(id);
+  const { mutate: initiate, isPending: isInitiating } = useInitiatePayment();
+
   const needsPolling = !!order && order.payment_status !== 'paid' && order.payment_status !== 'failed';
   const { data: payment } = usePaymentStatus(id, needsPolling);
 
   const paymentStatus = payment?.payment_status ?? order?.payment_status ?? 'unpaid';
+  const isTerminal = paymentStatus === 'paid' || paymentStatus === 'failed';
+
+  const [showNotCompleted, setShowNotCompleted] = useState(false);
+
+  useEffect(() => {
+    if (isTerminal) return;
+    const timer = setTimeout(() => setShowNotCompleted(true), NOT_COMPLETED_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [isTerminal]);
+
+  function handleRetryPayment() {
+    if (!order) return;
+    setShowNotCompleted(false);
+    const returnUrl = `${window.location.origin}/orders/${order.id}/confirmation`;
+    initiate(
+      { orderId: order.id, returnUrl },
+      {
+        onSuccess: async (payment) => {
+          await openCashfreeCheckout(payment.payment_session_id);
+        },
+      },
+    );
+  }
 
   if (isLoading) {
     return (
@@ -37,23 +66,44 @@ export default function OrderConfirmation() {
 
   const isPaid = paymentStatus === 'paid';
   const isFailed = paymentStatus === 'failed';
+  const isNotCompleted = !isTerminal && showNotCompleted;
+
+  let statusTitle = 'Awaiting Payment...';
+  let statusText = 'Your payment is being processed. This page will refresh automatically.';
+  let StatusIcon = Loader2;
+
+  if (isPaid) {
+    statusTitle = 'Payment Successful!';
+    statusText = 'Thank you for your purchase. Your order has been placed successfully.';
+    StatusIcon = CheckCircle;
+  } else if (isFailed) {
+    statusTitle = 'Payment Failed';
+    statusText = 'Your payment did not go through. Please try again or contact support.';
+    StatusIcon = XCircle;
+  } else if (isNotCompleted) {
+    statusTitle = 'Payment Not Completed';
+    statusText =
+      'Your payment was not completed, and no amount was charged. You can retry the payment for this order.';
+    StatusIcon = XCircle;
+  }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="text-center">
-        {isPaid && <CheckCircle className="mx-auto size-16 text-primary-900" aria-hidden="true" />}
-        {isFailed && <XCircle className="mx-auto size-16 text-red-600" aria-hidden="true" />}
-        {!isPaid && !isFailed && <Loader2 className="mx-auto size-16 animate-spin text-primary-900" aria-hidden="true" />}
-        <h1 className="mt-4 text-2xl font-bold text-neutral-900">
-          {isPaid ? 'Payment Successful!' : isFailed ? 'Payment Failed' : 'Awaiting Payment...'}
-        </h1>
-        <p className="mt-2 text-neutral-600">
-          {isPaid
-            ? 'Thank you for your purchase. Your order has been placed successfully.'
-            : isFailed
-              ? 'Your payment did not go through. Please try again or contact support.'
-              : 'Your payment is being processed. This page will refresh automatically.'}
-        </p>
+        <div
+          className={`mx-auto flex size-16 items-center justify-center rounded-full ${
+            isPaid || isNotCompleted ? 'bg-primary-100' : isFailed ? 'bg-red-100' : 'bg-neutral-100'
+          }`}
+        >
+          <StatusIcon
+            className={`size-9 ${
+              isPaid || isNotCompleted ? 'text-primary-900' : isFailed ? 'text-red-600' : 'animate-spin text-primary-900'
+            }`}
+            aria-hidden="true"
+          />
+        </div>
+        <h1 className="mt-4 text-2xl font-bold text-neutral-900">{statusTitle}</h1>
+        <p className="mt-2 text-neutral-600">{statusText}</p>
         <p className="mt-1 text-sm text-neutral-500">
           Order #{order.id.slice(0, 8).toUpperCase()}
         </p>
@@ -91,16 +141,30 @@ export default function OrderConfirmation() {
         </p>
       </div>
 
-      <div className="mt-8 text-center">
-        {isFailed ? (
-          <Link to="/cart" className="inline-flex h-12 items-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700">
-            Retry Checkout
-          </Link>
+      <div className="mt-8 flex flex-col items-center gap-3">
+        {isFailed || isNotCompleted ? (
+          <button
+            type="button"
+            onClick={handleRetryPayment}
+            disabled={isInitiating}
+            className="inline-flex h-12 w-full max-w-xs items-center justify-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400"
+          >
+            {isInitiating ? 'Redirecting to payment...' : 'Retry Payment'}
+          </button>
         ) : (
-          <Link to="/" className="inline-flex h-12 items-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700">
+          <Link
+            to="/"
+            className="inline-flex h-12 w-full max-w-xs items-center justify-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
+          >
             Continue Shopping
           </Link>
         )}
+        <Link
+          to="/"
+          className="text-sm text-neutral-600 transition-colors hover:text-primary-900"
+        >
+          Back to home
+        </Link>
       </div>
     </div>
   );
