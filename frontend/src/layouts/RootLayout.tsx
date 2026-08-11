@@ -4,6 +4,7 @@ import { User, Menu, X, LogOut, ClipboardList } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
 import { CartIcon, Footer, MobileCategoryNav } from '../components';
 import { NAV_LINKS, isLinkActive } from '../utils/nav';
+import { useRefreshProfile } from '../hooks/useRefreshProfile';
 
 export default function RootLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -12,6 +13,8 @@ export default function RootLayout() {
   const { pathname, search } = useLocation();
   const navigate = useNavigate();
   const section = new URLSearchParams(search).get('section');
+
+  useRefreshProfile();
 
   useEffect(() => {
     window.scrollTo(0, 0);
