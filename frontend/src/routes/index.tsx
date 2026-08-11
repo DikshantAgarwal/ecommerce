@@ -7,6 +7,7 @@ import Cart from '../pages/Cart';
 import Checkout from '../pages/Checkout';
 import OrderConfirmation from '../pages/OrderConfirmation';
 import Fulfillment from '../pages/Fulfillment';
+import OrderHistory from '../pages/OrderHistory';
 import Products from '../pages/Products';
 import ProtectedRoute from '../components/ProtectedRoute';
 
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           { path: 'checkout', element: <Checkout /> },
+          { path: 'orders', element: <OrderHistory /> },
           { path: 'orders/:id/confirmation', element: <OrderConfirmation /> },
           { path: 'fulfillment', element: <Fulfillment /> },
         ],

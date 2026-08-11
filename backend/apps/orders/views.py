@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from apps.cart.views import get_cart
 from apps.orders.models import Order, OrderItem
-from apps.orders.serializers import OrderSerializer
+from apps.orders.serializers import OrderSerializer, OrderStatusUpdateSerializer
 
 
 class OrderListCreateAPIView(APIView):
@@ -99,4 +99,35 @@ class OrderDetailAPIView(APIView):
     def get(self, request, pk):
         order = get_object_or_404(Order, pk=pk, user=request.user)
         serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request, pk):
+        order = get_object_or_404(Order, pk=pk)
+
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {'detail': 'You do not have permission to update this order.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = OrderStatusUpdateSerializer(
+            order,
+            data=request.data,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        response_serializer = OrderSerializer(order)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+
+class MyOrdersAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        orders = (
+            Order.objects.filter(user=request.user)
+            .prefetch_related('items')
+        )
+        serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

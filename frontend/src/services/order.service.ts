@@ -19,3 +19,13 @@ export async function getOrders(): Promise<Order[]> {
   const { data } = await apiClient.get<Order[]>('/orders/');
   return data;
 }
+
+export async function getMyOrders(): Promise<Order[]> {
+  const { data } = await apiClient.get<Order[]>('/orders/mine/');
+  return data;
+}
+
+export async function updateOrderStatus(id: string, status: Order['status']): Promise<Order> {
+  const { data } = await apiClient.patch<Order>(`/orders/${id}/`, { status });
+  return data;
+}

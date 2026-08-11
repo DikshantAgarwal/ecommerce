@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
-import { useOrders } from '../hooks/useOrder';
+import { useOrders, useUpdateOrderStatus } from '../hooks/useOrder';
 import { useAuthStore } from '../store/auth.store';
 import type { Order } from '../types';
 import { Package, PackageCheck, PackageX } from 'lucide-react';
@@ -22,10 +22,23 @@ const STATUS_STYLES: Record<Order['status'], string> = {
   cancelled: 'bg-red-50 text-red-600',
 };
 
+const NEXT_STATUS: Partial<Record<Order['status'], Order['status']>> = {
+  pending: 'confirmed',
+  confirmed: 'shipped',
+  shipped: 'delivered',
+};
+
+const NEXT_ACTION: Partial<Record<Order['status'], string>> = {
+  pending: 'Confirm order',
+  confirmed: 'Mark shipped',
+  shipped: 'Mark delivered',
+};
+
 type StatusFilter = 'all' | Order['status'];
 
 export default function Fulfillment() {
   const { data: orders, isLoading, error } = useOrders();
+  const updateStatus = useUpdateOrderStatus();
   const user = useAuthStore((s) => s.user);
   const [filter, setFilter] = useState<StatusFilter>('all');
 
@@ -34,6 +47,12 @@ export default function Fulfillment() {
     if (filter === 'all') return orders;
     return orders.filter((o) => o.status === filter);
   }, [orders, filter]);
+
+  function handleAdvance(order: Order) {
+    const next = NEXT_STATUS[order.status];
+    if (!next) return;
+    updateStatus.mutate({ id: order.id, status: next });
+  }
 
   if (user && !user.is_staff) {
     return (
@@ -177,6 +196,23 @@ export default function Fulfillment() {
                     <br />
                     {order.shipping_address.country}
                   </p>
+                </div>
+              )}
+
+              {NEXT_STATUS[order.status] && (
+                <div className="mt-4 border-t border-neutral-100 pt-3">
+                  <button
+                    type="button"
+                    onClick={() => handleAdvance(order)}
+                    disabled={updateStatus.isPending}
+                    className="inline-flex items-center gap-2 rounded-lg bg-primary-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 disabled:opacity-60"
+                  >
+                    <Package
+                      className={`size-4 ${updateStatus.isPending ? 'animate-pulse' : ''}`}
+                      aria-hidden="true"
+                    />
+                    {updateStatus.isPending ? 'Updating…' : NEXT_ACTION[order.status]}
+                  </button>
                 </div>
               )}
             </li>

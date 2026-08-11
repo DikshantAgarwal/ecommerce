@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
-import { User, Menu, X, LogOut, ClipboardList } from 'lucide-react';
+import { User, Menu, X, LogOut, ClipboardList, ShoppingBag } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
 import { CartIcon, Footer, MobileCategoryNav } from '../components';
 import { NAV_LINKS, isLinkActive } from '../utils/nav';
@@ -67,6 +67,13 @@ export default function RootLayout() {
                     <ClipboardList className="size-6" />
                   </Link>
                 )}
+                <Link
+                  to="/orders"
+                  className="flex items-center gap-1.5 p-2 text-neutral-600 transition-colors duration-200 hover:text-primary-900"
+                  aria-label="Orders"
+                >
+                  <ShoppingBag className="size-6" />
+                </Link>
                 <Link to="/" className="p-2 text-neutral-600 transition-colors duration-200 hover:text-primary-900" aria-label="Profile">
                   {user.avatar ? (
                     <img src={user.avatar} alt="" className="size-6 rounded-full" />
@@ -150,13 +157,21 @@ export default function RootLayout() {
                     <Link
                       to="/fulfillment"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="mb-6 flex items-center gap-3 text-base font-medium text-neutral-900 transition-colors hover:text-primary-900"
+                      className="mb-4 flex items-center gap-2.5 text-base font-medium text-neutral-900 transition-colors hover:text-primary-900"
                     >
-                      <ClipboardList className="size-5" aria-hidden="true" />
+                      <ClipboardList className="size-6 align-middle" aria-hidden="true" />
                       Fulfillment
                     </Link>
                   )}
-                  <div className="flex size-10 items-center justify-center rounded-full bg-neutral-100 text-sm font-medium text-neutral-600">
+                  <Link
+                    to="/orders"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="mb-4 flex items-center gap-2.5 text-base font-medium text-neutral-900 transition-colors hover:text-primary-900"
+                  >
+                    <ShoppingBag className="size-5 align-middle" aria-hidden="true" />
+                    Orders
+                  </Link>
+                  <div className="flex size-8 items-center justify-center rounded-full bg-neutral-100 text-sm font-medium text-neutral-600">
                     {user.full_name.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -166,7 +181,7 @@ export default function RootLayout() {
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:text-primary-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
+                    className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-neutral-600 transition-colors hover:text-primary-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
                   >
                     <LogOut className="size-4" />
                     Log out

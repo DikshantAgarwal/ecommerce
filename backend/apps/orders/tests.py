@@ -218,6 +218,103 @@ class OrderDetailAPIViewTests(OrderAPITestBase):
         self.assertEqual(response.data['id'], order_id)
         self.assertEqual(response.data['shipping_address']['city'], 'Bengaluru')
 
+
+class OrderStatusUpdateAPIViewTests(OrderAPITestBase):
+    def setUp(self):
+        super().setUp()
+        self.add_cart_item(quantity=1)
+        self.client.force_authenticate(user=self.user)
+        create_response = self.client.post('/api/orders/', format='json')
+        self.order_id = create_response.data['id']
+        self.url = f'/api/orders/{self.order_id}/'
+
+    def test_non_staff_cannot_update_status(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(
+            self.url,
+            {'status': 'shipped'},
+            format='json',
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_anonymous_cannot_update_status(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.patch(
+            self.url,
+            {'status': 'shipped'},
+            format='json',
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_staff_updates_status(self):
+        self.client.force_authenticate(user=self.staff)
+        response = self.client.patch(
+            self.url,
+            {'status': 'shipped'},
+            format='json',
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['status'], 'shipped')
+        order = Order.objects.get(pk=self.order_id)
+        self.assertEqual(order.status, 'shipped')
+
+    def test_staff_update_rejects_invalid_status(self):
+        self.client.force_authenticate(user=self.staff)
+        response = self.client.patch(
+            self.url,
+            {'status': 'not-a-status'},
+            format='json',
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_staff_update_requires_status(self):
+        self.client.force_authenticate(user=self.staff)
+        response = self.client.patch(self.url, {}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class MyOrdersAPIViewTests(OrderAPITestBase):
+    def setUp(self):
+        super().setUp()
+        self.url = '/api/orders/mine/'
+
+    def test_requires_authentication(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_returns_only_own_orders(self):
+        self.add_cart_item(quantity=1)
+        self.client.force_authenticate(user=self.user)
+        create_response = self.client.post(
+            '/api/orders/',
+            {'shipping_address_id': self.address.id},
+            format='json',
+        )
+        self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+        created_id = create_response.data['id']
+
+        other = User.objects.create_user(
+            email='other@example.com',
+            full_name='Other User',
+            password='testpass123',
+        )
+        self.client.force_authenticate(user=other)
+        other_order = Order.objects.create(user=other, total=50.00)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        ids = [order['id'] for order in response.data]
+        self.assertEqual(len(ids), 1)
+        self.assertNotIn(created_id, ids)
+        self.assertIn(str(other_order.id), ids)
+
+    def test_empty_when_no_orders(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, [])
+
 from unittest import mock
 
 from django.test import TestCase, override_settings

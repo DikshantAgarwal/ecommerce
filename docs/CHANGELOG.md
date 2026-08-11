@@ -10,6 +10,7 @@
 |---|---|---|
 | [v1.7.0](#170---2026-08-11) | 2026-08-11 | Shipping-address snapshot, staff order-list API, order confirmation email, fulfillment view, retry UI, prod admin fix |
 | [v1.7.0](#170---2026-08-11) | 2026-08-11 | Shipping-address snapshot at checkout, staff order-list API, payment-not-completed retry UI, prod admin 500 fix |
+| [v1.7.1](#171---2026-08-11) | 2026-08-11 | Order-status updates on fulfillment (backend PATCH + frontend action buttons), customer order-history page |
 | [v1.6.0](#160---2026-08-10) | 2026-08-10 | Storefront UI polish — lens/lightbox zoom, breadcrumbs + section nav, unified infinite theme carousel |
 | [v1.5.0](#150---2026-08-10) | 2026-08-10 | Real-product catalog (4 themes), Cloudinary images, full production deployment |
 | [v1.4.0](#140---2026-08-10) | 2026-08-10 | Variants, homepage, listing filters, checkout flow (orders backend + pages) |

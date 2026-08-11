@@ -25,6 +25,8 @@
 | [2026-08-11](#2026-08-11-cashfree-live) | Cashfree integration live — order placement unblocked (production JWT auth fix), full purchase flow smoke-tested |
 | [2026-08-11](#2026-08-11-shipping-orders) | Shipping-address snapshot, staff order list, order confirmation email, fulfillment view, retry UI, admin 500 fixed |
 | [2026-08-11](#2026-08-11-resend-api) | Order confirmation email moved SMTP→Resend HTTPS API (Railway blocks SMTP 587); staff-status bootstrap fix |
+| [2026-08-11](#2026-08-11-fulfillment-status) | Order-status updates on fulfillment — backend PATCH /api/orders/:id/ + frontend action buttons (Pending→Confirmed→Shipped→Delivered) |
+| [2026-08-11](#2026-08-11-order-history) | Customer order-history page — authenticated users can view their own past orders over GET /api/orders/mine/ |
 | [2026-08-11](#2026-08-11-shipping-orders) | Shipping-address snapshot at checkout, staff order-list API, admin 500 fixed, payment-not-completed retry UI |
 
 ---

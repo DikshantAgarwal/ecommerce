@@ -50,3 +50,15 @@ class OrderSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated and value.user != request.user:
             raise serializers.ValidationError("This address does not belong to you.")
         return value
+
+
+class OrderStatusUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['status']
+        extra_kwargs = {
+            'status': {
+                'required': True,
+                'help_text': 'New fulfillment status for the order.',
+            },
+        }

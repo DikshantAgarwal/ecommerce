@@ -7,9 +7,10 @@ import { useAuthStore } from '../../store/auth.store';
 
 vi.mock('../../hooks/useOrder', () => ({
   useOrders: vi.fn(),
+  useUpdateOrderStatus: vi.fn(),
 }));
 
-import { useOrders } from '../../hooks/useOrder';
+import { useOrders, useUpdateOrderStatus } from '../../hooks/useOrder';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function createMockOrder(overrides = {}): any {
@@ -61,11 +62,13 @@ function renderPage(orders = [createMockOrder()]) {
       <Fulfillment />
     </MemoryRouter>,
   );
-}
-
-describe('Fulfillment', () => {
+}describe('Fulfillment', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(useUpdateOrderStatus).mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+    } as never);
     useAuthStore.setState({
       user: { id: 'u1', email: 'staff@example.com', full_name: 'Staff', avatar: '', is_staff: true },
       isAuthenticated: true,
@@ -141,5 +144,30 @@ describe('Fulfillment', () => {
     await user.click(screen.getByRole('button', { name: /shipped \(0\)/i }));
 
     expect(screen.getByText(/no orders in this status/i)).toBeInTheDocument();
+  });
+
+  it('advances a pending order to confirmed', async () => {
+    const user = userEvent.setup();
+    const mutate = vi.fn();
+    vi.mocked(useUpdateOrderStatus).mockReturnValue({
+      mutate,
+      isPending: false,
+    } as never);
+    renderPage([createMockOrder({ id: 'o1', status: 'pending' })]);
+
+    await user.click(screen.getByRole('button', { name: /confirm order/i }));
+
+    expect(mutate).toHaveBeenCalledWith({ id: 'o1', status: 'confirmed' });
+  });
+
+  it('shows no advance button for terminal statuses', async () => {
+    renderPage([createMockOrder({ id: 'o1', status: 'delivered' })]);
+    expect(screen.queryByRole('button', { name: /confirm order/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /mark/i })).not.toBeInTheDocument();
+  });
+
+  it('advances confirmed to shipped and shipped to delivered labels', () => {
+    renderPage([createMockOrder({ id: 'o1', status: 'confirmed' })]);
+    expect(screen.getByRole('button', { name: /mark shipped/i })).toBeInTheDocument();
   });
 });
