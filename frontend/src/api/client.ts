@@ -60,7 +60,18 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // DRF returns 403 (not 401) for missing/expired credentials when the
+    // authenticator provides no WWW-Authenticate header (as SimpleJWT does).
+    // Treat both codes as refreshable so an expired access token is renewed.
+    if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
+      const isCredentialsError =
+        typeof error.response?.data?.detail === 'string' &&
+        /credentials|token/i.test(error.response.data.detail);
+
+      if (error.response.status === 403 && !isCredentialsError) {
+        return Promise.reject(error);
+      }
+
       const refresh = getStoredRefreshToken();
       if (!refresh) {
         return Promise.reject(error);
