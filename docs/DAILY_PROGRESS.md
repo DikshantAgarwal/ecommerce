@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| **Date** | 2026-08-10 |
+| **Date** | 2026-08-11 |
 | **Current Sprint** | Sprint 5 (Launch Prep) |
 | **MVP Deadline** | 10 August 2026 |
 | **Status** | 🟢 On Track |
@@ -20,6 +20,7 @@
 | [2026-08-10](#2026-08-10) | Phases 2–4 done — homepage, filters/sort, checkout+orders; variants; deployment finished |
 | [2026-08-10](#2026-08-10-catalog) | Real-product catalog shipped — 4-theme catalog, 263 Cloudinary images, full prod deploy |
 | [2026-08-10](#2026-08-10-ui-polish) | UI polish complete — lens/lightbox zoom, breadcrumb + section nav, unified theme carousel, logo, states, focus rings |
+| [2026-08-11](#2026-08-11-storefront-ux-fixes) | ₹ pricing, edit-carousel + editorial hero, ₹-aware cart, logout, compact hero, dedupe filters, carousel perf, scroll-to-top |
 
 ---
 
@@ -436,6 +437,52 @@ Nothing currently blocked.
 - **Biggest achievement:** Browsing experience is polished end-to-end — lens/lightbox image viewing, breadcrumbs, section nav, and one smooth infinite theme carousel on mobile and desktop alike
 - **Overall project completion:** ~70% toward MVP
 - **Current feature:** UI polish done → **Payments (Razorpay) + order emails** next
+- **Remaining blocker:** Payments not started (0%), order confirmation emails pending
+- **Tomorrow:** Razorpay integration (backend + frontend), order confirmation email, smoke test full purchase flow
+
+---
+
+<a name="2026-08-11-storefront-ux-fixes"></a>
+## 2026-08-11 (Storefront UX Fixes)
+
+### ✅ Completed Today
+
+**Frontend**
+- **₹ pricing util** — new `src/utils/format.ts` `formatPrice()`; replaced hardcoded `$`/`₹` across `Cart`, `Checkout`, `OrderConfirmation`, `ProductDetail`, `ActiveFilterPills` (₹-aware, India-first pricing)
+- **Modular snap carousel hook** — new `src/hooks/useSnapCarousel.ts`; `ThemeCarousel` + `HeroBanner` refactored onto it (previously duplicated stack-carousel logic)
+- **Editorial hero** — `HeroBanner` rewritten as a 3-slide editorial carousel with active-slide heading + CTA and new tests; desktop re-sized to a compact landscape `16/10`–`16/9` strip so it no longer dominates the viewport
+- **Logout option** — `LogOut` button in the desktop header (when signed in) and a full "Log out" action in the mobile slide-over menu; calls `useAuthStore.logout()` and routes home
+- **Deduplicated theme filters** — `Products` now de-dupes categories by name (same `Set` pattern as `MobileCategoryNav`) so each theme shows exactly one checkbox in both the desktop sidebar and mobile filter drawer
+- **Mobile-first footer** — brand spans full width, Customer Care + Connect sit side-by-side, larger tap targets, full-width back-to-top button on mobile
+
+**Performance / Bugs**
+- **Theme carousel flicker (fast rotation)** — reset rewind now loops (`while raw >= count*resetThreshold`), slides wrapped in `React.memo` with stable refs, "Explore…" hint always reserves space (no layout shift), all images `loading="eager"`, and imperative style writes coalesced into a single `requestAnimationFrame` per frame
+- **Scroll-to-top on navigation** — `RootLayout` scrolls to `(0,0)` whenever the pathname changes, so Products/Cart/etc. don't restore the previous page's scroll position
+
+**Testing**
+- 74 frontend tests passing (17 files, +17 vs last report) — `HeroBanner` tests added, `PopularThemes`/`ThemeCarousel` updated for the looping carousel; `tsc -b` clean
+
+### 🎯 Current Focus
+
+**Feature:** Storefront polish follow-ups — ✅ Complete
+
+**Definition of Done progress:**
+- [x] ₹ pricing throughout the frontend
+- [x] Modular snap-carousel hook (theme carousel + hero)
+- [x] Desktop hero sized appropriately
+- [x] Logout from header + mobile menu
+- [x] One filter per category
+- [x] Carousel flicker eliminated under fast rotation
+- [x] Scroll to top on route change
+- [x] Tests updated and passing (74 frontend)
+- [ ] Razorpay payment integration
+- [ ] Order confirmation emails
+
+### 📌 End of Day
+
+- **Biggest achievement:** Storefront UX issues closed — a user can now sign out, filter each theme once, browse without carousel flicker, and land at the top of every new page with India-correct pricing throughout
+- **Overall project completion:** ~72% toward MVP
+- **Current feature:** Polish follow-ups done → **Payments (Razorpay) + order emails** next
 - **Remaining blocker:** Payments not started (0%), order confirmation emails pending
 - **Tomorrow:** Razorpay integration (backend + frontend), order confirmation email, smoke test full purchase flow
 

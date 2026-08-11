@@ -33,6 +33,7 @@ export function useSnapCarousel({
   const touchMovedRef = useRef(false);
   const reducedRef = useRef(false);
   const activeRef = useRef(initialIndex ?? count);
+  const rafRef = useRef<number | null>(null);
   const slideCount = count * cycles;
   const [activeIndex, setActiveIndex] = useState(initialIndex ?? count);
 
@@ -89,7 +90,11 @@ export function useSnapCarousel({
       activeRef.current = rounded;
       setActiveIndex(rounded);
     }
-    applyStyles(rounded);
+    if (rafRef.current != null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      applyStyles(rounded);
+    });
   }, [count, measureUnit, applyStyles, resetThreshold]);
 
   const goTo = useCallback((targetLeft: number) => {
@@ -170,6 +175,12 @@ export function useSnapCarousel({
     const unit = measureUnit(track);
     track.scrollLeft = (initialIndex ?? count) * unit;
     applyStyles(initialIndex ?? count);
+    return () => {
+      if (rafRef.current != null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
   }, [count, measureUnit, applyStyles, initialIndex]);
 
   return {

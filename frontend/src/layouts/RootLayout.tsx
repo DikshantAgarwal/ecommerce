@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { User, Menu, X, LogOut } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
@@ -12,6 +12,10 @@ export default function RootLayout() {
   const { pathname, search } = useLocation();
   const navigate = useNavigate();
   const section = new URLSearchParams(search).get('section');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const handleLogout = () => {
     useAuthStore.getState().logout();
