@@ -173,6 +173,11 @@ export default function RootLayout() {
                   </Link>
                   <div className="flex size-8 items-center justify-center rounded-full bg-neutral-100 text-sm font-medium text-neutral-600">
                     {user.full_name.charAt(0).toUpperCase()}
+                    {user.is_staff && (
+                      <span className="ml-1 text-xxs font-bold bg-primary-600 text-white rounded-full px-1.5 py-0.5">
+                        Staff
+                      </span>
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-neutral-900">{user.full_name}</p>

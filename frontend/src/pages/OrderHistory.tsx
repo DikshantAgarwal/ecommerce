@@ -53,7 +53,7 @@ export default function OrderHistory() {
     );
   }
 
-  return (
+return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="flex items-center gap-2">
         <h1 className="text-2xl font-bold text-neutral-900">Your orders</h1>
@@ -76,14 +76,30 @@ export default function OrderHistory() {
         <ul className="mt-6 space-y-4">
           {orders.map((order) => (
             <li key={order.id} className="rounded-lg border border-neutral-100 bg-neutral-0 p-5">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
+              <div className="flex items-start gap-4">
+                {/* Order image/product preview */}
+                <div className="flex-shrink-0 w-20 h-20 rounded-lg bg-neutral-100 overflow-hidden">
+                  {order.items[0]?.product_image ? (
+                    <img
+                      src={order.items[0].product_image}
+                      alt={order.items[0].product_name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-neutral-400">
+                      <Package className="size-6" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1">
                   <p className="text-sm font-semibold text-neutral-900">
                     Order #{order.id.slice(0, 8).toUpperCase()}
                   </p>
                   <p className="mt-0.5 text-xs text-neutral-600">Placed {new Date(order.created_at).toLocaleString()}</p>
                 </div>
-                <div className="text-right">
+
+                <div className="self-start flex-1 text-right">
                   <p className="text-lg font-bold text-neutral-900">{formatPrice(order.total)}</p>
                   <span
                     className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[order.status]}`}
