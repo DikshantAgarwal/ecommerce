@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createOrder, getOrder } from '../services/order.service';
+import { createOrder, getOrder, getOrders } from '../services/order.service';
 import type { CreateOrderPayload } from '../services/order.service';
 
 export function useOrder(id: string | undefined) {
@@ -7,6 +7,13 @@ export function useOrder(id: string | undefined) {
     queryKey: ['order', id],
     queryFn: () => getOrder(id!),
     enabled: !!id,
+  });
+}
+
+export function useOrders() {
+  return useQuery({
+    queryKey: ['orders'],
+    queryFn: getOrders,
   });
 }
 

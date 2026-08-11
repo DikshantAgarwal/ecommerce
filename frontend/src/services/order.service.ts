@@ -14,3 +14,8 @@ export async function getOrder(id: string): Promise<Order> {
   const { data } = await apiClient.get<Order>(`/orders/${id}/`);
   return data;
 }
+
+export async function getOrders(): Promise<Order[]> {
+  const { data } = await apiClient.get<Order[]>('/orders/');
+  return data;
+}

@@ -3,6 +3,7 @@ export interface User {
   email: string;
   full_name: string;
   avatar: string;
+  is_staff?: boolean;
 }
 
 export interface AuthResponse {

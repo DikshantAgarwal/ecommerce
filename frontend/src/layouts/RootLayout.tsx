@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
-import { User, Menu, X, LogOut } from 'lucide-react';
+import { User, Menu, X, LogOut, ClipboardList } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
 import { CartIcon, Footer, MobileCategoryNav } from '../components';
 import { NAV_LINKS, isLinkActive } from '../utils/nav';
@@ -55,6 +55,15 @@ export default function RootLayout() {
             <CartIcon />
             {isAuthenticated && user ? (
               <div className="flex items-center gap-1">
+                {user.is_staff && (
+                  <Link
+                    to="/fulfillment"
+                    className="flex items-center gap-1.5 p-2 text-neutral-600 transition-colors duration-200 hover:text-primary-900"
+                    aria-label="Fulfillment"
+                  >
+                    <ClipboardList className="size-6" />
+                  </Link>
+                )}
                 <Link to="/" className="p-2 text-neutral-600 transition-colors duration-200 hover:text-primary-900" aria-label="Profile">
                   {user.avatar ? (
                     <img src={user.avatar} alt="" className="size-6 rounded-full" />
@@ -134,6 +143,16 @@ export default function RootLayout() {
             <div className="mt-auto flex items-center gap-4 pt-8 border-t border-neutral-200">
               {isAuthenticated && user ? (
                 <>
+                  {user.is_staff && (
+                    <Link
+                      to="/fulfillment"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="mb-6 flex items-center gap-3 text-base font-medium text-neutral-900 transition-colors hover:text-primary-900"
+                    >
+                      <ClipboardList className="size-5" aria-hidden="true" />
+                      Fulfillment
+                    </Link>
+                  )}
                   <div className="flex size-10 items-center justify-center rounded-full bg-neutral-100 text-sm font-medium text-neutral-600">
                     {user.full_name.charAt(0).toUpperCase()}
                   </div>
