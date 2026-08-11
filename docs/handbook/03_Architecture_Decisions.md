@@ -25,7 +25,7 @@ This document captures lightweight Architecture Decision Records (ADRs) for all 
 | 007 | TanStack Query for Data Fetching | ✅ Accepted | 2026-07-05 |
 | 008 | Zustand for State Management | ✅ Accepted | 2026-07-05 |
 | 009 | Cloudinary for Image Hosting | ✅ Accepted | 2026-07-05 |
-| 010 | Razorpay for Payments | ✅ Accepted | 2026-07-05 |
+| 010 | Cashfree for Payments | ✅ Accepted | 2026-07-05 (updated 2026-08-11) |
 | 011 | Resend for Emails | ✅ Accepted | 2026-07-05 |
 | 012 | Fabric.js for Product Customizer | ✅ Accepted | 2026-07-05 |
 | 013 | Vercel + Railway for Deployment | ✅ Accepted | 2026-07-05 |
@@ -306,29 +306,31 @@ This document captures lightweight Architecture Decision Records (ADRs) for all 
 
 ---
 
-### ADR-010: Razorpay for Payments
+### ADR-010: Cashfree for Payments
 
 | Field | Value |
 |---|---|
-| **Decision** | Use Razorpay as the payment gateway |
+| **Decision** | Use Cashfree Payments as the payment gateway |
 | **Status** | ✅ Accepted |
-| **Date** | 2026-07-05 |
+| **Date** | 2026-07-05 (updated 2026-08-11) |
 
 **Reason:**
-- Indian payments market leader. Supports UPI, cards, net banking, wallets.
-- Excellent developer experience: well-documented API, test mode, webhooks.
-- No monthly fee (pay per transaction).
-- Payment Link, Checkout, and API integration options.
-- Easy settlement to Indian bank accounts.
+- Strong Indian payments support: UPI, cards, net banking, wallets, and Buy Now Pay Later.
+- Better customer support than Razorpay for merchant needs (priority support, faster issue resolution).
+- Better pricing than Razorpay — lower per-transaction fees, improving margins on every sale.
+- Excellent developer experience: well-documented API, test/sandbox mode, webhooks.
+- Transparent settlements to Indian bank accounts.
+- **Note:** Superseded earlier plan to use Razorpay. Migration decision finalized after comparing support quality and transaction pricing.
 
 **Alternatives Considered:**
-- **Stripe:** Better international support but limited India features (no UPI natively). Higher transaction fees. Payouts to Indian accounts are more complex.
+- **Stripe:** Better international support but limited India features (no native UPI). Higher transaction fees. Payouts to Indian accounts are more complex.
 - **Paytm Payment Gateway:** Good Indian support but less developer-friendly API.
-- **Cashfree:** Good alternative, similar features. Smaller developer community.
+- **Razorpay:** Strong market leader and well-documented; rejected for higher per-transaction pricing and comparatively slower merchant support.
 
 **Tradeoffs:**
-- Razorpay handles INR only natively. International expansion will require a secondary gateway.
+- Cashfree handles INR only natively. International expansion will require a secondary gateway.
 - Webhook delivery is at-least-once — requires idempotency handling on our end.
+- Smaller global developer community than Stripe/Razorpay, though the Indian community is active.
 
 **Future Migration Strategy:**
 - For international expansion, add Stripe as a secondary gateway. Use a payment orchestration layer to abstract gateways.

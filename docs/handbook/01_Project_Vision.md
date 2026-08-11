@@ -68,7 +68,7 @@ TODO: Finalize tagline. Options under consideration:
 | Product Detail Page | P0 | Medium |
 | Shopping Cart | P0 | Medium |
 | Checkout Flow | P0 | High |
-| Razorpay Payment Integration | P0 | High |
+| Cashfree Payment Integration | P0 | High |
 | Order Confirmation | P0 | Medium |
 | Google OAuth Login (Social-Only) | P0 | Medium |
 | User Profile (Name, Email, Avatar) | P0 | Low |

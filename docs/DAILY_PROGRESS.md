@@ -21,6 +21,7 @@
 | [2026-08-10](#2026-08-10-catalog) | Real-product catalog shipped — 4-theme catalog, 263 Cloudinary images, full prod deploy |
 | [2026-08-10](#2026-08-10-ui-polish) | UI polish complete — lens/lightbox zoom, breadcrumb + section nav, unified theme carousel, logo, states, focus rings |
 | [2026-08-11](#2026-08-11-storefront-ux-fixes) | ₹ pricing, edit-carousel + editorial hero, ₹-aware cart, logout, compact hero, dedupe filters, carousel perf, scroll-to-top |
+| [2026-08-11](#2026-08-11-payment-gateway) | Payment gateway decision — Cashfree over Razorpay (support + pricing); docs updated across ADR, roadmap, API, deploy, checklist |
 
 ---
 
@@ -28,7 +29,7 @@
 
 | Health | Milestone | Focus | Completion |
 |---|---|---|---|
-| ✅ In Progress | Sprint 5 — Launch Prep | UI polish done; Payments (Razorpay) + order emails pending | ~70% toward MVP |
+| ✅ In Progress | Sprint 5 — Launch Prep | UI polish done; Payments (Cashfree) + order emails pending | ~72% toward MVP |
 
 Products backend ~95% complete with variants. Frontend component architecture established. Google OAuth fully implemented with JWT auth, profile API, and frontend integration. Sprint 1-2 complete. Cart Backend complete with full CRUD, guest support, merge, and stock validation. Orders backend + checkout flow complete end-to-end (cart → order → confirmation, stock decrement). Backend deployed to Railway; frontend live on Vercel with the real catalog. Storefront UI polish complete (lens/lightbox zoom, breadcrumbs, section nav, unified theme carousel, loading/empty states, focus rings).
 
@@ -462,6 +463,9 @@ Nothing currently blocked.
 **Testing**
 - 74 frontend tests passing (17 files, +17 vs last report) — `HeroBanner` tests added, `PopularThemes`/`ThemeCarousel` updated for the looping carousel; `tsc -b` clean
 
+**Architecture / Planning**
+- **Payment gateway decision:** chose **Cashfree Payments** over Razorpay (better merchant customer support, better per-transaction pricing). Updated ADR-010, Roadmap, API Conventions, Deployment Guide, Launch Checklist, Project Vision, and PROJECT_CONTEXT from Razorpay references to Cashfree (env vars `CASHFREE_*`/`VITE_CASHFREE_APP_ID`, webhook events `PAYMENT_SUCCESS`/`PAYMENT_FAILED`/`PAYMENT_USER_TERMINATED`, Cashfree test-mode testing).
+
 ### 🎯 Current Focus
 
 **Feature:** Storefront polish follow-ups — ✅ Complete
@@ -475,15 +479,50 @@ Nothing currently blocked.
 - [x] Carousel flicker eliminated under fast rotation
 - [x] Scroll to top on route change
 - [x] Tests updated and passing (74 frontend)
-- [ ] Razorpay payment integration
+- [ ] Cashfree payment integration
 - [ ] Order confirmation emails
 
 ### 📌 End of Day
 
 - **Biggest achievement:** Storefront UX issues closed — a user can now sign out, filter each theme once, browse without carousel flicker, and land at the top of every new page with India-correct pricing throughout
 - **Overall project completion:** ~72% toward MVP
-- **Current feature:** Polish follow-ups done → **Payments (Razorpay) + order emails** next
+- **Current feature:** Polish follow-ups done → **Payments (Cashfree) + order emails** next
 - **Remaining blocker:** Payments not started (0%), order confirmation emails pending
-- **Tomorrow:** Razorpay integration (backend + frontend), order confirmation email, smoke test full purchase flow
+- **Tomorrow:** Cashfree integration (backend + frontend), order confirmation email, smoke test full purchase flow
+
+---
+
+<a name="2026-08-11-payment-gateway"></a>
+## 2026-08-11 (Payment Gateway Decision)
+
+### ✅ Completed Today
+
+**Architecture / Planning**
+- **Selected Cashfree Payments as the payment gateway** (over Razorpay) after evaluating two options — better customer support for merchant needs and slightly better per-transaction pricing
+- Updated ADR-010 to reflect Cashfree and document why Razorpay was rejected
+- Updated plans end-to-end: Roadmap (Sprint 3 payment tasks + gantt + risk register), API Conventions (endpoint descriptions, Cashfree webhook section), Deployment Guide (env vars `CASHFREE_CLIENT_ID`/`CASHFREE_CLIENT_SECRET`/`CASHFREE_ENV`, `VITE_CASHFREE_APP_ID`, webhook setup, test-mode testing), Launch Checklist (payment items 1.2.9, 2.5.x, 3.15, 8.15, 10.4-10.6), Project Vision (P0 item), and PROJECT_CONTEXT (tech stack + geo + metrics)
+
+### 🎯 Current Focus
+
+**Feature:** Payments (Cashfree) — ⏳ Planned, not started
+
+**Definition of Done progress:**
+- [x] Payment gateway decision (Cashfree over Razorpay)
+- [x] Plan/docs updated for Cashfree
+- [ ] Cashfree backend integration (order creation, webhook verification, status)
+- [ ] Cashfree frontend checkout integration (drop-in, response handling)
+- [ ] Payment success/failure/retry flows
+- [ ] Order confirmation email on payment success
+- [ ] Test-mode smoke test of full purchase flow
+
+### 📌 End of Day
+
+- **Biggest achievement:** Payment gateway locked in — Cashfree better support + pricing; all planning docs now consistent with the decision
+- **Overall project completion:** ~72% toward MVP
+- **Current feature:** Payments (Cashfree)
+- **Remaining blocker:** Payments not started (0%), order confirmation emails pending
+- **Tomorrow:** Cashfree integration (backend + frontend), order confirmation email, smoke test full purchase flow
+
+---
 
 ---

@@ -32,7 +32,7 @@ gantt
     
     section Sprint 3 (Jul 20-26)
     Checkout Page (Frontend)                          :s3_fe, 2026-07-20, 7d
-    Razorpay Integration (Backend + Frontend)         :s3_pay, 2026-07-20, 7d
+    Cashfree Integration (Backend + Frontend)          :s3_pay, 2026-07-20, 7d
     Order Confirmation + Email Notifications          :s3_email, 2026-07-20, 7d
     
     section Sprint 4 (Jul 27 - Aug 2)
@@ -152,8 +152,8 @@ gantt
 |---|---|---|
 | Order Detail API | `GET /api/orders/:id/` | ❌ |
 | Order List API | `GET /api/orders/` (user's orders) | ❌ |
-| Razorpay Order Creation | `POST /api/payments/create-order/` | ❌ |
-| Razorpay Webhook Handler | Verify + update order status | ❌ |
+| Cashfree Order Creation | `POST /api/payments/create-order/` | ❌ |
+| Cashfree Webhook Handler | Verify + update order status | ❌ |
 | Order Confirmation Email | Trigger via Resend after payment | ❌ |
 | Stock Management | Decrement on order, restore on cancel | ❌ |
 
@@ -162,7 +162,7 @@ gantt
 | Task | Details |
 |---|---|
 | Checkout Page | Address form, order summary, pay button |
-| Razorpay Checkout Integration | Load Razorpay SDK, handle response |
+| Cashfree Checkout Integration | Load Cashfree SDK (Drop-in/JS Checkout), handle response |
 | Order Confirmation Page | Success message, order details |
 | Order History Page | List of past orders |
 | Loading States | Skeleton loaders for all pages |
@@ -255,7 +255,7 @@ gantt
 | Task | Details |
 |---|---|
 | Smoke Test | Full purchase flow test |
-| Payment Test | Razorpay test mode → successful payment |
+| Payment Test | Cashfree test mode → successful payment |
 | Email Test | Order confirmation email delivery |
 | Mobile Test | Test on actual mobile devices |
 | Launch Checklist | Complete [Launch Checklist](./07_Launch_Checklist.md) |
@@ -268,7 +268,7 @@ gantt
 | Risk | Probability | Impact | Mitigation |
 |---|---|---|---|
 | Customizer (Fabric.js) more complex than expected | Medium | High | Start early (Sprint 4), build MVP version first |
-| Razorpay integration issues | Low | High | Use test mode extensively, document webhook flow |
+| Cashfree integration issues | Low | High | Use test/sandbox mode extensively, document webhook flow |
 | Deployment configuration problems | Medium | Medium | Deploy early (Sprint 1), iterate |
 | Scope creep | High | High | Strictly follow roadmap, defer non-MVP features |
 | Learning curve slows backend work | Medium | Medium | Start with proven patterns, lean on Django documentation |

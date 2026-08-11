@@ -8,7 +8,7 @@
 
 ## Purpose
 
-This document provides step-by-step instructions for setting up local development environments and deploying the KuHu Apparels platform to production. It covers all services: Vercel (frontend), Railway (backend + PostgreSQL), Cloudinary (images), Resend (emails), and Razorpay (payments).
+This document provides step-by-step instructions for setting up local development environments and deploying the KuHu Apparels platform to production. It covers all services: Vercel (frontend), Railway (backend + PostgreSQL), Cloudinary (images), Resend (emails), and Cashfree (payments).
 
 ---
 
@@ -20,7 +20,7 @@ graph TB
     Vercel --> Railway[Railway - Backend + PostgreSQL]
     Railway --> Cloudinary[Cloudinary - Images]
     Railway --> Resend[Resend - Emails]
-    Railway --> Razorpay[Razorpay - Payments]
+    Railway --> Cashfree[Cashfree - Payments]
     Vercel --> GA4[Google Analytics 4]
     
     style Vercel fill:#000,color:#fff
@@ -28,7 +28,7 @@ graph TB
     style Railway fill:#00E599,color:#000
     style Cloudinary fill:#3448C5,color:#fff
     style Resend fill:#000,color:#fff
-    style Razorpay fill:#02042C,color:#fff
+    style Cashfree fill:#02042C,color:#fff
     style GA4 fill:#FF9800,color:#000
 ```
 
@@ -120,9 +120,10 @@ CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 
-# Razorpay
-RAZORPAY_KEY_ID=your-key-id
-RAZORPAY_KEY_SECRET=your-key-secret
+# Cashfree
+CASHFREE_CLIENT_ID=your-client-id
+CASHFREE_CLIENT_SECRET=your-client-secret
+CASHFREE_ENV=test  # test | production
 
 # Resend
 RESEND_API_KEY=your-resend-api-key
@@ -149,8 +150,8 @@ VITE_API_BASE_URL=http://localhost:8000/api
 VITE_CLOUDINARY_CLOUD_NAME=your-cloud-name
 VITE_CLOUDINARY_UPLOAD_PRESET=your-upload-preset
 
-# Razorpay
-VITE_RAZORPAY_KEY_ID=your-key-id
+# Cashfree
+VITE_CASHFREE_APP_ID=your-app-id
 
 # Google OAuth
 VITE_GOOGLE_CLIENT_ID=your-google-client-id
@@ -266,7 +267,7 @@ CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers
 | `GOOGLE_OAUTH_CLIENT_ID` | Google OAuth client ID |
 | `GOOGLE_OAUTH_CLIENT_SECRET` | Google OAuth client secret |
 | `CLOUDINARY_*` | Cloudinary credentials |
-| `RAZORPAY_*` | Razorpay live credentials |
+| `CASHFREE_*` | Cashfree credentials (client id/secret, env) |
 | `RESEND_*` | Resend API key |
 | `FRONTEND_URL` | `https://kuhuapparels.vercel.app` |
 | `DJANGO_SETTINGS_MODULE` | `config.settings.production` |
@@ -315,7 +316,7 @@ Railway automatically checks if the app is responding. Ensure the root URL retur
 | `VITE_CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
 | `VITE_CLOUDINARY_UPLOAD_PRESET` | Upload preset (unsigned) |
 | `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID (same as backend) |
-| `VITE_RAZORPAY_KEY_ID` | Razorpay key ID (live) |
+| `VITE_CASHFREE_APP_ID` | Cashfree app ID (live) |
 | `VITE_GA_MEASUREMENT_ID` | GA4 measurement ID |
 
 ### Vercel Configuration
@@ -406,29 +407,31 @@ TODO: Create email templates using React Email for:
 
 ---
 
-## 9. Razorpay
+## 9. Cashfree Payments
 
 ### Setup
 
-1. Go to [razorpay.com](https://razorpay.com) and sign up.
+1. Go to [cashfree.com](https://www.cashfree.com) and sign up.
 2. Complete KYC for live mode.
-3. In Dashboard → Settings → API Keys:
-   - Generate Key ID and Key Secret.
-   - Use **Test mode** keys for development, **Live mode** keys for production.
+3. In **Dashboard → Settings → API Keys**:
+   - Generate **Client ID** and **Client Secret**.
+   - Use the **Test environment** keys for development, **Production** keys for live.
+4. Set `CASHFREE_CLIENT_ID`, `CASHFREE_CLIENT_SECRET`, and `CASHFREE_ENV` (`test`/`production`) in Railway. Set `VITE_CASHFREE_APP_ID` in Vercel.
 
 ### Webhook Configuration
 
-1. In Razorpay Dashboard → Settings → Webhooks:
+1. In Cashfree Dashboard → **Settings → Webhooks**:
    - URL: `https://{railway-domain}.railway.app/api/payments/webhook/`
-   - Events: `payment.captured`, `payment.failed`, `order.paid`
-   - Secret: Generate a webhook secret and set as `RAZORPAY_WEBHOOK_SECRET` in Railway.
+   - Events: `PAYMENT_SUCCESS`, `PAYMENT_FAILED`, `PAYMENT_USER_TERMINATED`
+   - Secret: Generate a webhook secret and set as `CASHFREE_WEBHOOK_SECRET` in Railway.
+   - The webhook signature arrives in the `x-webhook-signature` header (HMAC-SHA256 over the raw body using the webhook secret).
 
 ### Testing
 
-Use Razorpay test card numbers:
-- **Visa:** `4111 1111 1111 1111`
-- **UPI:** `success@razorpay` (for successful payment)
-- **UPI:** `failure@razorpay` (for failed payment)
+Use Cashfree **test mode**:
+- Use the test card numbers and UPI handles listed in the Cashfree Dashboard / [test API docs](https://docs.cashfree.com/).
+- Place a test order in the checkout and confirm the webhook flips the order to "Paid" in the admin.
+- Trigger a failed payment and verify the order moves to "Payment Failed".
 
 ---
 
@@ -541,7 +544,7 @@ jobs:
 - [ ] Database migrations have been applied (`python manage.py migrate`)
 - [ ] Static files collected (`python manage.py collectstatic`)
 - [ ] Cloudinary configuration verified
-- [ ] Razorpay live keys configured
+- [ ] Cashfree live keys configured
 - [ ] Resend domain verified (DKIM records propagated)
 
 ### Post-Deployment
@@ -630,7 +633,7 @@ TODO: Set up uptime monitoring (e.g., UptimeRobot free tier, or Railway's built-
 | Railway | $5 credit (covers backend + PostgreSQL) | $5/month (Starter) |
 | Cloudinary | 25GB storage, 25GB bandwidth | $89/month (Plus) |
 | Resend | 100 emails/day | $10/month (250K emails) |
-| Razorpay | No monthly fee | Pay per transaction (2% + GST) |
+| Cashfree | No monthly fee | Pay per transaction (lower pricing than Razorpay) |
 | Domain | ~₹800/year (`.com`) | — |
 | **Total (Free)** | **~₹0-₹800/year** | — |
 | **Total (Paid)** | **~$40-50/month** | If we need to scale |
@@ -647,13 +650,13 @@ TODO: Set up uptime monitoring (e.g., UptimeRobot free tier, or Railway's built-
 
 ## 18. References
 
-- [Architecture Decisions](./03_Architecture_Decisions.md) — ADR-013 (Vercel + Railway), ADR-009 (Cloudinary), ADR-010 (Razorpay), ADR-011 (Resend)
+- [Architecture Decisions](./03_Architecture_Decisions.md) — ADR-013 (Vercel + Railway), ADR-009 (Cloudinary), ADR-010 (Cashfree), ADR-011 (Resend)
 - [Railway Documentation](https://docs.railway.app/)
 - [Vercel Documentation](https://vercel.com/docs)
 - [Neon Documentation](https://neon.tech/docs)
 - [Cloudinary Documentation](https://cloudinary.com/documentation)
 - [Resend Documentation](https://resend.com/docs)
-- [Razorpay Documentation](https://razorpay.com/docs/)
+- [Cashfree Documentation](https://docs.cashfree.com/)
 - [GA4 Documentation](https://developers.google.com/analytics/devguides/collection/ga4)
 
 ---

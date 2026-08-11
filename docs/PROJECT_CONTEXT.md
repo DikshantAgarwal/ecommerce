@@ -49,7 +49,7 @@ KuHu Apparels is a **production-grade premium apparel e-commerce platform** buil
 | Backend Hosting | Railway | Docker-native, simple deploy, free tier |
 | Database Hosting | Neon | Serverless PostgreSQL, free tier |
 | Image Hosting | Cloudinary | CDN, transformations, upload widgets |
-| Payments | Razorpay | Indian payments market, good DX |
+| Payments | Cashfree | Better support + lower pricing than Razorpay; UPI, cards, net banking |
 | Analytics | Google Analytics 4 | Industry standard, free |
 | Emails | Resend | Modern email API, React email support |
 | Product Customizer | Fabric.js | Canvas manipulation, JSON serialization |
@@ -70,7 +70,7 @@ KuHu Apparels is a **production-grade premium apparel e-commerce platform** buil
 - **Budget:** Minimal. Prefer free tiers. Spend only on essential services (domain, email, payments).
 - **Time:** 5 weeks to MVP. Every week has a clear delivery goal.
 - **Scope:** Premium apparel only. Initially 2-3 categories. No multi-vendor, no marketplace.
-- **Geography:** India-first. Razorpay for payments, INR as primary currency.
+- **Geography:** India-first. Cashfree for payments, INR as primary currency.
 
 ## Development Principles
 
@@ -102,7 +102,7 @@ Target WCAG 2.1 AA compliance. Keyboard navigation, screen reader support, suffi
 | Pages | Home, PLP, PDP, Cart, Checkout, Order Confirmation, Customizer |
 | Products | 20-30 products across 2-3 categories |
 | Auth | Google OAuth Login, Profile |
-| Payments | Razorpay checkout flow functional |
+| Payments | Cashfree checkout flow functional |
 | Emails | Order confirmation, payment receipt |
 | Customizer | Upload logo, change colors, move/resize/rotate, save design |
 | Load Time | < 3s on 3G |

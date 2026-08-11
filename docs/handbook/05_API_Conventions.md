@@ -250,8 +250,8 @@ For file uploads: `Content-Type: multipart/form-data`.
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| `POST` | `/api/payments/create-order/` | Yes | Create Razorpay order |
-| `POST` | `/api/payments/webhook/` | No | Razorpay webhook handler |
+| `POST` | `/api/payments/create-order/` | Yes | Create Cashfree order |
+| `POST` | `/api/payments/webhook/` | No | Cashfree webhook handler |
 | `GET` | `/api/payments/{order_id}/status/` | Yes | Check payment status |
 
 ### Addresses
@@ -463,22 +463,23 @@ TODO: Define rate limits per endpoint group.
 
 ## 15. Webhooks
 
-### Razorpay Webhook
+### Cashfree Webhook
 
 | Field | Value |
 |---|---|
 | URL | `POST /api/payments/webhook/` |
-| Auth | Webhook signature (Razorpay HMAC-SHA256) |
+| Auth | Webhook signature (Cashfree HMAC-SHA256 over signature header payload) |
 | Content-Type | `application/json` |
-| Idempotency | Razorpay sends `X-Razorpay-Webhook-Id` header |
+| Idempotency | Cashfree delivers each webhook once with a unique signature; verify and dedupe per `order_id` + event |
 
 ### Webhook Events
 
 | Event | Action |
 |---|---|
-| `payment.captured` | Update order status to "Paid" |
-| `payment.failed` | Update order status to "Payment Failed" |
-| `order.paid` | Send order confirmation email |
+| `PAYMENT_SUCCESS` | Update order status to "Paid" |
+| `PAYMENT_FAILED` | Update order status to "Payment Failed" |
+| `PAYMENT_USER_TERMINATED` | Update order status to "Payment Failed" |
+| Payment success | Send order confirmation email |
 
 ---
 
@@ -525,12 +526,12 @@ flowchart LR
 
 ## 18. References
 
-- [Architecture Decisions](./03_Architecture_Decisions.md) — ADR-004 (JWT), ADR-010 (Razorpay), ADR-021 (Social-Only Login), ADR-022 (django-allauth)
+- [Architecture Decisions](./03_Architecture_Decisions.md) — ADR-004 (JWT), ADR-010 (Cashfree), ADR-021 (Social-Only Login), ADR-022 (django-allauth)
 - [Django REST Framework Documentation](https://www.django-rest-framework.org/)
 - [SimpleJWT Documentation](https://django-rest-framework-simplejwt.readthedocs.io/)
 - [django-allauth Documentation](https://django-allauth.readthedocs.io/)
 - [Google Identity Services Documentation](https://developers.google.com/identity/gsi/web)
-- [Razorpay API Docs](https://razorpay.com/docs/api/)
+- [Cashfree API Docs](https://docs.cashfree.com/)
 
 ---
 

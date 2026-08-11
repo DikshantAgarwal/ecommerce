@@ -46,7 +46,7 @@ This document is the final verification checklist before the KuHu Apparels MVP l
 | 1.2.6 | `CORS_ALLOWED_ORIGINS` set to production frontend | ❌ | |
 | 1.2.7 | `DATABASE_URL` points to Neon production database | ❌ | Verify read/write access |
 | 1.2.8 | Cloudinary credentials are **live** (not test) | ❌ | |
-| 1.2.9 | Razorpay keys are **live** (not test) | ❌ | |
+| 1.2.9 | Cashfree keys are **live** (not test) | ❌ | |
 | 1.2.10 | Resend API key is valid and domain verified | ❌ | DKIM propagation may take 48h |
 
 ### 1.3 Database
@@ -160,14 +160,14 @@ This document is the final verification checklist before the KuHu Apparels MVP l
 
 | # | Item | Status | Notes |
 |---|---|---|---|
-| 2.5.1 | Razorpay checkout modal opens | ❌ | |
-| 2.5.2 | Razorpay order created server-side | ❌ | |
+| 2.5.1 | Cashfree checkout modal opens | ❌ | |
+| 2.5.2 | Cashfree order created server-side | ❌ | |
 | 2.5.3 | Card payment succeeds (test card) | ❌ | |
 | 2.5.4 | UPI payment succeeds (test UPI) | ❌ | |
 | 2.5.5 | Payment failure handled gracefully | ❌ | |
-| 2.5.6 | Webhook receives payment.captured event | ❌ | |
+| 2.5.6 | Webhook receives PAYMENT_SUCCESS event | ❌ | |
 | 2.5.7 | Order status updates to "Paid" after webhook | ❌ | |
-| 2.5.8 | Payment.failed webhook updates order status | ❌ | |
+| 2.5.8 | PAYMENT_FAILED webhook updates order status | ❌ | |
 | 2.5.9 | User redirected to order confirmation on success | ❌ | |
 | 2.5.10 | Retry payment flow works for failed payments | ❌ | |
 
@@ -220,7 +220,7 @@ This document is the final verification checklist before the KuHu Apparels MVP l
 | 3.12 | JWT refresh token expiry ≤ 7 days | ❌ | |
 | 3.13 | Sensitive data (passwords, tokens) never logged | ❌ | |
 | 3.14 | Environment variables not exposed to client | ❌ | Vite only exposes `VITE_*` vars |
-| 3.15 | Razorpay webhook signature verified | ❌ | |
+| 3.15 | Cashfree webhook signature verified | ❌ | |
 | 3.16 | Admin panel accessible only to staff users | ❌ | |
 | 3.17 | User can only access own orders/profile | ❌ | Object-level permissions |
 | 3.18 | Safe file upload handling | ❌ | Validate type, size, scan |
@@ -353,7 +353,7 @@ Execute this complete flow in production environment:
 | 8.12 | Update quantity | Total updates | ❌ |
 | 8.13 | Click "Proceed to Checkout" | Checkout page loads | ❌ |
 | 8.14 | Fill shipping address | Form validates | ❌ |
-| 8.15 | Click "Pay" | Razorpay modal opens | ❌ |
+| 8.15 | Click "Pay" | Cashfree checkout opens | ❌ |
 | 8.16 | Complete payment (test card) | Payment succeeds | ❌ |
 | 8.17 | Redirect to order confirmation | Order details shown | ❌ |
 | 8.18 | Check email | Order confirmation received | ❌ |
@@ -385,9 +385,9 @@ Execute this complete flow in production environment:
 | 10.1 | Monitor Railway logs for errors | ❌ | Check every 2 hours |
 | 10.2 | Monitor Vercel deployment for issues | ❌ | |
 | 10.3 | Monitor GA4 for real-time traffic | ❌ | |
-| 10.4 | Verify Razorpay webhooks are being received | ❌ | |
+| 10.4 | Verify Cashfree webhooks are being received | ❌ | |
 | 10.5 | Verify emails are being sent | ❌ | |
-| 10.6 | Check all payment transactions in Razorpay dashboard | ❌ | |
+| 10.6 | Check all payment transactions in Cashfree dashboard | ❌ | |
 | 10.7 | Test checkout flow one more time in production | ❌ | |
 | 10.8 | Verify database backup ran successfully | ❌ | |
 | 10.9 | Check Lighthouse scores on live site | ❌ | |
@@ -402,7 +402,7 @@ If any of these conditions are met, rollback immediately:
 | Condition | Action |
 |---|---|
 | Users cannot complete checkout | Rollback to previous backend deployment |
-| Payment processing consistently fails | Rollback to previous backend + verify Razorpay config |
+| Payment processing consistently fails | Rollback to previous backend + verify Cashfree config |
 | Users cannot access the site | Rollback frontend + backend |
 | Database corruption detected | Restore from backup |
 | Security vulnerability discovered | Rollback or hotfix depending on severity |
