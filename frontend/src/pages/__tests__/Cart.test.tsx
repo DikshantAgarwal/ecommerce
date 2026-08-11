@@ -103,10 +103,10 @@ describe('Cart', () => {
     );
 
     expect(screen.getByText('Your cart is empty')).toBeInTheDocument();
-    expect(screen.getByText('Start shopping')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /continue shopping/i })).toBeInTheDocument();
   });
 
-  it('renders cart items', () => {
+  it('renders cart items and summary', () => {
     vi.mocked(useCart).mockReturnValue(createMockCart() as any);
 
     render(
@@ -115,10 +115,28 @@ describe('Cart', () => {
       </BrowserRouter>,
     );
 
-    expect(screen.getByText('Shopping Cart')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^Cart$/ })).toBeInTheDocument();
     expect(screen.getByText('Test Shirt')).toBeInTheDocument();
-    expect(screen.getByText('Black / M')).toBeInTheDocument();
-    expect(screen.getAllByText('₹89.97')).toHaveLength(2);
+    expect(screen.getByText('Black · M')).toBeInTheDocument();
+    expect(screen.getByText('Order Summary')).toBeInTheDocument();
+    expect(screen.getByText('Subtotal')).toBeInTheDocument();
+    expect(screen.getByText('Free')).toBeInTheDocument();
+  });
+
+  it('shows the checkout progress steps', () => {
+    vi.mocked(useCart).mockReturnValue(createMockCart() as any);
+
+    render(
+      <BrowserRouter>
+        <Cart />
+      </BrowserRouter>,
+    );
+
+    const progress = screen.getByLabelText('Checkout progress');
+    expect(progress).toBeTruthy();
+    expect(progress.textContent).toContain('Cart');
+    expect(progress.textContent).toContain('Address');
+    expect(progress.textContent).toContain('Payment');
   });
 
   it('shows item quantity', () => {
@@ -133,7 +151,7 @@ describe('Cart', () => {
     expect(screen.getByLabelText('Quantity: 3')).toBeInTheDocument();
   });
 
-  it('shows total', () => {
+  it('shows totals', () => {
     vi.mocked(useCart).mockReturnValue(createMockCart() as any);
 
     render(
@@ -142,7 +160,21 @@ describe('Cart', () => {
       </BrowserRouter>,
     );
 
-    expect(screen.getByText('Total')).toBeInTheDocument();
-    expect(screen.getAllByText('₹89.97')).toHaveLength(2);
+    expect(screen.getAllByText('Total').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('₹89.97').length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('provides continue to address CTA', () => {
+    vi.mocked(useCart).mockReturnValue(createMockCart() as any);
+
+    render(
+      <BrowserRouter>
+        <Cart />
+      </BrowserRouter>,
+    );
+
+    const ctas = screen.getAllByRole('link', { name: /continue to address/i });
+    expect(ctas.length).toBeGreaterThanOrEqual(1);
+    expect(ctas[0]).toHaveAttribute('href', '/checkout');
   });
 });
