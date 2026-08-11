@@ -217,3 +217,96 @@ class OrderDetailAPIViewTests(OrderAPITestBase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['id'], order_id)
         self.assertEqual(response.data['shipping_address']['city'], 'Bengaluru')
+
+from unittest import mock
+
+from django.test import TestCase, override_settings
+
+from apps.orders.email_service import send_order_confirmation_email
+
+
+class OrderEmailServiceTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='emailuser@example.com',
+            full_name='Email User',
+        )
+        self.category = Category.objects.create(name='Test Cat', slug='test-cat')
+        self.product = Product.objects.create(
+            name='Test Product',
+            slug='test-product',
+            price=100.00,
+            stock_quantity=10,
+            category=self.category,
+        )
+        self.variant = ProductVariant.objects.create(
+            product=self.product,
+            size='M',
+            color='Black',
+            color_code='#000000',
+            sku='test-product-black-m',
+            stock_quantity=10,
+        )
+        from apps.orders.models import OrderItem
+        self.order = Order.objects.create(user=self.user, total=100.00)
+        OrderItem.objects.create(
+            order=self.order,
+            variant=self.variant,
+            quantity=2,
+            unit_price=50.00,
+            total_price=100.00,
+        )
+
+    @override_settings(RESEND_API_KEY='test-key')
+    @mock.patch('apps.orders.email_service.requests.post')
+    def test_sends_rendered_email_via_resend_api(self, mock_post):
+        mock_post.return_value.status_code = 200
+        mock_post.return_value.text = ''
+
+        ok = send_order_confirmation_email(self.order)
+
+        self.assertTrue(ok)
+        mock_post.assert_called_once()
+        args, kwargs = mock_post.call_args
+        self.assertEqual(args[0], 'https://api.resend.com/emails')
+        self.assertEqual(kwargs['headers']['Authorization'], 'Bearer test-key')
+        payload = kwargs['json']
+        self.assertEqual(payload['to'], ['emailuser@example.com'])
+        self.assertIn('confirmed', payload['subject'])
+        self.assertIn('Test Product', payload['text'])
+        self.assertIn('Total: ₹100.00', payload['text'])
+
+    @override_settings(RESEND_API_KEY='')
+    @mock.patch('apps.orders.email_service.requests.post')
+    def test_returns_false_without_api_key(self, mock_post):
+        ok = send_order_confirmation_email(self.order)
+        self.assertFalse(ok)
+        mock_post.assert_not_called()
+
+    @override_settings(RESEND_API_KEY='test-key')
+    @mock.patch('apps.orders.email_service.requests.post')
+    def test_returns_false_on_api_error(self, mock_post):
+        mock_post.return_value.status_code = 401
+        mock_post.return_value.text = 'unauthorized'
+        ok = send_order_confirmation_email(self.order)
+        self.assertFalse(ok)
+
+    @override_settings(RESEND_API_KEY='test-key')
+    @mock.patch('apps.orders.email_service.requests.post')
+    def test_html_includes_shipping_snapshot(self, mock_post):
+        self.order.shipping_name = 'Email User'
+        self.order.shipping_phone = '9876543210'
+        self.order.shipping_address_line1 = '123 Test Street'
+        self.order.shipping_city = 'Bengaluru'
+        self.order.shipping_state = 'Karnataka'
+        self.order.shipping_postal_code = '560001'
+        self.order.shipping_country = 'India'
+        self.order.save()
+        mock_post.return_value.status_code = 200
+        mock_post.return_value.text = ''
+
+        ok = send_order_confirmation_email(self.order)
+
+        self.assertTrue(ok)
+        _, kwargs = mock_post.call_args
+        self.assertIn('Bengaluru, Karnataka 560001', kwargs['json']['html'])

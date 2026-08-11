@@ -394,16 +394,19 @@ See the [UI Design Bible](./04_UI_Design_Bible.md#cloudinary-transformations) fo
 2. Verify your domain (`kuhuapparels.com`):
    - Add DKIM records to your DNS provider.
    - This may take up to 48 hours to propagate.
-3. Create an API key.
-4. Set the API key in Railway environment variables.
+   - For quick testing without DNS, use the sandbox sender `onboarding@resend.dev` and verify your own recipient email under **Audiences**.
+3. Create an API key (Resend → **API Keys**).
+4. Set env vars in Railway:
+   - `RESEND_API_KEY` — the API key
+   - `RESEND_FROM_EMAIL` — e.g. `noreply@kuhuapparels.com` (or `onboarding@resend.dev` for testing)
+   - `FRONTEND_URL` — the storefront origin (used for the "view order" link)
+   - **Redeploy** the service after adding the variables.
+
+> **Important:** Emails are sent via the **Resend HTTPS API** (`https://api.resend.com/emails`, port 443), not SMTP. Railway's egress firewall blocks outbound SMTP (port 587 etc.), which is why the SMTP backend hangs. The `email_service` uses `requests` against the Resend REST API instead.
 
 ### Email Templates
 
-TODO: Create email templates using React Email for:
-- Order confirmation
-- Payment receipt
-- Shipping update
-- Account registration welcome
+Order confirmation uses app templates under `backend/apps/orders/templates/orders/` (plain-text + inline-styled HTML with order items, total, shipping snapshot, and a view-order link). Future templates for payment receipt / shipping update / welcome can follow the same pattern.
 
 ---
 

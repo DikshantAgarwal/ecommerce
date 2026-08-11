@@ -1,7 +1,6 @@
 import uuid
 from unittest import mock
 
-from django.core import mail
 from django.test import TestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -146,7 +145,8 @@ class PaymentStatusAPIViewTests(PaymentAPITestBase):
         mock_fetch.assert_not_called()
 
     @mock.patch('apps.payments.views.fetch_order_status', return_value='PAID')
-    def test_status_polls_gateway_when_unpaid(self, mock_fetch):
+    @mock.patch('apps.payments.views.send_order_confirmation_email')
+    def test_status_polls_gateway_when_unpaid(self, mock_send, mock_fetch):
         self.order.cashfree_order_id = str(self.order.id)
         self.order.save()
         response = self.client.get(self.url)
@@ -155,6 +155,7 @@ class PaymentStatusAPIViewTests(PaymentAPITestBase):
         mock_fetch.assert_called_once_with(self.order.cashfree_order_id)
         self.order.refresh_from_db()
         self.assertEqual(self.order.status, Order.Status.CONFIRMED)
+        mock_send.assert_called_once_with(self.order)
 
     def test_status_requires_auth(self):
         self.client.force_authenticate(user=None)
@@ -212,65 +213,29 @@ class PaymentWebhookAPIViewTests(PaymentAPITestBase):
         self.assertEqual(self.order.status, Order.Status.CONFIRMED)
 
     @override_settings(CASHFREE_CLIENT_SECRET='test-secret')
-    def test_success_webhook_sends_confirmation_email(self):
+    @mock.patch('apps.payments.views.send_order_confirmation_email')
+    def test_success_webhook_sends_confirmation_email(self, mock_send):
         self.add_cart_item()
-        self.assertEqual(len(mail.outbox), 0)
 
         response = self._post_webhook()
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(mail.outbox), 1)
-        email = mail.outbox[0]
-        self.assertEqual(email.to, [self.user.email])
-        self.assertIn('confirmed', email.subject)
-        self.assertIn('Test Product', email.body)
-        self.assertIn('Total: ₹100.00', email.body)
-        self.assertEqual(len(email.alternatives), 1)
-        html_body, content_type = email.alternatives[0]
-        self.assertEqual(content_type, 'text/html')
-        self.assertIn('Order', html_body)
+        mock_send.assert_called_once_with(self.order)
 
     @override_settings(CASHFREE_CLIENT_SECRET='test-secret')
-    def test_success_webhook_email_includes_shipping_snapshot(self):
-        from apps.accounts.models import Address
-        Address.objects.create(
-            user=self.user,
-            name='Pay User',
-            phone='9876543210',
-            address_line1='123 Test Street',
-            city='Bengaluru',
-            state='Karnataka',
-            postal_code='560001',
-            country='India',
-        )
-        self.order.shipping_name = 'Pay User'
-        self.order.shipping_phone = '9876543210'
-        self.order.shipping_address_line1 = '123 Test Street'
-        self.order.shipping_city = 'Bengaluru'
-        self.order.shipping_state = 'Karnataka'
-        self.order.shipping_postal_code = '560001'
-        self.order.shipping_country = 'India'
-        self.order.save()
-
-        self._post_webhook()
-
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertIn('Shipping to', mail.outbox[0].body)
-        self.assertIn('Bengaluru, Karnataka 560001', mail.outbox[0].body)
-        self.assertIn('9876543210', mail.outbox[0].body)
-
-    @override_settings(CASHFREE_CLIENT_SECRET='test-secret')
-    def test_success_webhook_sends_email_only_once(self):
+    @mock.patch('apps.payments.views.send_order_confirmation_email')
+    def test_success_webhook_sends_email_only_once(self, mock_send):
         self.add_cart_item()
         self._post_webhook()
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mock_send.call_count, 1)
 
         response = self._post_webhook()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mock_send.call_count, 1)
 
     @override_settings(CASHFREE_CLIENT_SECRET='test-secret')
-    def test_failed_webhook_sends_no_email(self):
+    @mock.patch('apps.payments.views.send_order_confirmation_email')
+    def test_failed_webhook_sends_no_email(self, mock_send):
         self.add_cart_item()
         payload = {
             'type': 'PAYMENT_FAILED_WEBHOOK',
@@ -292,7 +257,8 @@ class PaymentWebhookAPIViewTests(PaymentAPITestBase):
             HTTP_X_WEBHOOK_SIGNATURE=signature,
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(Order.objects.get(pk=self.order.pk).payment_status, Order.PaymentStatus.FAILED)
+        mock_send.assert_not_called()
 
     @override_settings(CASHFREE_CLIENT_SECRET='test-secret')
     def test_failed_webhook_marks_failed(self):
