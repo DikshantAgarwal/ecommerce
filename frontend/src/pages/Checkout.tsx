@@ -9,7 +9,7 @@ import { formatPrice } from '../utils/format';
 export default function Checkout() {
   const { data: cart, isLoading, error } = useCart();
   const { mutate: placeOrder, isPending: isPlacing } = useCreateOrder();
-  const { mutate: initiate } = useInitiatePayment();
+  const { mutate: initiate, isPending: isInitiating } = useInitiatePayment();
 
   function handlePay() {
     placeOrder(undefined, {
@@ -27,7 +27,7 @@ export default function Checkout() {
     });
   }
 
-  const isPending = isPlacing;
+  const isPending = isPlacing || isInitiating;
 
   if (isLoading) {
     return (
@@ -59,7 +59,7 @@ export default function Checkout() {
     );
   }
 
-  if (cart.items.length === 0) {
+  if (cart.items.length === 0 && !isPending) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6 lg:px-8">
         <ShoppingCart className="mx-auto size-16 text-neutral-300" aria-hidden="true" />
