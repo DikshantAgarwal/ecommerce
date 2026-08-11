@@ -139,11 +139,11 @@ function CartItemRow({ item, onUpdate, onRemove }: CartItemRowProps) {
         to={`/products/${v.product_slug}`}
         className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-neutral-100 text-neutral-400"
       >
-        {v.product_image ? (
-          <img src={v.product_image} alt={v.product_name} className="size-full object-cover" loading="lazy" />
-        ) : (
-          <ShoppingCart className="size-8" aria-hidden="true" />
-        )}
+{v.image ? (
+              <img src={v.image} alt={v.product_name} className="size-full object-cover" loading="lazy" />
+            ) : (
+              <ShoppingCart className="size-8" aria-hidden="true" />
+            )}
       </Link>
 
       <div className="min-w-0 flex-1">
