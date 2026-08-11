@@ -1,11 +1,16 @@
 import { Link, useParams } from 'react-router';
 import { useOrder } from '../hooks/useOrder';
-import { CheckCircle } from 'lucide-react';
+import { usePaymentStatus } from '../hooks/usePayment';
+import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { formatPrice } from '../utils/format';
 
 export default function OrderConfirmation() {
   const { id } = useParams<{ id: string }>();
   const { data: order, isLoading, error } = useOrder(id);
+  const needsPolling = !!order && order.payment_status !== 'paid' && order.payment_status !== 'failed';
+  const { data: payment } = usePaymentStatus(id, needsPolling);
+
+  const paymentStatus = payment?.payment_status ?? order?.payment_status ?? 'unpaid';
 
   if (isLoading) {
     return (
@@ -30,13 +35,24 @@ export default function OrderConfirmation() {
     );
   }
 
+  const isPaid = paymentStatus === 'paid';
+  const isFailed = paymentStatus === 'failed';
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="text-center">
-        <CheckCircle className="mx-auto size-16 text-primary-900" aria-hidden="true" />
-        <h1 className="mt-4 text-2xl font-bold text-neutral-900">Order Confirmed!</h1>
+        {isPaid && <CheckCircle className="mx-auto size-16 text-primary-900" aria-hidden="true" />}
+        {isFailed && <XCircle className="mx-auto size-16 text-red-600" aria-hidden="true" />}
+        {!isPaid && !isFailed && <Loader2 className="mx-auto size-16 animate-spin text-primary-900" aria-hidden="true" />}
+        <h1 className="mt-4 text-2xl font-bold text-neutral-900">
+          {isPaid ? 'Payment Successful!' : isFailed ? 'Payment Failed' : 'Awaiting Payment...'}
+        </h1>
         <p className="mt-2 text-neutral-600">
-          Thank you for your purchase. Your order has been placed successfully.
+          {isPaid
+            ? 'Thank you for your purchase. Your order has been placed successfully.'
+            : isFailed
+              ? 'Your payment did not go through. Please try again or contact support.'
+              : 'Your payment is being processed. This page will refresh automatically.'}
         </p>
         <p className="mt-1 text-sm text-neutral-500">
           Order #{order.id.slice(0, 8).toUpperCase()}
@@ -70,13 +86,21 @@ export default function OrderConfirmation() {
           <span className="text-lg font-semibold text-neutral-900">Total</span>
           <span className="text-2xl font-bold text-neutral-900">{formatPrice(order.total)}</span>
         </div>
-        <p className="mt-1 text-right text-sm text-neutral-500">Status: {order.status.charAt(0).toUpperCase() + order.status.slice(1)}</p>
+        <p className="mt-1 text-right text-sm text-neutral-500">
+          Payment: {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
+        </p>
       </div>
 
       <div className="mt-8 text-center">
-        <Link to="/" className="inline-flex h-12 items-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700">
-          Continue Shopping
-        </Link>
+        {isFailed ? (
+          <Link to="/cart" className="inline-flex h-12 items-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700">
+            Retry Checkout
+          </Link>
+        ) : (
+          <Link to="/" className="inline-flex h-12 items-center rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700">
+            Continue Shopping
+          </Link>
+        )}
       </div>
     </div>
   );

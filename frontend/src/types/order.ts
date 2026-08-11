@@ -15,6 +15,7 @@ export interface Order {
   id: string;
   user: string;
   status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
+  payment_status: 'unpaid' | 'pending' | 'paid' | 'failed';
   total: string;
   items: OrderItem[];
   created_at: string;

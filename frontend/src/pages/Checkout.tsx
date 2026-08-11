@@ -1,12 +1,33 @@
 import { Link } from 'react-router';
 import { useCart } from '../hooks/useCart';
 import { useCreateOrder } from '../hooks/useOrder';
+import { useInitiatePayment } from '../hooks/usePayment';
+import { openCashfreeCheckout } from '../lib/cashfree';
 import { ShoppingCart } from 'lucide-react';
 import { formatPrice } from '../utils/format';
 
 export default function Checkout() {
   const { data: cart, isLoading, error } = useCart();
-  const { mutate: placeOrder, isPending } = useCreateOrder();
+  const { mutate: placeOrder, isPending: isPlacing } = useCreateOrder();
+  const { mutate: initiate } = useInitiatePayment();
+
+  function handlePay() {
+    placeOrder(undefined, {
+      onSuccess: (order) => {
+        const returnUrl = `${window.location.origin}/orders/${order.id}/confirmation`;
+        initiate(
+          { orderId: order.id, returnUrl },
+          {
+            onSuccess: async (payment) => {
+              await openCashfreeCheckout(payment.payment_session_id);
+            },
+          },
+        );
+      },
+    });
+  }
+
+  const isPending = isPlacing;
 
   if (isLoading) {
     return (
@@ -87,11 +108,11 @@ export default function Checkout() {
           <span className="text-2xl font-bold text-neutral-900">{formatPrice(cart.total)}</span>
         </div>
         <button
-          onClick={() => placeOrder()}
+          onClick={handlePay}
           disabled={isPending}
           className="mt-4 h-12 w-full rounded-lg bg-primary-900 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 disabled:hover:bg-neutral-200"
         >
-          {isPending ? 'Placing Order...' : 'Place Order'}
+          {isPending ? 'Redirecting to payment...' : 'Proceed to Pay'}
         </button>
         <Link
           to="/cart"

@@ -17,6 +17,7 @@ export default defineConfig({
     css: false,
     env: {
       VITE_GOOGLE_CLIENT_ID: 'test-id.apps.googleusercontent.com',
+      VITE_CASHFREE_MODE: 'sandbox',
     },
   },
 });

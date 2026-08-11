@@ -153,3 +153,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
 
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+
+# Cashfree Payments
+CASHFREE_CLIENT_ID = os.environ.get('CASHFREE_CLIENT_ID', '')
+CASHFREE_CLIENT_SECRET = os.environ.get('CASHFREE_CLIENT_SECRET', '')
+CASHFREE_WEBHOOK_SECRET = os.environ.get('CASHFREE_WEBHOOK_SECRET', '')
+CASHFREE_ENV = os.environ.get('CASHFREE_ENV', 'test')  # 'test' (sandbox) | 'prod'
+CASHFREE_API_VERSION = os.environ.get('CASHFREE_API_VERSION', '2025-01-01')
+
+def get_cashfree_base_url():
+    if CASHFREE_ENV == 'prod':
+        return 'https://api.cashfree.com/pg'
+    return 'https://sandbox.cashfree.com/pg'
+
+CASHFREE_BASE_URL = get_cashfree_base_url()
+CASHFREE_NOTIFY_URL = os.environ.get('CASHFREE_NOTIFY_URL', '')

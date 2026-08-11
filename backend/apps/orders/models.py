@@ -12,6 +12,12 @@ class Order(models.Model):
         DELIVERED = 'delivered', 'Delivered'
         CANCELLED = 'cancelled', 'Cancelled'
 
+    class PaymentStatus(models.TextChoices):
+        UNPAID = 'unpaid', 'Unpaid'
+        PENDING = 'pending', 'Pending'
+        PAID = 'paid', 'Paid'
+        FAILED = 'failed', 'Failed'
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -23,6 +29,12 @@ class Order(models.Model):
         choices=Status.choices,
         default=Status.PENDING,
     )
+    payment_status = models.CharField(
+        max_length=10,
+        choices=PaymentStatus.choices,
+        default=PaymentStatus.UNPAID,
+    )
+    cashfree_order_id = models.CharField(max_length=100, blank=True, default='')
     total = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
