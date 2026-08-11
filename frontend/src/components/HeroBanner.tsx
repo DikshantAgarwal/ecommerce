@@ -58,7 +58,7 @@ export default function HeroBanner() {
   } = useSnapCarousel({ count, cycles: CYCLES, initialIndex: 0 });
 
   return (
-    <section className="py-6 sm:py-10 lg:py-12" aria-label="Featured collection">
+    <section className="py-6 sm:py-8 lg:py-10" aria-label="Featured collection">
       <div
         ref={trackRef}
         role="group"
@@ -75,7 +75,7 @@ export default function HeroBanner() {
         onTouchEnd={handleTouchEnd}
         onClickCapture={handleClickCapture}
         tabIndex={0}
-        className="flex cursor-grab snap-x snap-mandatory overflow-x-auto scroll-pl-[7.5%] scroll-pr-[7.5%] select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 active:cursor-grabbing sm:scroll-pl-[19%] sm:scroll-pr-[19%] lg:scroll-pl-[27%] lg:scroll-pr-[27%] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex cursor-grab snap-x snap-mandatory overflow-x-auto scroll-pl-[7.5%] scroll-pr-[7.5%] select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 active:cursor-grabbing sm:scroll-pl-[17%] sm:scroll-pr-[17%] lg:scroll-pl-[22%] lg:scroll-pr-[22%] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {SLIDES.map((slide, r) => {
           const isActive = r === activeIndex;
@@ -83,14 +83,14 @@ export default function HeroBanner() {
             <li
               key={slide.headline}
               aria-hidden={!isActive}
-              className="relative w-[85%] shrink-0 snap-center sm:w-[62%] lg:w-[46%]"
+              className="relative w-[85%] shrink-0 snap-center sm:w-[66%] lg:w-[56%]"
               style={{ transformOrigin: 'center center' }}
             >
               <article
                 ref={(el) => {
                   slideRefs.current[r] = el;
                 }}
-                className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-neutral-100 sm:aspect-[4/5]"
+                className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-neutral-100 sm:aspect-[16/9]"
               >
                 <img
                   src={slide.image}

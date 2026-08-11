@@ -73,7 +73,7 @@ export default function ThemeCarousel({ themes }: ThemeCarouselProps) {
                   src={theme.image}
                   alt={theme.name}
                   draggable={false}
-                  loading={r === count ? 'eager' : 'lazy'}
+                  loading="eager"
                   decoding="async"
                   className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                 />
@@ -94,11 +94,12 @@ export default function ThemeCarousel({ themes }: ThemeCarouselProps) {
                     className="size-4 -translate-x-1 text-primary-900 opacity-0 transition duration-300 group-hover:translate-x-0 group-hover:opacity-100"
                   />
                 </span>
-                {isActive && (
-                  <span className="mt-1 block text-xs font-medium text-neutral-500">
-                    Explore the {theme.name} collection &rarr;
-                  </span>
-                )}
+                <span
+                  aria-hidden={!isActive}
+                  className="mt-1 block truncate text-xs font-medium text-neutral-500"
+                >
+                  {isActive ? `Explore the ${theme.name} collection \u2192` : '\u00A0'}
+                </span>
               </div>
             </Link>
           </li>

@@ -80,16 +80,16 @@ export function useSnapCarousel({
     if (!el) return;
     const unit = measureUnit(el);
     let raw = el.scrollLeft / unit;
-    if (raw >= count * resetThreshold) {
+    while (raw >= count * resetThreshold) {
       el.scrollLeft -= count * unit;
       raw = el.scrollLeft / unit;
     }
-    applyStyles(raw);
     const rounded = Math.round(raw);
     if (rounded !== activeRef.current) {
       activeRef.current = rounded;
       setActiveIndex(rounded);
     }
+    applyStyles(rounded);
   }, [count, measureUnit, applyStyles, resetThreshold]);
 
   const goTo = useCallback((targetLeft: number) => {

@@ -71,6 +71,16 @@ export default function Products() {
     [selectedSection, themeFromUrl],
   );
 
+  const filterCategories = useMemo(() => {
+    if (!categories) return [];
+    const seen = new Set<string>();
+    return categories.filter((c) => {
+      if (seen.has(c.name)) return false;
+      seen.add(c.name);
+      return true;
+    });
+  }, [categories]);
+
   const handleThemeChange = useCallback((slug: string) => {
     setSelectedThemes((prev) =>
       prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
@@ -96,7 +106,7 @@ export default function Products() {
     selectedThemes.length + (priceMin || priceMax ? 1 : 0) + (inStockOnly ? 1 : 0);
 
   const sharedFilterProps = {
-    categories: categories ?? [],
+    categories: filterCategories,
     selectedThemes,
     priceMin,
     priceMax,
@@ -134,7 +144,7 @@ export default function Products() {
 
         <ActiveFilterPills
           selectedThemes={selectedThemes}
-          categories={categories ?? []}
+          categories={filterCategories}
           priceMin={priceMin}
           priceMax={priceMax}
           inStockOnly={inStockOnly}

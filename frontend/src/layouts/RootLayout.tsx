@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router';
-import { User, Menu, X } from 'lucide-react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router';
+import { User, Menu, X, LogOut } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
 import { CartIcon, Footer, MobileCategoryNav } from '../components';
 import { NAV_LINKS, isLinkActive } from '../utils/nav';
@@ -10,7 +10,14 @@ export default function RootLayout() {
   const user = useAuthStore((s) => s.user);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const { pathname, search } = useLocation();
+  const navigate = useNavigate();
   const section = new URLSearchParams(search).get('section');
+
+  const handleLogout = () => {
+    useAuthStore.getState().logout();
+    setMobileMenuOpen(false);
+    navigate('/');
+  };
 
   return (
     <div className="min-h-screen bg-neutral-0">
@@ -43,13 +50,23 @@ export default function RootLayout() {
           <div className="flex flex-1 items-center justify-end gap-4">
             <CartIcon />
             {isAuthenticated && user ? (
-              <Link to="/" className="p-2 text-neutral-600 transition-colors duration-200 hover:text-primary-900" aria-label="Profile">
-                {user.avatar ? (
-                  <img src={user.avatar} alt="" className="size-6 rounded-full" />
-                ) : (
-                  <User className="size-6" />
-                )}
-              </Link>
+              <div className="flex items-center gap-1">
+                <Link to="/" className="p-2 text-neutral-600 transition-colors duration-200 hover:text-primary-900" aria-label="Profile">
+                  {user.avatar ? (
+                    <img src={user.avatar} alt="" className="size-6 rounded-full" />
+                  ) : (
+                    <User className="size-6" />
+                  )}
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="p-2 text-neutral-600 transition-colors duration-200 hover:text-primary-900"
+                  aria-label="Log out"
+                >
+                  <LogOut className="size-6" />
+                </button>
+              </div>
             ) : (
               <Link to="/login" className="p-2 text-neutral-600 transition-colors duration-200 hover:text-primary-900" aria-label="Sign in">
                 <User className="size-6" />
@@ -116,10 +133,18 @@ export default function RootLayout() {
                   <div className="flex size-10 items-center justify-center rounded-full bg-neutral-100 text-sm font-medium text-neutral-600">
                     {user.full_name.charAt(0).toUpperCase()}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-neutral-900">{user.full_name}</p>
-                    <p className="text-xs text-neutral-600">{user.email}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-neutral-900">{user.full_name}</p>
+                    <p className="truncate text-xs text-neutral-600">{user.email}</p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:text-primary-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
+                  >
+                    <LogOut className="size-4" />
+                    Log out
+                  </button>
                 </>
               ) : (
                 <Link
